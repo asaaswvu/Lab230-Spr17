@@ -2,14 +2,9 @@ import javax.swing.*;
 import java.awt.Toolkit;
 import java.awt.Dimension;
 
-class Basic extends JFrame{
+public class Basic extends JFrame{
 
-    Basic(){
-        
-
-
-
-
+   public  Basic(){
         this.setSize(640,480); 
         this.setVisible(true);  //will be invisible otherwise
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -20,15 +15,6 @@ class Basic extends JFrame{
         int y = (int) ((dimension.getHeight() - this.getHeight()) / 2);
         setLocation(x, y);
     }
-
-
-
-
-
-
-
-
-
 
     public static void main(String args[]){
         new Basic();
