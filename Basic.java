@@ -12,7 +12,7 @@ class Basic extends JFrame{
 
         this.setSize(640,480); 
         this.setVisible(true);  //will be invisible otherwise
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 
 
         //this centers the window in the screen
         Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
