@@ -17,7 +17,7 @@ class NameGUI extends JFrame implements ActionListener{
         JPanel panelBottom = new JPanel(new FlowLayout());
         
         //create a button named btnSample with text Sample Button
-        JButton btnSample = new JButton("Sample Button");
+        JButton btnSample = new JButton("Click Me");
         JButton btnQuit = new JButton("Quit");
         JButton btnSwap = new JButton("Swap");
         
@@ -87,12 +87,12 @@ class NameGUI extends JFrame implements ActionListener{
         JMenuBar menuBar = new JMenuBar();
 
         //create a menu  (file, edit, help, etc)
-        JMenu menuHelp = new JMenu("Help");
+        JMenu menuHelp = new JMenu("File");
         
         //create a menu item and set up its listeners, similar to buttons
-        JMenuItem miHelp = new JMenuItem("Help me");
+        JMenuItem miHelp = new JMenuItem("Quit");
         miHelp.addActionListener(this);
-        miHelp.setActionCommand("help");
+        miHelp.setActionCommand("file");
     
         //put together the pieces
         menuHelp.add(miHelp);
@@ -106,7 +106,7 @@ class NameGUI extends JFrame implements ActionListener{
         //this method listens to the JFrame's events and performs appropriately
         switch (evt.getActionCommand()){
             case "sample":
-                JOptionPane.showMessageDialog(this,"A Sample message dialog box","A plain message",JOptionPane.PLAIN_MESSAGE);
+                JOptionPane.showMessageDialog(this,"Julio Martin","A plain message",JOptionPane.PLAIN_MESSAGE);
                 break;
             case "quit" :
                 System.exit(0);
@@ -117,8 +117,8 @@ class NameGUI extends JFrame implements ActionListener{
                 txtWord1.setText(txtWord2.getText());
                 txtWord2.setText(tempString);
                 break;
-            case "help" :
-                JOptionPane.showMessageDialog(this,"There is no help for you.","Sorry",JOptionPane.WARNING_MESSAGE);
+            case "file" :
+		System.exit(0);
                 break;
                 
         }
