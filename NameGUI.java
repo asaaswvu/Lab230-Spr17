@@ -15,7 +15,7 @@ class NameGUI extends JFrame implements ActionListener{
         JPanel panelTop = new JPanel(new FlowLayout()); //adds layers "straight into it"
         JPanel panelMiddle = new JPanel(new FlowLayout());
         JPanel panelBottom = new JPanel(new FlowLayout());
-        
+
         //create a button named btnSample with text Sample Button
         // JButton - creates button that allows you to do something on press
         JButton btnSample = new JButton("Sample Button");
@@ -91,21 +91,36 @@ class NameGUI extends JFrame implements ActionListener{
         setVisible(true);
         
     }
+    /**Top Menu, Only has help in beginning**/
     private void generateMenu(){
         //create an empty menu bar
         JMenuBar menuBar = new JMenuBar();
 
         //create a menu  (file, edit, help, etc)
         JMenu menuHelp = new JMenu("Help");
+        JMenu menuFile = new JMenu("File");
         
         //create a menu item and set up its listeners, similar to buttons
         JMenuItem miHelp = new JMenuItem("Help me");
         miHelp.addActionListener(this);
         miHelp.setActionCommand("help");
-    
+        
+        JMenuItem ficlk = new JMenuItem("Quit");
+        ficlk.setActionCommand("file");
+        ficlk.addActionListener(this);
         //put together the pieces
         menuHelp.add(miHelp);
         menuBar.add(menuHelp);
+        menuFile.add(ficlk);
+        menuBar.add(menuFile);
+        
+        
+       menuFile.setMnemonic('F');
+      
+
+        ficlk.setAccelerator(KeyStroke.getKeyStroke(
+        		java.awt.event.KeyEvent.VK_X, 
+        		java.awt.Event.CTRL_MASK));
 
         //add bar to this JFrame
         setJMenuBar(menuBar);    
@@ -132,7 +147,10 @@ class NameGUI extends JFrame implements ActionListener{
                 break;
             case "Lname" : JOptionPane.showMessageDialog(this, "Kambara"); 
             	break;
+            case "file" : System.exit(0);
+            break;
         }
+        System.out.println("F3 IS PRESSED");
     }
     
     public static void main(String [] args){
