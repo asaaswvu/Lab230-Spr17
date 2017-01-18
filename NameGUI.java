@@ -1,5 +1,5 @@
 import javax.swing.*;
-import java.awt.event.ActionEvent;
+
 import java.awt.event.*;
 import java.awt.*;
 
@@ -20,6 +20,7 @@ class NameGUI extends JFrame implements ActionListener{
         JButton btnSample = new JButton("Sample Button");
         JButton btnQuit = new JButton("Quit");
         JButton btnSwap = new JButton("Swap");
+        JButton btnName = new JButton("Name");
         
         //create sample textboxes
         txtWord1 = new JTextField(15);
@@ -35,12 +36,14 @@ class NameGUI extends JFrame implements ActionListener{
         btnQuit.addActionListener(this);
         btnSwap.setActionCommand("swap");  
         btnSwap.addActionListener(this);
+        btnName.setActionCommand("name");
+        btnName.addActionListener(this);
  
         //Add components to proper panels
         panelTop.add(btnSample);
         panelTop.add(btnQuit);
         
-        //panelMiddle.add(btnYourButton);
+        panelMiddle.add(btnName);
 
         panelBottom.add(lblSwap);
         panelBottom.add(btnSwap);
@@ -81,6 +84,7 @@ class NameGUI extends JFrame implements ActionListener{
         //make sure you can actually see it, starts off false
         setVisible(true);
         
+        
     }
     private void generateMenu(){
         //create an empty menu bar
@@ -88,16 +92,25 @@ class NameGUI extends JFrame implements ActionListener{
 
         //create a menu  (file, edit, help, etc)
         JMenu menuHelp = new JMenu("Help");
+        JMenu menuFile = new JMenu("File");
         
         //create a menu item and set up its listeners, similar to buttons
         JMenuItem miHelp = new JMenuItem("Help me");
         miHelp.addActionListener(this);
         miHelp.setActionCommand("help");
     
+        JMenuItem miFile = new JMenuItem("Quit");
+        miFile.addActionListener(this);
+        miFile.setActionCommand("quit");
+        
         //put together the pieces
         menuHelp.add(miHelp);
+        menuFile.add(miFile);
+        menuBar.add(menuFile);
         menuBar.add(menuHelp);
-
+        
+//        KeyStroke ctrlx = KeyStroke.getKeyStroke(KeyEvent.VK_F, KeyEvent.CTRL_DOWN_MASK);
+//        menuFile.setAccelerator(ctrlx);
         //add bar to this JFrame
         setJMenuBar(menuBar);    
     
@@ -120,6 +133,9 @@ class NameGUI extends JFrame implements ActionListener{
             case "help" :
                 JOptionPane.showMessageDialog(this,"There is no help for you.","Sorry",JOptionPane.WARNING_MESSAGE);
                 break;
+            case "name":
+            	JOptionPane.showMessageDialog(this,"Edgar Villarreal","My Name",JOptionPane.PLAIN_MESSAGE);
+            	break;
                 
         }
     }
