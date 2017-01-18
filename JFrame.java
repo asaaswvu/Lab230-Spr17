@@ -100,6 +100,10 @@ class NameGUI extends JFrame implements ActionListener{
         JMenuItem miFile = new JMenuItem("Quit");
         miFile.addActionListener(this);
         miFile.setActionCommand("Quit");
+        miFile.setAccelerator(KeyStroke.getKeyStroke(
+                java.awt.event.KeyEvent.VK_X, 
+                java.awt.Event.CTRL_MASK));
+    
     
         //put together the pieces
         menuHelp.add(miHelp);
