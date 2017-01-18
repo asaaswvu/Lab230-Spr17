@@ -110,8 +110,8 @@ class NameGUI extends JFrame implements ActionListener{
         menuHelp.add(miHelp);
         menuBar.add(menuHelp);
 
-        exitMenuButton.add(confirm);
-        menuBar.add(exitMenuButton);
+        fileButton.add(confirm);
+        menuBar.add(fileButton);
 
         //add bar to this JFrame
         setJMenuBar(menuBar);    
