@@ -20,6 +20,7 @@ class NameGUI extends JFrame implements ActionListener{
         JButton btnSample = new JButton("Sample Button");
         JButton btnQuit = new JButton("Quit");
         JButton btnSwap = new JButton("Swap");
+	JButton btnName = new JButton("My Name");
         
         //create sample textboxes
         txtWord1 = new JTextField(15);
@@ -35,12 +36,16 @@ class NameGUI extends JFrame implements ActionListener{
         btnQuit.addActionListener(this);
         btnSwap.setActionCommand("swap");  
         btnSwap.addActionListener(this);
+	btnName.setActionCommand("name");
+	btnName.addActionListener(this);
  
         //Add components to proper panels
         panelTop.add(btnSample);
         panelTop.add(btnQuit);
-        
+	        
         //panelMiddle.add(btnYourButton);
+	panelMiddle.add(btnName);
+
 
         panelBottom.add(lblSwap);
         panelBottom.add(btnSwap);
@@ -87,14 +92,20 @@ class NameGUI extends JFrame implements ActionListener{
         JMenuBar menuBar = new JMenuBar();
 
         //create a menu  (file, edit, help, etc)
+	JMenu menuFile = new JMenu("File");
         JMenu menuHelp = new JMenu("Help");
         
         //create a menu item and set up its listeners, similar to buttons
+	JMenuItem miQuit = new JMenuItem("Quit");
+	miQuit.addActionListener(this);
+	miQuit.setActionCommand("quit");
         JMenuItem miHelp = new JMenuItem("Help me");
         miHelp.addActionListener(this);
         miHelp.setActionCommand("help");
     
         //put together the pieces
+	menuFile.add(miQuit);
+	menuBar.add(menuFile);
         menuHelp.add(miHelp);
         menuBar.add(menuHelp);
 
@@ -117,6 +128,10 @@ class NameGUI extends JFrame implements ActionListener{
                 txtWord1.setText(txtWord2.getText());
                 txtWord2.setText(tempString);
                 break;
+	    case "name" :
+		JOptionPane.showMessageDialog(this, "My name is David Evick", 
+"Name Display", JOptionPane.PLAIN_MESSAGE);
+		break;
             case "help" :
                 JOptionPane.showMessageDialog(this,"There is no help for you.","Sorry",JOptionPane.WARNING_MESSAGE);
                 break;
