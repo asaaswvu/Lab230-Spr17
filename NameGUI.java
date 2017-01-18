@@ -46,6 +46,7 @@ class NameGUI extends JFrame implements ActionListener{
         panelBottom.add(btnSwap);
         panelBottom.add(txtWord1);
         panelBottom.add(txtWord2);
+
         
         //Add individual panels to panelMain, applies to BORDERLAYOUT only
         //PAGE_START is top of screen
@@ -80,7 +81,13 @@ class NameGUI extends JFrame implements ActionListener{
         
         //make sure you can actually see it, starts off false
         setVisible(true);
-        
+
+	//LAB 2 WORK
+	
+     	JButton btnName = new JButton("Name");
+	btnName.setActionCommand("name");  
+        btnName.addActionListener(this);
+	panelMiddle.add(btnName);
     }
     private void generateMenu(){
         //create an empty menu bar
@@ -88,16 +95,22 @@ class NameGUI extends JFrame implements ActionListener{
 
         //create a menu  (file, edit, help, etc)
         JMenu menuHelp = new JMenu("Help");
-        
+	JMenu menuFile = new JMenu("File");        		//ADDED FOR LAB 2
+
         //create a menu item and set up its listeners, similar to buttons
         JMenuItem miHelp = new JMenuItem("Help me");
         miHelp.addActionListener(this);
         miHelp.setActionCommand("help");
-    
+    	JMenuItem miQuit = new JMenuItem("Quit");		//SO WAS THIS STUFF
+        miQuit.addActionListener(this);
+        miQuit.setActionCommand("quit");
+
         //put together the pieces
         menuHelp.add(miHelp);
         menuBar.add(menuHelp);
-
+	menuFile.add(miQuit);					//AND THESE
+        menuBar.add(menuFile);
+		
         //add bar to this JFrame
         setJMenuBar(menuBar);    
     
@@ -120,6 +133,9 @@ class NameGUI extends JFrame implements ActionListener{
             case "help" :
                 JOptionPane.showMessageDialog(this,"There is no help for you.","Sorry",JOptionPane.WARNING_MESSAGE);
                 break;
+	case "name":				//BEHOLD: MORE LAB 2 STUFF
+		JOptionPane.showMessageDialog(this,"Connor Fitz", "Ayo this my name", JOptionPane.PLAIN_MESSAGE);
+		break;
                 
         }
     }
