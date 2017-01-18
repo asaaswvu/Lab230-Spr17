@@ -20,6 +20,7 @@ class NameGUI extends JFrame implements ActionListener{
         JButton btnSample = new JButton("Sample Button");
         JButton btnQuit = new JButton("Quit");
         JButton btnSwap = new JButton("Swap");
+	JButton btnName = new JButton("MyName");
         
         //create sample textboxes
         txtWord1 = new JTextField(15);
@@ -35,10 +36,13 @@ class NameGUI extends JFrame implements ActionListener{
         btnQuit.addActionListener(this);
         btnSwap.setActionCommand("swap");  
         btnSwap.addActionListener(this);
+	btnName.setActionCommand("myname");
+	btnName.addActionListener(this);
  
         //Add components to proper panels
         panelTop.add(btnSample);
         panelTop.add(btnQuit);
+	panelTop.add(btnName);
         
         //panelMiddle.add(btnYourButton);
 
@@ -88,15 +92,27 @@ class NameGUI extends JFrame implements ActionListener{
 
         //create a menu  (file, edit, help, etc)
         JMenu menuHelp = new JMenu("Help");
+	JMenu menuFile = new JMenu("File");
+	
+
         
         //create a menu item and set up its listeners, similar to buttons
-        JMenuItem miHelp = new JMenuItem("Help me");
+        
+		
+	JMenuItem miHelp = new JMenuItem("Help me");
         miHelp.addActionListener(this);
         miHelp.setActionCommand("help");
-    
+	JMenuItem miQuit = new JMenuItem("Quit");
+        miQuit.addActionListener(this);
+        miQuit.setActionCommand("quitted");
+
         //put together the pieces
+	menuFile.add(miQuit);
+	menuBar.add(menuFile);
         menuHelp.add(miHelp);
         menuBar.add(menuHelp);
+	
+	
 
         //add bar to this JFrame
         setJMenuBar(menuBar);    
@@ -111,6 +127,9 @@ class NameGUI extends JFrame implements ActionListener{
             case "quit" :
                 System.exit(0);
                 break;
+	    case "quitted" :
+                System.exit(0);
+                break;
             case "swap" :
                 String tempString;
                 tempString = txtWord1.getText();
@@ -118,8 +137,12 @@ class NameGUI extends JFrame implements ActionListener{
                 txtWord2.setText(tempString);
                 break;
             case "help" :
-                JOptionPane.showMessageDialog(this,"There is no help for you.","Sorry",JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(this,"There is simply no helping someone like you.","Sorry",JOptionPane.WARNING_MESSAGE);
                 break;
+	    case "myname" :
+                JOptionPane.showMessageDialog(this,"Alexander Baumgartner","Another plain message",JOptionPane.PLAIN_MESSAGE);
+                break;
+	   
                 
         }
     }
