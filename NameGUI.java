@@ -20,6 +20,7 @@ class NameGUI extends JFrame implements ActionListener{
         JButton btnSample = new JButton("Sample Button");
         JButton btnQuit = new JButton("Quit");
         JButton btnSwap = new JButton("Swap");
+	JButton btnName = new JButton("Calvin Barker");
         
         //create sample textboxes
         txtWord1 = new JTextField(15);
@@ -35,10 +36,13 @@ class NameGUI extends JFrame implements ActionListener{
         btnQuit.addActionListener(this);
         btnSwap.setActionCommand("swap");  
         btnSwap.addActionListener(this);
+	btnName.setActionCommand("name");
+	btnName.addActionListener(this);
  
         //Add components to proper panels
         panelTop.add(btnSample);
         panelTop.add(btnQuit);
+	panelTop.add(btnName);
         
         //panelMiddle.add(btnYourButton);
 
@@ -88,14 +92,21 @@ class NameGUI extends JFrame implements ActionListener{
 
         //create a menu  (file, edit, help, etc)
         JMenu menuHelp = new JMenu("Help");
+	JMenu menuFile = new JMenu("File");
         
         //create a menu item and set up its listeners, similar to buttons
         JMenuItem miHelp = new JMenuItem("Help me");
         miHelp.addActionListener(this);
         miHelp.setActionCommand("help");
+	JMenuItem miFile = new JMenuItem("Quit");
+	miFile.addActionListener(this);
+	miFile.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Q,java.awt.Event.CTRL_MASK));
+	miFile.setActionCommand("quit");
     
         //put together the pieces
+	menuFile.add(miFile);
         menuHelp.add(miHelp);
+	menuBar.add(menuFile);
         menuBar.add(menuHelp);
 
         //add bar to this JFrame
@@ -108,6 +119,9 @@ class NameGUI extends JFrame implements ActionListener{
             case "sample":
                 JOptionPane.showMessageDialog(this,"A Sample message dialog box","A plain message",JOptionPane.PLAIN_MESSAGE);
                 break;
+	    case "name":
+		JOptionPane.showMessageDialog(this,"That is my Name","My Button", JOptionPane.PLAIN_MESSAGE);
+		break;
             case "quit" :
                 System.exit(0);
                 break;
