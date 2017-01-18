@@ -20,6 +20,7 @@ class NameGUI extends JFrame implements ActionListener{
         JButton btnSample = new JButton("Sample Button");
         JButton btnQuit = new JButton("Quit");
         JButton btnSwap = new JButton("Swap");
+        JButton btnShowName = new JButton("Name");
         
         //create sample textboxes
         txtWord1 = new JTextField(15);
@@ -27,6 +28,9 @@ class NameGUI extends JFrame implements ActionListener{
         
         //create a label for display
         JLabel lblSwap = new JLabel("Swap Words!");
+
+	//KeyListener
+	
         
         //buttons need to say something(ActionCommand) to someone who's listening
         btnSample.setActionCommand("sample");  //yours will have to be unique
@@ -35,10 +39,13 @@ class NameGUI extends JFrame implements ActionListener{
         btnQuit.addActionListener(this);
         btnSwap.setActionCommand("swap");  
         btnSwap.addActionListener(this);
+	btnShowName.setActionCommand("name");  
+        btnShowName.addActionListener(this);
  
         //Add components to proper panels
         panelTop.add(btnSample);
         panelTop.add(btnQuit);
+	panelTop.add(btnShowName);
         
         //panelMiddle.add(btnYourButton);
 
@@ -87,16 +94,22 @@ class NameGUI extends JFrame implements ActionListener{
         JMenuBar menuBar = new JMenuBar();
 
         //create a menu  (file, edit, help, etc)
-        JMenu menuHelp = new JMenu("Help");
+	JMenu menuHelp = new JMenu("Help");
+        JMenu menuQuit = new JMenu("Quit");
         
         //create a menu item and set up its listeners, similar to buttons
         JMenuItem miHelp = new JMenuItem("Help me");
         miHelp.addActionListener(this);
         miHelp.setActionCommand("help");
+	JMenuItem miQuit = new JMenuItem("Quit");
+        miQuit.addActionListener(this);
+        miQuit.setActionCommand("quit");
     
         //put together the pieces
         menuHelp.add(miHelp);
+	menuQuit.add(miQuit);
         menuBar.add(menuHelp);
+	menuBar.add(menuQuit);
 
         //add bar to this JFrame
         setJMenuBar(menuBar);    
@@ -107,6 +120,9 @@ class NameGUI extends JFrame implements ActionListener{
         switch (evt.getActionCommand()){
             case "sample":
                 JOptionPane.showMessageDialog(this,"A Sample message dialog box","A plain message",JOptionPane.PLAIN_MESSAGE);
+                break;
+	    case "name":
+                JOptionPane.showMessageDialog(this,"Brandon Phillips","My Name",JOptionPane.PLAIN_MESSAGE);
                 break;
             case "quit" :
                 System.exit(0);
