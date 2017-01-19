@@ -93,13 +93,16 @@ class NameGUI extends JFrame implements ActionListener{
         //create a menu  (file, edit, help, etc)
         JMenu menuHelp = new JMenu("Help");
 	JMenu menuFile = new JMenu("File");
-        
+	menuFile.setMnemonic(KeyEvent.VK_F);      // for ALT+f   
+
+
         //create a menu item and set up its listeners, similar to buttons
         JMenuItem miHelp = new JMenuItem("Help me");
         miHelp.addActionListener(this);
         miHelp.setActionCommand("help");
 	
 	JMenuItem miFile = new JMenuItem("Quit");
+	miFile.setMnemonic(KeyEvent.VK_X);	// for alt+X
 	miFile.addActionListener(this);
 	miFile.setActionCommand("quit Menu");
     
@@ -108,6 +111,12 @@ class NameGUI extends JFrame implements ActionListener{
         menuBar.add(menuHelp);
 	menuFile.add(miFile);
 	menuBar.add(menuFile);
+	
+		
+	
+     
+
+	
 
         //add bar to this JFrame
         setJMenuBar(menuBar);    
