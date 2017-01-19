@@ -20,6 +20,7 @@ class NameGUI extends JFrame implements ActionListener{
         JButton btnSample = new JButton("Sample Button");
         JButton btnQuit = new JButton("Quit");
         JButton btnSwap = new JButton("Swap");
+	JButton btnName = new JButton("Name"); //creating button for my name
         
         //create sample textboxes
         txtWord1 = new JTextField(15);
@@ -35,10 +36,13 @@ class NameGUI extends JFrame implements ActionListener{
         btnQuit.addActionListener(this);
         btnSwap.setActionCommand("swap");  
         btnSwap.addActionListener(this);
+	btnName.setActionCommand("my name"); //command for my name
+	btnName.addActionListener(this);
  
         //Add components to proper panels
         panelTop.add(btnSample);
         panelTop.add(btnQuit);
+	panelTop.add(btnName);
         
         //panelMiddle.add(btnYourButton);
 
@@ -88,15 +92,32 @@ class NameGUI extends JFrame implements ActionListener{
 
         //create a menu  (file, edit, help, etc)
         JMenu menuHelp = new JMenu("Help");
+	JMenu menuFile = new JMenu("File"); //creating File
         
         //create a menu item and set up its listeners, similar to buttons
         JMenuItem miHelp = new JMenuItem("Help me");
         miHelp.addActionListener(this);
         miHelp.setActionCommand("help");
+	JMenuItem miQuit = new JMenuItem("Quit"); //creating quit item
+	miQuit.addActionListener(this);
+	miQuit.setActionCommand("quit");
+	menuFile.setActionCommand("file");
+	menuFile.addActionListener(this);
     
         //put together the pieces
+	menuFile.add(miQuit); //adding quit item to File
+	menuBar.add(menuFile); //adding File to menu
         menuHelp.add(miHelp);
         menuBar.add(menuHelp);
+
+	//set keyboard shortcuts
+	
+	menuFile.setMnemonic('F');
+	//miQuit.setMnemonic(KeyEvent.VK_X);
+	//KeyStroke keyStrokeFile = KeyStroke.getKeyStroke(KeyEvent.VK_F,KeyEvent.CTRL_DOWN_MASK);
+	//menuFile.setAccelerator(keyStrokeFile);
+	KeyStroke keyStrokeQuit = KeyStroke.getKeyStroke(KeyEvent.VK_X, KeyEvent.CTRL_MASK);	
+	miQuit.setAccelerator(keyStrokeQuit);
 
         //add bar to this JFrame
         setJMenuBar(menuBar);    
@@ -111,6 +132,9 @@ class NameGUI extends JFrame implements ActionListener{
             case "quit" :
                 System.exit(0);
                 break;
+	    case "my name" :
+		JOptionPane.showMessageDialog(this,"My name is Kelly Martin.","This is my name",JOptionPane.PLAIN_MESSAGE); 
+		break;
             case "swap" :
                 String tempString;
                 tempString = txtWord1.getText();
