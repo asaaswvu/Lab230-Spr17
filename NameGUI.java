@@ -17,7 +17,7 @@ class NameGUI extends JFrame implements ActionListener{
         JPanel panelBottom = new JPanel(new FlowLayout());
         
         //create a button named btnSample with text Sample Button
-        JButton btnSample = new JButton("Sample Button");
+        JButton btnSample = new JButton("My Name");
         JButton btnQuit = new JButton("Quit");
         JButton btnSwap = new JButton("Swap");
         
@@ -29,7 +29,7 @@ class NameGUI extends JFrame implements ActionListener{
         JLabel lblSwap = new JLabel("Swap Words!");
         
         //buttons need to say something(ActionCommand) to someone who's listening
-        btnSample.setActionCommand("sample");  //yours will have to be unique
+        btnSample.setActionCommand("name");  //yours will have to be unique
         btnSample.addActionListener(this);
         btnQuit.setActionCommand("quit");  //your command will have to be unique
         btnQuit.addActionListener(this);
@@ -105,8 +105,8 @@ class NameGUI extends JFrame implements ActionListener{
     public void actionPerformed(ActionEvent evt) {
         //this method listens to the JFrame's events and performs appropriately
         switch (evt.getActionCommand()){
-            case "sample":
-                JOptionPane.showMessageDialog(this,"A Sample message dialog box","A plain message",JOptionPane.PLAIN_MESSAGE);
+            case "name":
+                JOptionPane.showMessageDialog(this,"Joshua E Mosley","A plain message",JOptionPane.PLAIN_MESSAGE);
                 break;
             case "quit" :
                 System.exit(0);
@@ -118,6 +118,9 @@ class NameGUI extends JFrame implements ActionListener{
                 txtWord2.setText(tempString);
                 break;
             case "help" :
+                JOptionPane.showMessageDialog(this,"There is no help for you.","Sorry",JOptionPane.WARNING_MESSAGE);
+                break;
+	    case "file" :
                 JOptionPane.showMessageDialog(this,"There is no help for you.","Sorry",JOptionPane.WARNING_MESSAGE);
                 break;
                 
