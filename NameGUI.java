@@ -17,7 +17,7 @@ class NameGUI extends JFrame implements ActionListener{
         JPanel panelBottom = new JPanel(new FlowLayout());
         
         //create a button named btnSample with text Sample Button
-        JButton btnSample = new JButton("My Name");
+        JButton btnSample = new JButton("Name Button");
         JButton btnQuit = new JButton("Quit");
         JButton btnSwap = new JButton("Swap");
         
@@ -34,6 +34,8 @@ class NameGUI extends JFrame implements ActionListener{
         btnQuit.setActionCommand("quit");  //your command will have to be unique
         btnQuit.addActionListener(this);
         btnSwap.setActionCommand("swap");  
+        btnSwap.addActionListener(this);
+	btnSwap.setActionCommand("file");  
         btnSwap.addActionListener(this);
  
         //Add components to proper panels
@@ -65,7 +67,7 @@ class NameGUI extends JFrame implements ActionListener{
 
         //tells java what to do when the class object closes
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        setTitle("NameGui Title (how original)");
+        setTitle("My Name Gui Lab 2");
 
         
         //get visible container and add panelMain to it
@@ -88,24 +90,22 @@ class NameGUI extends JFrame implements ActionListener{
 
         //create a menu  (file, edit, help, etc)
         JMenu menuHelp = new JMenu("Help");
+	JMenu menuFile = new JMenu("file");
         
         //create a menu item and set up its listeners, similar to buttons
         JMenuItem miHelp = new JMenuItem("Help me");
         miHelp.addActionListener(this);
         miHelp.setActionCommand("help");
 
-	//my menu stuff
-	//create a menu  (file, edit, help, etc)
-        JMenu menuHelp = new JMenu("File");
-        
-        //create a menu item and set up its listeners, similar to buttons
-        JMenuItem miHelp = new JMenuItem("quit");
-        miHelp.addActionListener(this);
-        miHelp.setActionCommand("file");
+        JMenuItem miFile = new JMenuItem("Quit");
+        miFile.addActionListener(this);
+        miFile.setActionCommand("file");
     
         //put together the pieces
         menuHelp.add(miHelp);
+	menuFile.add(miFile);
         menuBar.add(menuHelp);
+	menuBar.add(menuFile);
 
         //add bar to this JFrame
         setJMenuBar(menuBar);    
@@ -115,7 +115,7 @@ class NameGUI extends JFrame implements ActionListener{
         //this method listens to the JFrame's events and performs appropriately
         switch (evt.getActionCommand()){
             case "name":
-                JOptionPane.showMessageDialog(this,"Joshua E Mosley","A plain message",JOptionPane.PLAIN_MESSAGE);
+                JOptionPane.showMessageDialog(this,"Joshua E Mosley","My name is here",JOptionPane.PLAIN_MESSAGE);
                 break;
             case "quit" :
                 System.exit(0);
@@ -129,8 +129,8 @@ class NameGUI extends JFrame implements ActionListener{
             case "help" :
                 JOptionPane.showMessageDialog(this,"There is no help for you.","Sorry",JOptionPane.WARNING_MESSAGE);
                 break;
-	    case "file" :
-                JOptionPane.showMessageDialog(this,"There is no help for you.","Sorry",JOptionPane.WARNING_MESSAGE);
+            case "file" :
+                JOptionPane.showMessageDialog(this,"There is no Quiting","Sorry",JOptionPane.WARNING_MESSAGE);
                 break;
                 
         }
