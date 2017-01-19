@@ -18,6 +18,7 @@ class NameGUI extends JFrame implements ActionListener{
         
         //create a button named btnSample with text Sample Button
         JButton btnSample = new JButton("Sample Button");
+	JButton btnName = new JButton("Name");
         JButton btnQuit = new JButton("Quit");
         JButton btnSwap = new JButton("Swap");
         
@@ -31,6 +32,10 @@ class NameGUI extends JFrame implements ActionListener{
         //buttons need to say something(ActionCommand) to someone who's listening
         btnSample.setActionCommand("sample");  //yours will have to be unique
         btnSample.addActionListener(this);
+
+	btnName.setActionCommand("Name");	//Button for displaying name
+	btnName.addActionListener(this);
+
         btnQuit.setActionCommand("quit");  //your command will have to be unique
         btnQuit.addActionListener(this);
         btnSwap.setActionCommand("swap");  
@@ -39,9 +44,9 @@ class NameGUI extends JFrame implements ActionListener{
         //Add components to proper panels
         panelTop.add(btnSample);
         panelTop.add(btnQuit);
-        
-        //panelMiddle.add(btnYourButton);
-
+	    
+        panelMiddle.add(btnName); //Button set in the middle for name display
+	
         panelBottom.add(lblSwap);
         panelBottom.add(btnSwap);
         panelBottom.add(txtWord1);
@@ -88,16 +93,34 @@ class NameGUI extends JFrame implements ActionListener{
 
         //create a menu  (file, edit, help, etc)
         JMenu menuHelp = new JMenu("Help");
+
+	//File menu item created
+	JMenu menuFile = new JMenu("File");
+	menuFile.setMnemonic(KeyEvent.VK_F); //ALT+ F needs to be pressed because my accelerator does not work somehow
+	//menuFile.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, ActionEvent.CTRL_MASK));
+	 
         
         //create a menu item and set up its listeners, similar to buttons
         JMenuItem miHelp = new JMenuItem("Help me");
         miHelp.addActionListener(this);
         miHelp.setActionCommand("help");
-    
+	
+	//File menu item is set up
+	JMenuItem miFile = new JMenuItem("Quit");
+	miFile.addActionListener(this);
+	miFile.setActionCommand("quit");
+
+	//Keyboard accelerator works for CTRL + X
+	miFile.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, ActionEvent.CTRL_MASK));
+    	
+	//File button added to the Menu bar
+	menuFile.add(miFile);
+	menuBar.add(menuFile);	
+	
         //put together the pieces
         menuHelp.add(miHelp);
         menuBar.add(menuHelp);
-
+	
         //add bar to this JFrame
         setJMenuBar(menuBar);    
     
@@ -108,6 +131,8 @@ class NameGUI extends JFrame implements ActionListener{
             case "sample":
                 JOptionPane.showMessageDialog(this,"A Sample message dialog box","A plain message",JOptionPane.PLAIN_MESSAGE);
                 break;
+	    case "Name":
+		JOptionPane.showMessageDialog(this,"Ken Nicolas" , "Your name is..",JOptionPane.PLAIN_MESSAGE);
             case "quit" :
                 System.exit(0);
                 break;
