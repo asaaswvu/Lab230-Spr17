@@ -97,9 +97,9 @@ class NameGUI extends JFrame implements ActionListener{
         JMenuItem miFile=new JMenuItem("File");
         JMenuItem miQuit=new JMenuItem("Quit");
         miQuit.addActionListener(this);
-        miQuit.setActionListener("Quit Menu");
+        miQuit.setActionCommand("Quit Menu");
         miFile.addActionListener(this);
-        miFIle.setActionListener("File");
+        miFile.setActionCommand("File");
         miHelp.addActionListener(this);
         miHelp.setActionCommand("help");
     
