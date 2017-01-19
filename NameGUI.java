@@ -17,7 +17,7 @@ class NameGUI extends JFrame implements ActionListener{
         JPanel panelBottom = new JPanel(new FlowLayout());
         
         //create a button named btnSample with text Sample Button
-        JButton btnSample = new JButton("Sample Button");
+        JButton btnSample = new JButton("Mike Muponda");
         JButton btnQuit = new JButton("Quit");
         JButton btnSwap = new JButton("Swap");
         
@@ -88,15 +88,30 @@ class NameGUI extends JFrame implements ActionListener{
 
         //create a menu  (file, edit, help, etc)
         JMenu menuHelp = new JMenu("Help");
+        JMenu menuFile=new JMenu("File");
+        JMenu menuQuit=new JMenu("Quit");
+
         
         //create a menu item and set up its listeners, similar to buttons
         JMenuItem miHelp = new JMenuItem("Help me");
+        JMenuItem miFile=new JMenuItem("File");
+        JMenuItem miQuit=new JMenuItem("Quit");
+        miQuit.addActionListener(this);
+        miQuit.setActionListener("Quit Menu");
+        miFile.addActionListener(this);
+        miFIle.setActionListener("File");
         miHelp.addActionListener(this);
         miHelp.setActionCommand("help");
     
         //put together the pieces
         menuHelp.add(miHelp);
+        menuFile.add(miFile);
+        menuQuit.add(miQuit);
+        
         menuBar.add(menuHelp);
+        menuBar.add(menuFile);
+        menuBar.add(menuQuit); 
+
 
         //add bar to this JFrame
         setJMenuBar(menuBar);    
