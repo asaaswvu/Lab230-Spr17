@@ -20,6 +20,7 @@ class NameGUI extends JFrame implements ActionListener{
         JButton btnSample = new JButton("Sample Button");
         JButton btnQuit = new JButton("Quit");
         JButton btnSwap = new JButton("Swap");
+	JButton btnName = new JButton("Travis Dickel");
         
         //create sample textboxes
         txtWord1 = new JTextField(15);
@@ -40,7 +41,7 @@ class NameGUI extends JFrame implements ActionListener{
         panelTop.add(btnSample);
         panelTop.add(btnQuit);
         
-        //panelMiddle.add(btnYourButton);
+        panelMiddle.add(btnName);
 
         panelBottom.add(lblSwap);
         panelBottom.add(btnSwap);
@@ -88,13 +89,22 @@ class NameGUI extends JFrame implements ActionListener{
 
         //create a menu  (file, edit, help, etc)
         JMenu menuHelp = new JMenu("Help");
+	JMenu menuFile = new JMenu("File");
         
         //create a menu item and set up its listeners, similar to buttons
         JMenuItem miHelp = new JMenuItem("Help me");
+	
         miHelp.addActionListener(this);
         miHelp.setActionCommand("help");
-    
+
+ 	JMenuItem miFile = new JMenuItem("Quit");  
+
+	miFile.addActionListener(this);
+	miFile.setActionCommand("quit");
         //put together the pieces
+	menuFile.add(miFile);
+	menuBar.add(menuFile);
+
         menuHelp.add(miHelp);
         menuBar.add(menuHelp);
 
