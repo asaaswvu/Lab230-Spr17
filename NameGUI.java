@@ -88,26 +88,33 @@ class NameGUI extends JFrame implements ActionListener{
 	
 
         //create a menu  (file, edit, help, etc)
-        JMenu menuHelp = new JMenu("Help");
-	JMenu menuHelp = new JMenu("File");
-	JMenu menuHelp = new JMenu("Quit")
+        JMenu menuHelp1 = new JMenu("Help");
+	JMenu menuHelp2 = new JMenu("File");
+	JMenu menuHelp3 = new JMenu("Quit");
         
         //create a menu item and set up its listeners, similar to buttons
-        JMenuItem miHelp = new JMenuItem("Help me");
-        miHelp.addActionListener(this);
-        miHelp.setActionCommand("help");
-	JMenuItem miHelp = new JMenuItem("file");
- 	miHelp.addActionListener(this);
-        miHelp.setActionCommand("file");
-	JMenuItem miHelp = new JMenuItem("Exit");
-        miHelp.addActionListener(this);
-        miHelp.setActionCommand("quit");
+        JMenuItem miHelp1 = new JMenuItem("Help me");
+        miHelp1.addActionListener(this);
+        miHelp1.setActionCommand("help");
+	JMenuItem miHelp2 = new JMenuItem("file");
+ 	miHelp2.addActionListener(this);
+        miHelp2.setActionCommand("file");
+	JMenuItem miHelp3 = new JMenuItem("Exit");
+        miHelp3.addActionListener(this);
+        miHelp3.setActionCommand("quit");
 
 
     
         //put together the pieces
-        menuHelp.add(miHelp);
-        menuBar.add(menuHelp);
+        menuHelp1.add(miHelp1);
+	menuHelp2.add(miHelp2);
+	menuHelp3.add(miHelp3);
+
+	menuBar.add(miHelp1);
+	menuBar.add(miHelp2);
+	menuBar.add(miHelp3);
+
+        
 
         //add bar to this JFrame
         setJMenuBar(menuBar);    
