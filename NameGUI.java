@@ -18,7 +18,7 @@ class NameGUI extends JFrame implements ActionListener{
         
         //create a button named btnSample with text Sample Button
         JButton btnSample = new JButton("Sample Button");
-        JButton btnQuit = new JButton("Quit");
+        JButton btnQuit = new JButton("Name");
         JButton btnSwap = new JButton("Swap");
         
         //create sample textboxes
@@ -31,7 +31,7 @@ class NameGUI extends JFrame implements ActionListener{
         //buttons need to say something(ActionCommand) to someone who's listening
         btnSample.setActionCommand("sample");  //yours will have to be unique
         btnSample.addActionListener(this);
-        btnQuit.setActionCommand("quit");  //your command will have to be unique
+        btnQuit.setActionCommand("showname");  //your command will have to be unique
         btnQuit.addActionListener(this);
         btnSwap.setActionCommand("swap");  
         btnSwap.addActionListener(this);
@@ -88,15 +88,22 @@ class NameGUI extends JFrame implements ActionListener{
 
         //create a menu  (file, edit, help, etc)
         JMenu menuHelp = new JMenu("Help");
+	JMenu menuQuit = new JMenu("Quit");
         
         //create a menu item and set up its listeners, similar to buttons
         JMenuItem miHelp = new JMenuItem("Help me");
         miHelp.addActionListener(this);
         miHelp.setActionCommand("help");
+
+	JMenuItem miQuit = new JMenuItem("Quit");
+	miQuit.addActionListener(this);
+	miQuit.setActionCommand("quit");
     
         //put together the pieces
         menuHelp.add(miHelp);
         menuBar.add(menuHelp);
+	menuQuit.add(miQuit);
+	menuBar.add(menuQuit);
 
         //add bar to this JFrame
         setJMenuBar(menuBar);    
@@ -120,12 +127,13 @@ class NameGUI extends JFrame implements ActionListener{
             case "help" :
                 JOptionPane.showMessageDialog(this,"There is no help for you.","Sorry",JOptionPane.WARNING_MESSAGE);
                 break;
-                
+	    case "showname" : 
+		JOptionPane.showMessageDialog(this,"Corrie Shaffer", "Name",JOptionPane.PLAIN_MESSAGE);
+             	break;
         }
     }
     
     public static void main(String [] args){
         new NameGUI();
     }
-    
-}
+ }
