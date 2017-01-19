@@ -20,6 +20,10 @@ class NameGUI extends JFrame implements ActionListener{
         JButton btnSample = new JButton("Sample Button");
         JButton btnQuit = new JButton("Quit");
         JButton btnSwap = new JButton("Swap");
+
+	/*Revision*/
+	//Added button for name
+	JButton btnName = new JButton("Name");
         
         //create sample textboxes
         txtWord1 = new JTextField(15);
@@ -35,12 +39,18 @@ class NameGUI extends JFrame implements ActionListener{
         btnQuit.addActionListener(this);
         btnSwap.setActionCommand("swap");  
         btnSwap.addActionListener(this);
+
+	/*Revision*/
+	//Added name action listener
+	btnName.setActionCommand("name");
+	btnName.addActionListener(this);
  
         //Add components to proper panels
         panelTop.add(btnSample);
         panelTop.add(btnQuit);
-        
-        //panelMiddle.add(btnYourButton);
+
+	//Added name button to middle panel
+        panelMiddle.add(btnName);
 
         panelBottom.add(lblSwap);
         panelBottom.add(btnSwap);
@@ -88,39 +98,61 @@ class NameGUI extends JFrame implements ActionListener{
 
         //create a menu  (file, edit, help, etc)
         JMenu menuHelp = new JMenu("Help");
-        
+
+	/*Revision*/
+	//Added file option
+	JMenu menuFile = new JMenu("File");
+	
         //create a menu item and set up its listeners, similar to buttons
         JMenuItem miHelp = new JMenuItem("Help me");
         miHelp.addActionListener(this);
         miHelp.setActionCommand("help");
+
+	/*Revision*/
+	//Created the file menu items along with keystroke listener/accelerator for ctrl+z combo
+	JMenuItem miFile = new JMenuItem("Quit");
+	miFile.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, ActionEvent.CTRL_MASK));
+	miFile.addActionListener(this);
+	miFile.setActionCommand("file");
     
         //put together the pieces
         menuHelp.add(miHelp);
         menuBar.add(menuHelp);
 
+	/*Revision*/
+	//connected all appropriate file pieces
+	menuFile.add(miFile);
+	menuBar.add(menuFile);
+
         //add bar to this JFrame
-        setJMenuBar(menuBar);    
+        setJMenuBar(menuBar); 
     
     }
     public void actionPerformed(ActionEvent evt) {
         //this method listens to the JFrame's events and performs appropriately
         switch (evt.getActionCommand()){
-            case "sample":
-                JOptionPane.showMessageDialog(this,"A Sample message dialog box","A plain message",JOptionPane.PLAIN_MESSAGE);
-                break;
-            case "quit" :
-                System.exit(0);
-                break;
-            case "swap" :
-                String tempString;
-                tempString = txtWord1.getText();
-                txtWord1.setText(txtWord2.getText());
-                txtWord2.setText(tempString);
-                break;
-            case "help" :
-                JOptionPane.showMessageDialog(this,"There is no help for you.","Sorry",JOptionPane.WARNING_MESSAGE);
-                break;
-                
+	case "sample":
+	    JOptionPane.showMessageDialog(this,"A Sample message dialog box","A plain message",JOptionPane.PLAIN_MESSAGE);
+	    break;
+	case "quit" :
+	    System.exit(0);
+	    break;
+	case "name" :
+	    JOptionPane.showMessageDialog(this,"John Goodwyn","Hello, My Name Is:",JOptionPane.PLAIN_MESSAGE);
+	    break;
+	case "swap" :
+	    String tempString;
+	    tempString = txtWord1.getText();
+	    txtWord1.setText(txtWord2.getText());
+	    txtWord2.setText(tempString);
+	    break;
+	case "help" :
+	    JOptionPane.showMessageDialog(this,"There is no help for you.","Sorry",JOptionPane.WARNING_MESSAGE);
+	    break;
+	case "file" :
+	    System.exit(0);
+	    break;
+            
         }
     }
     
