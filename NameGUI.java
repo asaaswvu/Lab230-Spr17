@@ -17,7 +17,7 @@ class NameGUI extends JFrame implements ActionListener{
         JPanel panelBottom = new JPanel(new FlowLayout());
         
         //create a button named btnSample with text Sample Button
-        JButton btnSample = new JButton("Sample Button");
+        JButton btnSample = new JButton("Show Name");
         JButton btnQuit = new JButton("Quit");
         JButton btnSwap = new JButton("Swap");
         
@@ -88,16 +88,21 @@ class NameGUI extends JFrame implements ActionListener{
 
         //create a menu  (file, edit, help, etc)
         JMenu menuHelp = new JMenu("Help");
-        
+        JMenu menuFile = new JMenu("File");
         //create a menu item and set up its listeners, similar to buttons
         JMenuItem miHelp = new JMenuItem("Help me");
         miHelp.addActionListener(this);
         miHelp.setActionCommand("help");
-    
+        
+	JMenuItem mifile = new JMenuItem("Quit");
+        mifile.addActionListener(this);
+        mifile.setActionCommand("Quit");
         //put together the pieces
         menuHelp.add(miHelp);
         menuBar.add(menuHelp);
 
+	menuFile.add(mifile);
+        menuBar.add(menuFile);
         //add bar to this JFrame
         setJMenuBar(menuBar);    
     
@@ -106,7 +111,7 @@ class NameGUI extends JFrame implements ActionListener{
         //this method listens to the JFrame's events and performs appropriately
         switch (evt.getActionCommand()){
             case "sample":
-                JOptionPane.showMessageDialog(this,"A Sample message dialog box","A plain message",JOptionPane.PLAIN_MESSAGE);
+                JOptionPane.showMessageDialog(this,"Matthew Doerzbacher","Matthew Doerzbacher",JOptionPane.PLAIN_MESSAGE);
                 break;
             case "quit" :
                 System.exit(0);
@@ -119,6 +124,9 @@ class NameGUI extends JFrame implements ActionListener{
                 break;
             case "help" :
                 JOptionPane.showMessageDialog(this,"There is no help for you.","Sorry",JOptionPane.WARNING_MESSAGE);
+                break;
+	    case "Quit" :
+                System.exit(0);
                 break;
                 
         }
