@@ -121,7 +121,7 @@ class NameGUI extends JFrame implements ActionListener{
                 JOptionPane.showMessageDialog(this,"A Sample message dialog box","A plain message",JOptionPane.PLAIN_MESSAGE);
                 break;
 	    case "name":
-		JOptionPane.showMessageDialog(this, "Name", "Bradlee Cruise",JOptionPane.PLAIN_MESSAGE);
+		JOptionPane.showMessageDialog(this, "Bradlee Cruise", "Name",JOptionPane.PLAIN_MESSAGE);
 		break;
             case "quit" :
                 System.exit(0);
@@ -136,7 +136,7 @@ class NameGUI extends JFrame implements ActionListener{
                 JOptionPane.showMessageDialog(this,"There is no help for you.","Sorry",JOptionPane.WARNING_MESSAGE);
                 break;
 	    case "file" :
-		JOptionPane.showMessageDialog(this, "Quit Program", "Quit"  , JOptionPane.WARNING_MESSAGE);
+		JOptionPane.showMessageDialog(this, "Quit Program", "Quit" , JOptionPane.WARNING_MESSAGE);
 		break;
                 
         }
