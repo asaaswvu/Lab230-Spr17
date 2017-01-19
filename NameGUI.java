@@ -19,6 +19,7 @@ class NameGUI extends JFrame implements ActionListener{
         //create a button named btnSample with text Sample Button
         JButton btnSample = new JButton("Sample Button");
         JButton btnQuit = new JButton("Quit");
+	JButton btnName = new JButton("Display Name");
         JButton btnSwap = new JButton("Swap");
         
         //create sample textboxes
@@ -35,13 +36,14 @@ class NameGUI extends JFrame implements ActionListener{
         btnQuit.addActionListener(this);
         btnSwap.setActionCommand("swap");  
         btnSwap.addActionListener(this);
+	btnName.setActionCommand("name");
+	btnName.addActionListener(this);
  
         //Add components to proper panels
         panelTop.add(btnSample);
         panelTop.add(btnQuit);
+	panelTop.add(btnName);
         
-        //panelMiddle.add(btnYourButton);
-
         panelBottom.add(lblSwap);
         panelBottom.add(btnSwap);
         panelBottom.add(txtWord1);
@@ -56,7 +58,7 @@ class NameGUI extends JFrame implements ActionListener{
         panelMain.add(panelTop,BorderLayout.PAGE_START);
         panelMain.add(panelMiddle,BorderLayout.CENTER);
         panelMain.add(panelBottom,BorderLayout.PAGE_END);
-        
+
         //created separate method to generate menu, not necessary, but cleaner
         generateMenu();
         
@@ -87,8 +89,11 @@ class NameGUI extends JFrame implements ActionListener{
         JMenuBar menuBar = new JMenuBar();
 
         //create a menu  (file, edit, help, etc)
-        JMenu menuHelp = new JMenu("Help");
 	JMenu menuFile = new JMenu("File");
+	//Sets hotkey to file menu item
+	menuFile.setMnemonic('f');        
+	JMenu menuHelp = new JMenu("Help");
+
         
         //create a menu item and set up its listeners, similar to buttons, for 'help'
         JMenuItem miHelp = new JMenuItem("Help me");
@@ -97,10 +102,14 @@ class NameGUI extends JFrame implements ActionListener{
     
 	//create a menu item and set up its listeners, for 'file'	
 	JMenuItem miFile = new JMenuItem("Quit");
+	//Adds hotkey to button within menu
+	miFile.setMnemonic('x');
 	miFile.addActionListener(this);
-	miHelp.setActionCommand("quit");
+	miFile.setActionCommand("quit");
 
         //put together the pieces
+	menuFile.add(miFile);
+	menuBar.add(menuFile);
         menuHelp.add(miHelp);
         menuBar.add(menuHelp);
 
@@ -123,6 +132,9 @@ class NameGUI extends JFrame implements ActionListener{
                 txtWord1.setText(txtWord2.getText());
                 txtWord2.setText(tempString);
                 break;
+	    case "name" :
+		JOptionPane.showMessageDialog(this, "Sebastian Reger", "My Name Is",JOptionPane.PLAIN_MESSAGE);
+		break;
             case "help" :
                 JOptionPane.showMessageDialog(this,"There is no help for you.","Sorry",JOptionPane.WARNING_MESSAGE);
                 break;
