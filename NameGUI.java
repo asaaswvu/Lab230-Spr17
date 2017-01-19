@@ -93,6 +93,15 @@ class NameGUI extends JFrame implements ActionListener{
         JMenuItem miHelp = new JMenuItem("Help me");
         miHelp.addActionListener(this);
         miHelp.setActionCommand("help");
+
+	//my menu stuff
+	//create a menu  (file, edit, help, etc)
+        JMenu menuHelp = new JMenu("File");
+        
+        //create a menu item and set up its listeners, similar to buttons
+        JMenuItem miHelp = new JMenuItem("quit");
+        miHelp.addActionListener(this);
+        miHelp.setActionCommand("file");
     
         //put together the pieces
         menuHelp.add(miHelp);
