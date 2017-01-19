@@ -18,6 +18,7 @@ class NameGUI extends JFrame implements ActionListener{
         
         //create a button named btnSample with text Sample Button
         JButton btnSample = new JButton("Sample Button");
+	JButton btnName = new JButton("Caprini");
         JButton btnQuit = new JButton("Quit");
         JButton btnSwap = new JButton("Swap");
         
@@ -35,10 +36,13 @@ class NameGUI extends JFrame implements ActionListener{
         btnQuit.addActionListener(this);
         btnSwap.setActionCommand("swap");  
         btnSwap.addActionListener(this);
+	btnName.setActionCommand("myName");//my command
+	btnName.addActionListener(this);
  
         //Add components to proper panels
         panelTop.add(btnSample);
         panelTop.add(btnQuit);
+	panelTop.add(btnName);
         
         //panelMiddle.add(btnYourButton);
 
@@ -88,15 +92,28 @@ class NameGUI extends JFrame implements ActionListener{
 
         //create a menu  (file, edit, help, etc)
         JMenu menuHelp = new JMenu("Help");
+
+	//create a menu  (file, edit, help, etc)
+        JMenu menuFile = new JMenu("File");
+	menuFile.setMnemonic('f');//allows file dropdown menu 
         
         //create a menu item and set up its listeners, similar to buttons
         JMenuItem miHelp = new JMenuItem("Help me");
         miHelp.addActionListener(this);
         miHelp.setActionCommand("help");
+
+	//create a menu item and set up its listeners, similar to buttons
+        JMenuItem myFile = new JMenuItem("Quit");
+	myFile.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_X,
+                                           java.awt.Event.CTRL_MASK));
+        myFile.addActionListener(this);
+        myFile.setActionCommand("quit");
     
         //put together the pieces
         menuHelp.add(miHelp);
         menuBar.add(menuHelp);
+	menuBar.add(menuFile);
+	menuFile.add(myFile);
 
         //add bar to this JFrame
         setJMenuBar(menuBar);    
@@ -108,6 +125,8 @@ class NameGUI extends JFrame implements ActionListener{
             case "sample":
                 JOptionPane.showMessageDialog(this,"A Sample message dialog box","A plain message",JOptionPane.PLAIN_MESSAGE);
                 break;
+	    case "myName":
+		JOptionPane.showMessageDialog(this,"Collin Caprini", "A message" , JOptionPane.PLAIN_MESSAGE);
             case "quit" :
                 System.exit(0);
                 break;
