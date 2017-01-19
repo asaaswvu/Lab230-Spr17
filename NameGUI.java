@@ -20,7 +20,8 @@ class NameGUI extends JFrame implements ActionListener{
         JButton btnSample = new JButton("Sample Button");
         JButton btnQuit = new JButton("Quit");
         JButton btnSwap = new JButton("Swap");
-        
+        JButton btnName = new JButton("Show Name");
+
         //create sample textboxes
         txtWord1 = new JTextField(15);
         txtWord2 = new JTextField(15);
@@ -35,10 +36,13 @@ class NameGUI extends JFrame implements ActionListener{
         btnQuit.addActionListener(this);
         btnSwap.setActionCommand("swap");  
         btnSwap.addActionListener(this);
+	btnName.setActionCommand("name");
+	btnName.addActionListener(this);
  
         //Add components to proper panels
         panelTop.add(btnSample);
         panelTop.add(btnQuit);
+	panelTop.add(btnName);
         
         //panelMiddle.add(btnYourButton);
 
@@ -85,23 +89,39 @@ class NameGUI extends JFrame implements ActionListener{
     private void generateMenu(){
         //create an empty menu bar
         JMenuBar menuBar = new JMenuBar();
-
+	
         //create a menu  (file, edit, help, etc)
         JMenu menuHelp = new JMenu("Help");
+	JMenu menuFile = new JMenu("File");
+
         
         //create a menu item and set up its listeners, similar to buttons
         JMenuItem miHelp = new JMenuItem("Help me");
         miHelp.addActionListener(this);
         miHelp.setActionCommand("help");
-    
-        //put together the pieces
-        menuHelp.add(miHelp);
+	
+	
+	JMenuItem miQuit = new JMenuItem("Quit");
+	miQuit.addActionListener(this);
+	miQuit.setActionCommand("quit");
+	//menuFile.addActionListener(this);
+	//menuFile.addActionCommand("file");
+
+	//put together the pieces
+        menuFile.add(miQuit);
+	menuBar.add(menuFile);
+
+	menuHelp.add(miHelp);
         menuBar.add(menuHelp);
+
+	miQuit.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_X,java.awt.Event.CTRL_MASK));
 
         //add bar to this JFrame
         setJMenuBar(menuBar);    
     
     }
+
+
     public void actionPerformed(ActionEvent evt) {
         //this method listens to the JFrame's events and performs appropriately
         switch (evt.getActionCommand()){
@@ -116,6 +136,9 @@ class NameGUI extends JFrame implements ActionListener{
                 tempString = txtWord1.getText();
                 txtWord1.setText(txtWord2.getText());
                 txtWord2.setText(tempString);
+                break;
+	    case "name" :
+		JOptionPane.showMessageDialog(this,"Ryan Dennis","My Name is",JOptionPane.WARNING_MESSAGE);
                 break;
             case "help" :
                 JOptionPane.showMessageDialog(this,"There is no help for you.","Sorry",JOptionPane.WARNING_MESSAGE);
