@@ -17,7 +17,8 @@ class NameGUI extends JFrame implements ActionListener{
         JPanel panelBottom = new JPanel(new FlowLayout());
         
         //create a button named btnSample with text Sample Button
-        JButton btnSample = new JButton("Show Name");
+        JButton btnSample = new JButton("Sample Button");
+	JButton btnName = new JButton("Show Name");
         JButton btnQuit = new JButton("Quit");
         JButton btnSwap = new JButton("Swap");
         
@@ -31,13 +32,17 @@ class NameGUI extends JFrame implements ActionListener{
         //buttons need to say something(ActionCommand) to someone who's listening
         btnSample.setActionCommand("sample");  //yours will have to be unique
         btnSample.addActionListener(this);
-        btnQuit.setActionCommand("quit");  //your command will have to be unique
+        btnName.setActionCommand("name");  //yours will have to be unique
+        btnName.addActionListener(this);
+	
+	btnQuit.setActionCommand("quit");  //your command will have to be unique
         btnQuit.addActionListener(this);
         btnSwap.setActionCommand("swap");  
         btnSwap.addActionListener(this);
  
         //Add components to proper panels
         panelTop.add(btnSample);
+	panelTop.add(btnName);
         panelTop.add(btnQuit);
         
         //panelMiddle.add(btnYourButton);
@@ -110,7 +115,7 @@ class NameGUI extends JFrame implements ActionListener{
     public void actionPerformed(ActionEvent evt) {
         //this method listens to the JFrame's events and performs appropriately
         switch (evt.getActionCommand()){
-            case "sample":
+            case "name":
                 JOptionPane.showMessageDialog(this,"Matthew Doerzbacher","Matthew Doerzbacher",JOptionPane.PLAIN_MESSAGE);
                 break;
             case "quit" :
