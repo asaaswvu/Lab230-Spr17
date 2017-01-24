@@ -11,12 +11,7 @@ class Pizza extends JFrame implements ActionListener{
     JTextField txtAddress;
     JTextField txtPhone;
     JTextArea txtOrder;
-    JRadioButton rad12;
-    JRadioButton rad10;
-    JRadioButton rad16;
-    JCheckBox chkPepperoni;
-    JCheckBox chkPeppers;
-    JCheckBox chkSausage;
+    
     ButtonGroup btnGroupRadio;
     ArrayList<JCheckBox> btnCheck;
     
@@ -35,12 +30,12 @@ class Pizza extends JFrame implements ActionListener{
         JLabel lName = new JLabel("Name");
         JLabel lAddress = new JLabel("Address");
         JLabel lPhone = new JLabel("Phone");
-        rad12 = new JRadioButton("12 inch");
+        JRadioButton rad12 = new JRadioButton("12 inch");
         rad12.setActionCommand("12inch");
-        rad10 = new JRadioButton("10 inch");
+        JRadioButton rad10 = new JRadioButton("10 inch");
         rad10.setActionCommand("10inch");
         rad10.setSelected(true);
-        rad16 = new JRadioButton("16 inch");
+        JRadioButton rad16 = new JRadioButton("16 inch");
         rad16.setActionCommand("16inch");
         
         btnGroupRadio = new ButtonGroup();
@@ -57,11 +52,11 @@ class Pizza extends JFrame implements ActionListener{
         
         JLabel lblToppings = new JLabel("Toppings:  ");
         lblToppings.setFont(new Font(lblToppings.getFont().getName(), Font.PLAIN, 20));
-        chkPepperoni = new JCheckBox("Pepperoni");
+        JCheckBox chkPepperoni = new JCheckBox("Pepperoni");
         chkPepperoni.setActionCommand("Pepperoni");
-        chkPeppers = new JCheckBox("Peppers");
+        JCheckBox chkPeppers = new JCheckBox("Peppers");
         chkPeppers.setActionCommand("Peppers");
-        chkSausage = new JCheckBox("Sausage");
+        JCheckBox chkSausage = new JCheckBox("Sausage");
         chkSausage.setActionCommand("Sausage");
         
         btnCheck = new ArrayList<JCheckBox>();
