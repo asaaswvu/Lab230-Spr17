@@ -1,8 +1,11 @@
 import javax.swing.*;
+import javax.swing.GroupLayout.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Arrays;
 
 
 public class PayForm extends JFrame implements ActionListener{
@@ -11,11 +14,10 @@ public class PayForm extends JFrame implements ActionListener{
 	private JTextField email;
 	private JTextArea textArea;
 	private ButtonGroup btnGroup;
-	private List<JCheckBox> btnChecks;
-	
+	private List btnChecks;
 	
 	PayForm(){
-		JPanel panelMain = new Jpanel();
+		JPanel panelMain = new JPanel();
 		GroupLayout layout = new GroupLayout(panelMain);
 		JPanel radioButtonPanel = new JPanel();
 		JPanel checkboxPanel = new JPanel();
@@ -65,7 +67,7 @@ public class PayForm extends JFrame implements ActionListener{
 		JCheckBox printReceiptCheckbox = new JCheckBox("Print");
 		printReceiptCheckbox.setActionCommand("printSelected");
 		
-		btnChecks = Arrays.asList(emailCheckbox, printReceiptCheckbox);
+		btnChecks = new ArrayList<JCheckBox>(Arrays.asList(emailCheckbox, printReceiptCheckbox));
 		
 		checkboxPanel.add(printReceiptLabel);
 		checkboxPanel.add(emailCheckbox);
@@ -80,7 +82,7 @@ public class PayForm extends JFrame implements ActionListener{
 		layout.setAutoCreateContainerGaps(true);
 		
 		//Create horizontal group
-		SequentialGroup horizontalGroup = layout.createSequentialGroup().addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+		Group horizontalGroup = layout.createSequentialGroup().addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
 				.addComponent(labelForName)
 				.addComponent(name)
 				.addComponent(labelForEmail)
@@ -94,19 +96,27 @@ public class PayForm extends JFrame implements ActionListener{
 		
 		layout.setHorizontalGroup(horizontalGroup);
 		
-		
-		
-		
-		
-		
+		//Create vertical group
+		Group verticalGroup = layout.createParallelGroup().addGroup(layout.createSequentialGroup()
+				.addComponent(labelForName)
+				.addComponent(name)
+				.addComponent(labelForEmail)
+				.addComponent(email)
+				.addComponent(labelForCCNumber)
+				.addComponent(creditCardNumber)
+				.addComponent(radioButtonPanel)
+				.addComponent(checkboxPanel)
+				.addComponent(payButton))
+				.addComponent(textArea);
+		layout.setVerticalGroup(verticalGroup);
 		this.initializePane(panelMain);
 	}
 	
-	private initializePane(JPanel mainPanel){
+	private void initializePane(JPanel mainPanel){
 		//Initialization Boilerplate
 		setSize(600, 350);
 		setTitle("Pay Form");
-		setDefaultCloseOperation(WindowsConstants.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		getContentPane().add(mainPanel);
 	    
 		Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
@@ -115,6 +125,17 @@ public class PayForm extends JFrame implements ActionListener{
 	    setLocation(x, y);
 	    
 	    setVisible(true); 
+	}
+	
+	public void actionPerformed(ActionEvent e){
+		if(e.getActionCommand.equals("paySelected")){
+			StringBuilder stringBuilder = new StringBuilder();
+			stringBuilder.append("Pay Invoice Details for: " + this.name.getText() + "\n");
+			stringBuilder.append("Payment sent for account number: " + this.creditCardNumber.getText() + "\n");
+			stringBuilder.append("Email: " + this.email.getText() + "\n");
+			
+		} 
+		
 	}
 	
 	
