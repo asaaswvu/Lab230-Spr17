@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Arrays;
+import java.util.Map;
+import java.util.HashMap;
 
 
 public class PayForm extends JFrame implements ActionListener{
@@ -14,7 +16,7 @@ public class PayForm extends JFrame implements ActionListener{
 	private JTextField email;
 	private JTextArea textArea;
 	private ButtonGroup btnGroup;
-	private List btnChecks;
+	private Map<String, JCheckBox> btnChecks;
 	
 	PayForm(){
 		JPanel panelMain = new JPanel();
@@ -35,13 +37,13 @@ public class PayForm extends JFrame implements ActionListener{
 		
 		//Initialize Buttons
 		JRadioButton discoverRadio = new JRadioButton("Discover");
-		discoverRadio.setActionCommand("discoverSelected");
+		discoverRadio.setActionCommand("Discover");
 		
 		JRadioButton amexRadio = new JRadioButton("Amex");
-		amexRadio.setActionCommand("amexRadioSelected");
+		amexRadio.setActionCommand("Amex");
 		
 		JRadioButton visaRadio = new JRadioButton("Visa");
-		visaRadio.setActionCommand("visaSelected");
+		visaRadio.setActionCommand("Visa");
 		
 		this.btnGroup = new ButtonGroup();
 		this.btnGroup.add(visaRadio);
@@ -67,7 +69,9 @@ public class PayForm extends JFrame implements ActionListener{
 		JCheckBox printReceiptCheckbox = new JCheckBox("Print");
 		printReceiptCheckbox.setActionCommand("printSelected");
 		
-		btnChecks = new ArrayList<JCheckBox>(Arrays.asList(emailCheckbox, printReceiptCheckbox));
+		btnChecks = new HashMap<>();
+		btnChecks.put("email", emailCheckbox);
+		btnChecks.put("print", printReceiptCheckbox);
 		
 		checkboxPanel.add(printReceiptLabel);
 		checkboxPanel.add(emailCheckbox);
@@ -114,7 +118,7 @@ public class PayForm extends JFrame implements ActionListener{
 	
 	private void initializePane(JPanel mainPanel){
 		//Initialization Boilerplate
-		setSize(600, 350);
+		setSize(800, 350);
 		setTitle("Pay Form");
 		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		getContentPane().add(mainPanel);
@@ -127,16 +131,31 @@ public class PayForm extends JFrame implements ActionListener{
 	    setVisible(true); 
 	}
 	
-	public void actionPerformed(ActionEvent e){
-		if(e.getActionCommand.equals("paySelected")){
-			StringBuilder stringBuilder = new StringBuilder();
-			stringBuilder.append("Pay Invoice Details for: " + this.name.getText() + "\n");
-			stringBuilder.append("Payment sent for account number: " + this.creditCardNumber.getText() + "\n");
-			stringBuilder.append("Email: " + this.email.getText() + "\n");
-			
-		} 
-		
+	private void printToTextArea(){
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.append("Pay Invoice Details for: " + this.name.getText() + "\n");
+		stringBuilder.append("Payment sent for account: " + this.btnGroup.getSelection().getActionCommand() + " Number: " + this.creditCardNumber.getText() + "\n");
+		stringBuilder.append("Email: " + this.email.getText() + "\n");
+		this.textArea.setText(stringBuilder.toString());
 	}
+	
+	private void printEmailConfirmationSent(){
+		this.textArea.setText("Email confirmation sent to: " + this.email.getText() + "\n");
+	}
+	
+	public void actionPerformed(ActionEvent e){
+		if(e.getActionCommand().equals("paySelected")){
+			
+			if(this.btnChecks.get("email").isSelected()){
+				this.printEmailConfirmationSent();
+			}
+			
+			if(this.btnChecks.get("print").isSelected()){
+				this.printToTextArea();
+			}
+		} 
+	}
+	
 	
 	
 	public static void main(String [] args){
