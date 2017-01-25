@@ -112,7 +112,7 @@ class Pizza extends JFrame implements ActionListener{
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setTitle("Pizza Order");
 
-        
+        panelMain.setBackground(Color.red);
         //get visible container and add panelMain to it
         //EVERYTHING has to be arranged and set before adding to ContentPane
         getContentPane().add(panelMain);
