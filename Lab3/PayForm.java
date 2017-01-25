@@ -10,7 +10,7 @@ class PayForm extends JFrame implements ActionListener{
 	JTextField txtCCNumber;
 	JTextField txtEmail;
 	JTextArea txtOrder;
-	boolean emailNotification = false, paperNotification = false;
+	boolean emailNotification, paperNotification;
 	ButtonGroup btnGroupRadio;
     	ArrayList<JCheckBox> btnCheck;
 	ArrayList<JTextArea> cardInfo;
@@ -20,6 +20,8 @@ class PayForm extends JFrame implements ActionListener{
         	GroupLayout layout = new GroupLayout(panelMain);
         	JPanel pnlButtons = new JPanel();
         	JPanel pnlRadios = new JPanel();
+		emailNotification = false;
+		paperNotification = false;
 
 		txtName = new JTextField(30);
         	txtCCNumber = new JTextField(16);
@@ -58,21 +60,21 @@ class PayForm extends JFrame implements ActionListener{
         	pnlRadios.add(radMC);
 		pnlRadios.add(radDis);
 		
-		JLabel lblRecipt = new JLabel("Recipt:  ");
-        	lblRecipt.setFont(new Font(lblRecipt.getFont().getName(), Font.PLAIN, 20));
-		lblRecipt.setForeground(Color.blue);
+		JLabel lblReciept = new JLabel("Reciept:  ");
+        	lblReciept.setFont(new Font(lblReciept.getFont().getName(), Font.PLAIN, 20));
+		lblReciept.setForeground(Color.blue);
         	JCheckBox chkEmail = new JCheckBox("Email");
         	chkEmail.setActionCommand("Email");
 		chkEmail.addActionListener(this);
         	JCheckBox chkPaper = new JCheckBox("Paper");
         	chkPaper.setActionCommand("Paper");
-		chkPaper.addActionListerner(this);
+		chkPaper.addActionListener(this);
 
 		btnCheck = new ArrayList<JCheckBox>();
         	btnCheck.add(chkEmail);
         	btnCheck.add(chkPaper);
 
-		pnlButtons.add(lblRecipt);
+		pnlButtons.add(lblReciept);
         	pnlButtons.add(chkEmail);
         	pnlButtons.add(chkPaper);
 
@@ -148,11 +150,21 @@ class PayForm extends JFrame implements ActionListener{
                }
                
                txtOrder.setText(strOrder.toString());
+		
+		if(emailNotification == true && paperNotification == false){
+			JOptionPane.showMessageDialog(this,"The reciept email has been sent.","Reciept",JOptionPane.PLAIN_MESSAGE);
+		}else if (emailNotification == false && paperNotification == true){
+			JOptionPane.showMessageDialog(this,"The reciept is printing.","Reciept",JOptionPane.PLAIN_MESSAGE);
+		}else if (emailNotification == true && paperNotification == true){
+			JOptionPane.showMessageDialog(this,"The reciept email has been sent AND the reciept is printing.","Reciept",JOptionPane.PLAIN_MESSAGE);
+		}
+
+		
            }
-	  if(e.getActionCommand().equals("Email"){
+	  if(e.getActionCommand().equals("Email")){
 	  	emailNotification = !emailNotification;
 	  }
-	  if(e.getActionCommand().equals("Paper"){
+	  if(e.getActionCommand().equals("Paper")){
 	  	paperNotification = !paperNotification;
 	  }
 	}
