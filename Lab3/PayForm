@@ -1,11 +1,10 @@
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-class Pizza extends JFrame implements ActionListener{
+class PayForm extends JFrame implements ActionListener{
     
     JTextField txtName;
     JTextField txtAddress;
@@ -28,16 +27,18 @@ class Pizza extends JFrame implements ActionListener{
         txtOrder.setEditable(false);
         
         JLabel lName = new JLabel("Name");
-        JLabel lAddress = new JLabel("Address");
-        JLabel lPhone = new JLabel("Phone");
-        JRadioButton rad12 = new JRadioButton("12 inch");
-        rad12.setActionCommand("12inch");
-        JRadioButton rad10 = new JRadioButton("10 inch");
-        rad10.setActionCommand("10inch");
+        JLabel lAddress = new JLabel("Credit Card #");
+        JLabel lPhone = new JLabel("Email Address");
+        JRadioButton rad12 = new JRadioButton("American Express");
+        rad12.setActionCommand("American Express");
+        JRadioButton rad10 = new JRadioButton("Visa");
+        rad10.setActionCommand("Visa");
         rad10.setSelected(true);
-        JRadioButton rad16 = new JRadioButton("16 inch");
-        rad16.setActionCommand("16inch");
-        
+        JRadioButton rad16 = new JRadioButton("Mastercard");
+        rad16.setActionCommand("Mastercard");
+	JRadioButton rad18 = new JRadioButton("Discover");
+	rad18.setActionCommand("Discover");
+
         btnGroupRadio = new ButtonGroup();
         btnGroupRadio.add(rad12);
         btnGroupRadio.add(rad10);
@@ -166,6 +167,6 @@ class Pizza extends JFrame implements ActionListener{
     
     
     public static void main(String args[]){
-        new Pizza();
+        new PayForm();
     }
 }
