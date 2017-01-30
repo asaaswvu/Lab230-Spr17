@@ -11,6 +11,7 @@
 import javax.swing.*;
 import java.awt.event.*;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 
 class PayForm extends JFrame implements ActionListener {
@@ -59,19 +60,70 @@ class PayForm extends JFrame implements ActionListener {
         pnlRadios.add(radMastercard);
         pnlRadios.add(radVisa);
 
+        JButton btnOrder = new JButton("Place Order");
+        btnOrder.setActionCommand("order");
+        btnOrder.addActionListener(this);
+
+        panelMain.setLayout(layout);
+        layout.setAutoCreateGaps(true);
+        layout.setAutoCreateContainerGaps(true);
+
+        layout.setHorizontalGroup(
+                layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                                .addComponent(lName)
+                                .addComponent(txtName)
+                                .addComponent(lAddress)
+                                .addComponent(txtAddress)
+                                .addComponent(lCreditCardNum)
+                                .addComponent(txtEmail)
+                                .addComponent(pnlRadios)
+                                .addComponent(pnlButtons)
+                                .addComponent(btnOrder))
+                        .addComponent(txtPayForm)
+        );
+        layout.setVerticalGroup(
+                layout.createParallelGroup()
+                        .addGroup(layout.createSequentialGroup()
+                                .addComponent(lName)
+                                .addComponent(txtName)
+                                .addComponent(lAddress)
+                                .addComponent(txtAddress)
+                                .addComponent(lCreditCardNum)
+                                .addComponent(txtEmail)
+                                .addComponent(pnlRadios)
+                                .addComponent(pnlButtons)
+                                .addComponent(btnOrder))
+                        .addComponent(txtPayForm)
+        );
+
         setSize(800, 600);
 
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setTitle("Pay Form");
 
-
-
-
     }
 
-    @Override
     public void actionPerformed(ActionEvent e) {
+        if(e.getActionCommand().equals("")) {
+            StringBuffer strOrder = new StringBuffer();
+            strOrder.append(txtName.getText() + "\n");
+            strOrder.append(txtAddress.getText() + "\n");
+            strOrder.append(txtCreditCardNum.getText() + "\n");
+            strOrder.append(myRadioButtons.getSelection().getActionCommand() + "\n");
 
+            Iterator<JCheckBox> iterCheckButtons = btnCheck.iterator();
+            while(iterCheckButtons.hasNext()){
+                JCheckBox nextBox = iterCheckButtons.next();
+                if(nextBox.isSelected()){
+                    strOrder.append(nextBox.getActionCommand() + " ");
+
+                }
+
+            }
+
+            txtPayForm.setText(strOrder.toString());
+        }
     }
 
     public static void main(String args[]) {new PayForm();}
