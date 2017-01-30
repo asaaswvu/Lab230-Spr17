@@ -6,27 +6,27 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 class Pizza extends JFrame implements ActionListener{
-    
+
     JTextField txtName;
     JTextField txtAddress;
     JTextField txtPhone;
     JTextArea txtOrder;
-    
+
     ButtonGroup btnGroupRadio;
     ArrayList<JCheckBox> btnCheck;
-    
+
     Pizza(){
         JPanel panelMain = new JPanel();
         GroupLayout layout = new GroupLayout(panelMain);
         JPanel pnlButtons = new JPanel();
         JPanel pnlRadios = new JPanel();
-        
+
         txtName = new JTextField(20);
         txtAddress = new JTextField(50);
         txtPhone = new JTextField(10);
         txtOrder = new JTextArea(15,50);
         txtOrder.setEditable(false);
-        
+
         JLabel lName = new JLabel("Name");
         JLabel lAddress = new JLabel("Address");
         JLabel lPhone = new JLabel("Phone");
@@ -37,7 +37,7 @@ class Pizza extends JFrame implements ActionListener{
         rad10.setSelected(true);
         JRadioButton rad16 = new JRadioButton("16 inch");
         rad16.setActionCommand("16inch");
-        
+
         btnGroupRadio = new ButtonGroup();
         btnGroupRadio.add(rad12);
         btnGroupRadio.add(rad10);
@@ -49,7 +49,7 @@ class Pizza extends JFrame implements ActionListener{
         pnlRadios.add(rad10);
         pnlRadios.add(rad12);
         pnlRadios.add(rad16);
-        
+
         JLabel lblToppings = new JLabel("Toppings:  ");
         lblToppings.setFont(new Font(lblToppings.getFont().getName(), Font.PLAIN, 20));
         JCheckBox chkPepperoni = new JCheckBox("Pepperoni");
@@ -58,21 +58,21 @@ class Pizza extends JFrame implements ActionListener{
         chkPeppers.setActionCommand("Peppers");
         JCheckBox chkSausage = new JCheckBox("Sausage");
         chkSausage.setActionCommand("Sausage");
-        
+
         btnCheck = new ArrayList<JCheckBox>();
         btnCheck.add(chkPepperoni);
         btnCheck.add(chkPeppers);
         btnCheck.add(chkSausage);
-        
+
         pnlButtons.add(lblToppings);
         pnlButtons.add(chkPepperoni);
         pnlButtons.add(chkPeppers);
         pnlButtons.add(chkSausage);
-        
+
         JButton btnOrder = new JButton("Place Order");
         btnOrder.setActionCommand("order");
         btnOrder.addActionListener(this);
-        
+
         panelMain.setLayout(layout);
         layout.setAutoCreateGaps(true);
         layout.setAutoCreateContainerGaps(true);
@@ -105,14 +105,14 @@ class Pizza extends JFrame implements ActionListener{
                     .addComponent(btnOrder))
                 .addComponent(txtOrder)
         );
-        
+
         setSize(600,350);
 
         //tells java what to do when the class object closes
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setTitle("Pizza Order");
 
-        
+
         //get visible container and add panelMain to it
         //EVERYTHING has to be arranged and set before adding to ContentPane
         getContentPane().add(panelMain);
@@ -122,14 +122,14 @@ class Pizza extends JFrame implements ActionListener{
         int x = (int) ((dimension.getWidth() - this.getWidth()) / 2);
         int y = (int) ((dimension.getHeight() - this.getHeight()) / 2);
         setLocation(x, y);
-        
-        //make sure you can actually see it, starts off false
-        setVisible(true);       
 
-        
-        
+        //make sure you can actually see it, starts off false
+        setVisible(true);
+
+
+
     }
-    
+
     public void actionPerformed(ActionEvent e){
            if(e.getActionCommand().equals("order")){
                StringBuffer strOrder = new StringBuffer();
@@ -137,34 +137,34 @@ class Pizza extends JFrame implements ActionListener{
                strOrder.append(txtAddress.getText() + "\n");
                strOrder.append(txtPhone.getText() + "\n");
                strOrder.append(btnGroupRadio.getSelection().getActionCommand() + "\n");
-               
+
                Iterator<JCheckBox> iterCheckButtons = btnCheck.iterator();
                while(iterCheckButtons.hasNext()){
                    JCheckBox nextBox = iterCheckButtons.next();
                    if(nextBox.isSelected()){
                        strOrder.append(nextBox.getActionCommand() + " ");
-                       
+
                    }
-                   
+
                }
-               
+
                txtOrder.setText(strOrder.toString());
            }
     }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     public static void main(String args[]){
         new Pizza();
     }
