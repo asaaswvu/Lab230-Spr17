@@ -9,6 +9,7 @@
  * If you like that sound you won't after hearing it 24/7 365 ^_^
  */
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -101,6 +102,19 @@ class PayForm extends JFrame implements ActionListener {
 
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setTitle("Pay Form");
+
+        //get visible container and add panelMain to it
+        //EVERYTHING has to be arranged and set before adding to ContentPane
+        getContentPane().add(panelMain);
+
+        //this centers the window in the screen
+        Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
+        int x = (int) ((dimension.getWidth() - this.getWidth()) / 2);
+        int y = (int) ((dimension.getHeight() - this.getHeight()) / 2);
+        setLocation(x, y);
+
+        //make sure you can actually see it, starts off false
+        setVisible(true);
 
     }
 
