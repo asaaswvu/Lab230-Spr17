@@ -56,6 +56,8 @@ class PayForm extends JFrame implements ActionListener {
         myRadioButtons.add(radDiscover);
         myRadioButtons.add(radMastercard);
 
+        JLabel lblSize = new JLabel("Size:  ");
+        lblSize.setFont(new Font(lblSize.getFont().getName(), Font.PLAIN, 20));
         pnlRadios.add(radAmex);
         pnlRadios.add(radDiscover);
         pnlRadios.add(radMastercard);
