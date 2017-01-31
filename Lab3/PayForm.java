@@ -133,7 +133,7 @@ class PayForm extends JFrame implements ActionListener {
                 JCheckBox nextBox = iterCheckButtons.next();
                 if(nextBox.isSelected()){
                     strOrder.append(nextBox.getActionCommand() + " ");
-
+                    //this is a git test I am changing for git test
                 }
 
             }
