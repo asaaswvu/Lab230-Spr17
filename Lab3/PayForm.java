@@ -4,8 +4,10 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-class Pizza extends JFrame implements ActionListener{
+class PayForm extends JFrame implements ActionListener{
 
 	JTextField txtName;
 	JTextField txtPhone;
@@ -18,7 +20,7 @@ class Pizza extends JFrame implements ActionListener{
 	ArrayList<JCheckBox> btnCheck;
 	ArrayList<JCheckBox> btnConfirmation;
 
-	Pizza(){
+	PayForm(){
 		JPanel panelMain = new JPanel();
 		GroupLayout layout = new GroupLayout(panelMain);
 		JPanel pnlCCType = new JPanel();
@@ -30,20 +32,59 @@ class Pizza extends JFrame implements ActionListener{
 		txtPhone = new JTextField(10);
 		txtEmail = new JTextField(30);
 		txtCCNum = new JTextField(16);
-		txtOrder = new JTextArea(15,50);
+		txtOrder = new JTextArea("Order information will appear here after submitting!",15,50);
 		txtOrder.setEditable(false);
 
 		JLabel lName = new JLabel("Name");
 		JLabel lPhone = new JLabel("Phone");
 		JLabel lEmail = new JLabel("Email");
 		JLabel lCCNum = new JLabel("Credit Card Number");
+		
+		Pattern patternPhone;
+		Pattern patternCC;
+	    Matcher matcher;
+
+	    patternPhone = Pattern.compile("(?:\\([2-9]\\d{2}\\)\\ ?|[2-9]\\d{2}(?:\\-?|\\ ?))[2-9]\\d{2}[- ]?\\d{4}");
+	    
+		InputVerifier verifierPhone = new InputVerifier() {
+			public boolean verify(JComponent input) {
+				final JTextField userPhone = (JTextField) input;
+				String text = userPhone.getText();
+				if ((!patternPhone.matcher(text).matches())) {
+					JOptionPane.showMessageDialog(userPhone, "Please Enter 10-Digit Phone number:\nExamples:\n(304) 123-4567\n3041234567\n304-123-4567", "Error Dialog", JOptionPane.ERROR_MESSAGE);
+					return false;
+				} 
+				else{
+					return true;
+				}
+			}
+		};
+		txtPhone.setInputVerifier(verifierPhone);
+		
+		patternCC = Pattern.compile("(?:3[47]\\d|(?:4\\d|5[1-5]|65)\\d{2}|6011)\\d{12}");
+		
+		InputVerifier verifierCC = new InputVerifier() {
+			public boolean verify(JComponent input) {
+				final JTextField userCC = (JTextField) input;
+				String text = userCC.getText();
+				if ((!patternCC.matcher(text).matches())) {
+					JOptionPane.showMessageDialog(userCC, "Please Enter 16-Digit Credit Card Number:\nExample: 1111222233334444", "Error Dialog", JOptionPane.ERROR_MESSAGE);
+					return false;
+				} 
+				else{
+					return true;
+				}
+			}
+		};
+		txtCCNum.setInputVerifier(verifierCC);
+
 
 		ImageIcon AmexImg = new ImageIcon(((new ImageIcon("images/Amex.png")).getImage()).getScaledInstance(30, 30, java.awt.Image.SCALE_SMOOTH));
 		ImageIcon VisaImg = new ImageIcon(((new ImageIcon("images/Visa.png")).getImage()).getScaledInstance(30, 30, java.awt.Image.SCALE_SMOOTH));
 		ImageIcon MasterCardImg = new ImageIcon(((new ImageIcon("images/MasterCard.jpg")).getImage()).getScaledInstance(30, 30, java.awt.Image.SCALE_SMOOTH));
 		ImageIcon DiscoverImg = new ImageIcon(((new ImageIcon("images/Discover.png")).getImage()).getScaledInstance(30, 30, java.awt.Image.SCALE_SMOOTH));
 
-		JRadioButton Amex = new JRadioButton("Amex", AmexImg);
+		JRadioButton Amex = new JRadioButton("Amex", AmexImg, true);
 		Amex.setActionCommand("Amex");
 		JRadioButton Visa = new JRadioButton("Visa", VisaImg);
 		Visa.setActionCommand("Visa");
@@ -218,10 +259,10 @@ class Pizza extends JFrame implements ActionListener{
 				.addComponent(txtOrder)
 				);
 
-		setSize(800,500);
+		setSize(700,500);
 
 		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-		setTitle("Pizza Order");
+		setTitle("Lab 3 - PayForm");
 
 		panelMain.setBackground(Color.gray);
 		getContentPane().add(panelMain);
@@ -235,6 +276,14 @@ class Pizza extends JFrame implements ActionListener{
 	}
 
 	public void actionPerformed(ActionEvent e){
+		if(txtName.getText().length() == 0||txtCCNum.getText().length() == 0||txtPhone.getText().length() == 0||txtCCNum.getText().length() == 0){
+			txtOrder.setText("Name\nCredit Card Number\nPhone Number\nRequired to place an order!");
+			return;
+		}
+		if(txtPhone.getText().length() == 0){
+
+		}
+
 		if(e.getActionCommand().equals("order")){
 			StringBuffer strOrder = new StringBuffer("Customer Information \n------------------------------\n");
 			strOrder.append(txtName.getText() + "\n");
@@ -276,6 +325,6 @@ class Pizza extends JFrame implements ActionListener{
 	} 
 
 	public static void main(String args[]){
-		new Pizza();
+		new PayForm();
 	}
 }
