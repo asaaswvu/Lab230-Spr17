@@ -151,20 +151,7 @@ class Pizza extends JFrame implements ActionListener{
                txtOrder.setText(strOrder.toString());
            }
     }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
     public static void main(String args[]){
         new Pizza();
     }
