@@ -96,7 +96,8 @@ class Client extends JFrame implements ActionListener{
 		    }
 		}else{
 		    JOptionPane.showMessageDialog(this,"Socket is Closed","Error",JOptionPane.ERROR_MESSAGE);
-		}   
+		}  
+ 
    	} 
 
 	public static void main(String args[]){
