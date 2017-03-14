@@ -60,11 +60,28 @@ class Client extends JFrame implements ActionListener{
         	setLocation(x, y);
         
         	setVisible(true);
-        	//run();	
+        	run();	
 	}
 
-	//private void run(){
-	//}
+	private void run(){
+	    try{
+            	sock = new Socket("127.0.0.1",50000);
+            	brIn = new BufferedReader(new InputStreamReader(sock.getInputStream()));
+            	pwOut = new PrintWriter(sock.getOutputStream(),true);
+        
+            	while (true){
+                	String strIn = brIn.readLine();
+                	if (strIn.startsWith("send")){
+                    JOptionPane.showMessageDialog(this,"Names Sent to Server","Successful",JOptionPane.PLAIN_MESSAGE);
+                	}else
+                    	JOptionPane.showMessageDialog(this,strIn,"???",JOptionPane.PLAIN_MESSAGE);
+            		}
+        	}catch(IOException e){
+            		System.out.println("IOException");
+        	}catch(NullPointerException npe){
+            		System.out.println("null");
+        	}	
+	}
 
 	public void actionPerformed(ActionEvent e){
 		if (!sock.isClosed()){
