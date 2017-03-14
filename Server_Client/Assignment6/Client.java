@@ -6,7 +6,6 @@ import java.net.*;
 import java.io.*;
 
 class Client extends JFrame implements ActionListener{
-<<<<<<< HEAD
 	JTextField txtField;
 	JTextArea txtArea;
 	Socket sock;
