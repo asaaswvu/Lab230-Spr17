@@ -1,15 +1,14 @@
 import java.net.*;
+import java.util.*;
 import java.util.Hashtable;
 import java.io.IOException;
 
 class Server extends Thread{
 
-    Hashtable<String,String> users;
     ServerSocket ss;
 
 
     Server(){
-        users = new Hashtable<String,String>();   
     }
 
     public void run(){
@@ -39,14 +38,7 @@ class Server extends Thread{
         }
         System.exit(0);
     }
-    public boolean addUser(String strUser){
-        if(users.containsKey(strUser)){
-            return false;
-        }else{
-            users.put(strUser,strPass);
-            return true;
-        }
-    }
+    
     public static void main(String args[]){
         new Server().start();
     }

@@ -71,8 +71,8 @@ class Client extends JFrame implements ActionListener{
         
             	while (true){
                 	String strIn = brIn.readLine();
-                	if (strIn.startsWith("send")){
-                    JOptionPane.showMessageDialog(this,"Names Sent to Server","Successful",JOptionPane.PLAIN_MESSAGE);
+                	if (strIn.startsWith("<send>;")){
+			    txtArea.append(strIn);
                 	}else
                     	JOptionPane.showMessageDialog(this,strIn,"???",JOptionPane.PLAIN_MESSAGE);
             		}
@@ -87,7 +87,7 @@ class Client extends JFrame implements ActionListener{
 		if (!sock.isClosed()){
 		    switch (e.getActionCommand()){
 		        case "send":
-		           //Fill in 
+			    pwOut.println("<send>;"+txtField.getText());//Fill in 
 		        break;
 		        case "quit":
 		            pwOut.println("<die>");

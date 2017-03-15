@@ -26,14 +26,12 @@ class ClientHandler extends Thread{
             while (true){
                 line = brIn.readLine();
                 System.out.println(line);
-                String [] data = line.split(",");
+		if(line == null) return;
+                String [] data = line.split(";");
                 switch (data[0]){
-                    case "<add>":
-                        addUser(data);
-                    break;
-                    case "<login>":
-                        loginUser(data);
-                    break;
+		    case "<send>":
+			sendData(data[1].trim().split(","));
+		    break;
                     case "<die>" :
                         die();
                     default:
@@ -47,27 +45,13 @@ class ClientHandler extends Thread{
             System.out.print("Error: " + line);
         } 
     }
-    private void addUser(String [] data){
-        if (data.length == 3){
-            if(server.addUser(data[1],data[2])){
-                pwOut.println("<added>");
-            }else{
-                pwOut.println("<error>");
-            }
-        }else{
-            pwOut.println("<error>");
-        }
-    }
-    private void loginUser(String [] data){
-        if (data.length == 3){
-            if(server.loginUser(data[1],data[2])){
-                pwOut.println("<logged>");
-            }else{
-                pwOut.println("<error>");
-            }
-        }else{
-            pwOut.println("<error>");
-        }
+    public void sendData(String [] data){
+	for(int i = 0; i < data.length; i++){
+	    String cur = data[i].trim();
+	    if( (cur!=null) && (cur.length() > 0) ){
+		pwOut.println("<send>;"+cur);
+	    }
+	}
     }
     private void die(){
         try{
