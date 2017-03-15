@@ -45,11 +45,12 @@ class ClientHandler extends Thread{
             System.out.print("Error: " + line);
         } 
     }
-    public void sendData(String [] data){
+    public void sendData(String [] data) throws InterruptedException{
 	for(int i = 0; i < data.length; i++){
 	    String cur = data[i].trim();
 	    if( (cur!=null) && (cur.length() > 0) ){
 		pwOut.println("<send>;"+cur);
+		Thread.sleep(1000);
 	    }
 	}
     }

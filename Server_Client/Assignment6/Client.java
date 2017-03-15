@@ -37,8 +37,9 @@ class Client extends JFrame implements ActionListener{
        		pnlButtons.add(btnSend);
         	pnlButtons.add(btnQuit);
 
-		txtArea = new JTextArea(50,100);
+		txtArea = new JTextArea(30,60);
 		txtArea.setEditable(false);
+		JScrollPane scrollPane = new JScrollPane(txtArea);
 		JLabel lblReturn = new JLabel("Output from Server");
 		pnlOutput.add(lblReturn);
 		pnlOutput.add(txtArea);
@@ -72,7 +73,8 @@ class Client extends JFrame implements ActionListener{
             	while (true){
                 	String strIn = brIn.readLine();
                 	if (strIn.startsWith("<send>;")){
-			    txtArea.append(strIn);
+			    strIn = strIn.replace("<send>;", "");
+			    txtArea.append(strIn + " ");
                 	}else
                     	JOptionPane.showMessageDialog(this,strIn,"???",JOptionPane.PLAIN_MESSAGE);
             		}
@@ -87,7 +89,8 @@ class Client extends JFrame implements ActionListener{
 		if (!sock.isClosed()){
 		    switch (e.getActionCommand()){
 		        case "send":
-			    pwOut.println("<send>;"+txtField.getText());//Fill in 
+			    System.out.println("<send>;"+txtField.getText());
+			    pwOut.println("<send>;"+txtField.getText());
 		        break;
 		        case "quit":
 		            pwOut.println("<die>");
