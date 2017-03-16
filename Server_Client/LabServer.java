@@ -1,14 +1,14 @@
 import java.net.*;
-import java.util.Hashtable;
+import java.util.ArrayList;
 import java.io.IOException;
 
-class Server extends Thread{
+class LabServer extends Thread{
 
-    Hashtable<String,String> users;
+    ArrayList<String> values;
     ServerSocket ss;
 
-    Server(){
-        users = new Hashtable<String,String>();   
+    LabServer(){
+        values = new ArrayList<String>();   
     }
 
     public void run(){
@@ -17,7 +17,7 @@ class Server extends Thread{
         System.out.println("Server Started");
         while(true){
             Socket client = ss.accept();
-            new ClientHandler(client,this).start();
+            new LabClientHandler(client,this).start();
             System.out.println("Started ClientHandler");
         }
         }catch(SocketException f){
@@ -37,24 +37,17 @@ class Server extends Thread{
         }
         System.exit(0);
     }
-    public boolean addUser(String strUser, String strPass){
-        if(users.containsKey(strUser)){
+    public boolean addValue(String value){
+        if(value.equalsIgnoreCase("quit")){
             return false;
         }else{
-            users.put(strUser,strPass);
+	    values.add(value);
             return true;
         }
-    }
-    public boolean loginUser(String strUser, String strPass){
-        String tempPass = users.get(strUser);
-        if (tempPass != null && tempPass.equals(strPass)){
-            return true;
-        }
-        return false;
     }
 
     public static void main(String args[]){
-        new Server().start();
+        new LabServer().start();
     }
 
 }

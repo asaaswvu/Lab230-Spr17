@@ -2,14 +2,14 @@ import java.io.*;
 import java.net.*;
 
 
-class ClientHandler extends Thread{
+class LabClientHandler extends Thread{
 
     BufferedReader brIn;
     PrintWriter pwOut;
-    Server server;
+    LabServer server;
     Socket socket;
     
-    ClientHandler(Socket sock, Server serv){
+    LabClientHandler(Socket sock, LabServer serv){
         try{
             brIn = new BufferedReader(new InputStreamReader(sock.getInputStream()));
             pwOut = new PrintWriter(sock.getOutputStream(),true);
@@ -27,14 +27,15 @@ class ClientHandler extends Thread{
                 line = brIn.readLine();
                 System.out.println(line);
                 String [] data = line.split(",");
+		System.out.println("@ START SERVER" + data[0].toString());
                 switch (data[0]){
-                    case "<sentServerSide:>":
-                        dataHandler(data);
+                    case "<send>":
+                        addValue(data);
                     break;
                     case "<die>" :
                         die();
                     default:
-                        pwOut.println("<error>");
+                        pwOut.println("<error here>");
                 }         
                 
             }
@@ -44,27 +45,14 @@ class ClientHandler extends Thread{
             System.out.print("Error: " + line);
         } 
     }
-    private void dataHandler(String [] data){
-        if (data.length == 3){
-            if(server.addValue(data[1],data[2])){
-                pwOut.println("<added>");
+    private void addValue(String [] data){
+            System.out.println(data.toString());
+            if(server.addValue(data[1])){
+                pwOut.println("<ValueAdded>");
             }else{
-                pwOut.println("<error>");
+                pwOut.println("<error>" + data.toString());
             }
-        }else{
-            pwOut.println("<error>");
-        }
-    }
-    private void loginUser(String [] data){
-        if (data.length == 3){
-            if(server.loginUser(data[1],data[2])){
-                pwOut.println("<logged>");
-            }else{
-                pwOut.println("<error>");
-            }
-        }else{
-            pwOut.println("<error>");
-        }
+
     }
     private void die(){
         try{
