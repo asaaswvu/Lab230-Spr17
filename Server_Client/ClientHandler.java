@@ -30,9 +30,7 @@ class ClientHandler extends Thread{
                 switch (data[0]){
                     case "<add>":
                         addUser(data);
-                    break;
-                    case "<display>":
-                        displayUsers();
+			displayUsers();
                     break;
                     case "<die>" :
                         die();

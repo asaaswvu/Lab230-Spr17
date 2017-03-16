@@ -26,6 +26,8 @@ class Client extends JFrame implements ActionListener{
         pnlName.add(txtName);
         pnlName.add(names);
         
+	//Jlabel displayNames = new JLabel();
+
         JButton btnAdd = new JButton("Add User");
         btnAdd.setActionCommand("add");
         btnAdd.addActionListener(this);
@@ -66,18 +68,15 @@ class Client extends JFrame implements ActionListener{
             while (true){
                 String strIn = brIn.readLine();
                 if (strIn.startsWith("<added>")){
-                    JOptionPane.showMessageDialog(this,"User added","Successful",JOptionPane.PLAIN_MESSAGE);
-                    
-                    
-                }else if (strIn.startsWith("<logged>")){
-                    JOptionPane.showMessageDialog(this,"Successful Login","Successful",JOptionPane.PLAIN_MESSAGE);
-                    
+                    JOptionPane.showMessageDialog(this,"Users added","Successful",JOptionPane.PLAIN_MESSAGE);
+                      
                 }
-                else
+                else{
                     JOptionPane.showMessageDialog(this,strIn,"???",JOptionPane.PLAIN_MESSAGE);
-            }
+		}            
+	}
         }catch(IOException e){
-            System.out.println("IOException");
+            System.out.println("IOException, Client.java");
         }catch(NullPointerException npe){
             System.out.println("null");
         }
@@ -89,6 +88,8 @@ class Client extends JFrame implements ActionListener{
                 case "add":
                     System.out.println("<add>," + txtName.getText());
                     pwOut.println("<add>," + txtName.getText()); 
+
+				
                 break;
                 case "quit":
                     pwOut.println("<die>");
