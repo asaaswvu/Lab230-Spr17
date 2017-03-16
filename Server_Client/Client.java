@@ -11,44 +11,34 @@ class Client extends JFrame implements ActionListener{
     PrintWriter pwOut;
     Socket sock;
     JTextField txtName;
-    JPasswordField txtPass;
     
     Client(){
         JPanel pnlMain = new JPanel();
         pnlMain.setLayout(new BoxLayout(pnlMain,BoxLayout.PAGE_AXIS));
         
         JPanel pnlName = new JPanel();
-        JPanel pnlPassword = new JPanel();
         JPanel pnlButtons = new JPanel();
         
         txtName = new JTextField(15);
-        JLabel lblName = new JLabel("Name");
+        JLabel lblName = new JLabel("Names, separated by commas");
+        JLabel names = new JLabel("");
         pnlName.add(lblName);
         pnlName.add(txtName);
-        
-        txtPass = new JPasswordField(15);
-        JLabel lblPass = new JLabel("Pass");
-        pnlPassword.add(lblPass);
-        pnlPassword.add(txtPass);
+        pnlName.add(names);
         
         JButton btnAdd = new JButton("Add User");
         btnAdd.setActionCommand("add");
         btnAdd.addActionListener(this);
         
-        JButton btnLogin = new JButton("Login");
-        btnLogin.setActionCommand("login");
-        btnLogin.addActionListener(this);
-        
-        JButton btnQuit = new JButton("Quit");
+        JButton btnQuit = new JButton("Shut Down Server");
         btnQuit.setActionCommand("quit");
         btnQuit.addActionListener(this);
         
+        
         pnlButtons.add(btnAdd);
-        pnlButtons.add(btnLogin);
         pnlButtons.add(btnQuit);
         
         pnlMain.add(pnlName);
-        pnlMain.add(pnlPassword);
         pnlMain.add(pnlButtons);
         
         getContentPane().add(pnlMain);
@@ -97,17 +87,14 @@ class Client extends JFrame implements ActionListener{
         if (!sock.isClosed()){
             switch (e.getActionCommand()){
                 case "add":
-                    System.out.println("<add>," + txtName.getText() + "," + txtPass.getText());
-                    pwOut.println("<add>," + txtName.getText() + "," + txtPass.getText()); 
-                break;
-                case "login":
-                    pwOut.println("<login>," + txtName.getText() + "," + txtPass.getText());
-                    System.out.println("<login>," + txtName.getText() + "," + txtPass.getText());
+                    System.out.println("<add>," + txtName.getText());
+                    pwOut.println("<add>," + txtName.getText()); 
                 break;
                 case "quit":
                     pwOut.println("<die>");
                     System.exit(0);
                 break;
+                default: break;
             }
         }else{
             JOptionPane.showMessageDialog(this,"Socket is Closed","Error",JOptionPane.ERROR_MESSAGE);
