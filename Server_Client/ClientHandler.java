@@ -31,8 +31,8 @@ class ClientHandler extends Thread{
                     case "<add>":
                         addUser(data);
                     break;
-                    case "<login>":
-                        loginUser(data);
+                    case "<display>":
+                        displayUsers();
                     break;
                     case "<die>" :
                         die();
@@ -48,27 +48,20 @@ class ClientHandler extends Thread{
         } 
     }
     private void addUser(String [] data){
-        if (data.length == 3){
-            if(server.addUser(data[1],data[2])){
+            if(server.addUser(data)){
                 pwOut.println("<added>");
             }else{
                 pwOut.println("<error>");
             }
-        }else{
-            pwOut.println("<error>");
-        }
+        
     }
-    private void loginUser(String [] data){
-        if (data.length == 3){
-            if(server.loginUser(data[1],data[2])){
-                pwOut.println("<logged>");
-            }else{
-                pwOut.println("<error>");
-            }
-        }else{
-            pwOut.println("<error>");
-        }
+
+    private void displayUsers(){
+	server.displayUsers();
+
     }
+
+
     private void die(){
         try{
             socket.close();

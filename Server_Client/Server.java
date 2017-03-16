@@ -1,15 +1,17 @@
 import java.net.*;
 import java.util.Hashtable;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 class Server extends Thread{
 
-    Hashtable<String,String> users;
+//    Hashtable<String,String> users;
     ServerSocket ss;
-
+    List users;
 
     Server(){
-        users = new Hashtable<String,String>();   
+        users = new ArrayList<String>();   
     }
 
     public void run(){
@@ -27,10 +29,9 @@ class Server extends Thread{
         }catch(IOException e){
             System.out.print("Server IOException");
             e.printStackTrace();
-        }
-        
-        
+        }   
     }
+
     public void die(){
         try{
             ss.close();
@@ -39,20 +40,22 @@ class Server extends Thread{
         }
         System.exit(0);
     }
-    public boolean addUser(String strUser, String strPass){
-        if(users.containsKey(strUser)){
-            return false;
+
+    public boolean addUser(String [] strUser){
+        if(users.contains(strUser) || strUser.equals(null)){            
+	    return false;
         }else{
-            users.put(strUser,strPass);
+	    for (int i = 1; i < strUser.length; i++){
+		if (!strUser[i].isEmpty()){
+            	     users.add(strUser[i]);
+		}
+	    }	
             return true;
         }
     }
-    public boolean loginUser(String strUser, String strPass){
-        String tempPass = users.get(strUser);
-        if (tempPass != null && tempPass.equals(strPass)){
-            return true;
-        }
-        return false;
+
+    public String displayUsers(){
+	return "Users: \n" + users.toString();
     }
 
     public static void main(String args[]){
