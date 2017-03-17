@@ -10,7 +10,7 @@ class Client extends JFrame implements ActionListener{
     BufferedReader brIn;
     PrintWriter pwOut;
     Socket sock;
-    JTextField txtName;
+    JTextField txtName,names;
     
     Client(){
         JPanel pnlMain = new JPanel();
@@ -18,13 +18,14 @@ class Client extends JFrame implements ActionListener{
         
         JPanel pnlName = new JPanel();
         JPanel pnlButtons = new JPanel();
-        
+        JPanel namesText = new JPanel();
         txtName = new JTextField(15);
         JLabel lblName = new JLabel("Names, separated by commas");
-        JLabel names = new JLabel("");
+        names = new JTextField(20);
+        names.setEditable(false);
         pnlName.add(lblName);
         pnlName.add(txtName);
-        pnlName.add(names);
+        namesText.add(names);
         
 	//Jlabel displayNames = new JLabel();
 
@@ -41,6 +42,7 @@ class Client extends JFrame implements ActionListener{
         pnlButtons.add(btnQuit);
         
         pnlMain.add(pnlName);
+        pnlMain.add(namesText);
         pnlMain.add(pnlButtons);
         
         getContentPane().add(pnlMain);
@@ -57,8 +59,8 @@ class Client extends JFrame implements ActionListener{
         setVisible(true);
         run();
 
-        
-    }
+    }    
+    
     private void run(){
         try{
             sock = new Socket("127.0.0.1",50000);
@@ -69,7 +71,7 @@ class Client extends JFrame implements ActionListener{
                 String strIn = brIn.readLine();
                 if (strIn.startsWith("<added>")){
                     JOptionPane.showMessageDialog(this,"Users added","Successful",JOptionPane.PLAIN_MESSAGE);
-                      
+                    names.setText(names.getText()+strIn);
                 }
                 else{
                     JOptionPane.showMessageDialog(this,strIn,"???",JOptionPane.PLAIN_MESSAGE);
