@@ -13,19 +13,33 @@ class LabClient extends JFrame implements ActionListener{
     JLabel lblSent;
 
     LabClient(){
-        JPanel pnlMain = new JPanel(new SpringLayout());
-        SpringUtilities.makeCompactGrid(pnlMain,3, 2, 6, 6,6, 6);
+        JPanel pnlMain = new JPanel();
+        pnlMain.setLayout(new BorderLayout());
         JPanel pnlName = new JPanel();
+        pnlName.setLayout(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
         JPanel pnlButtons = new JPanel();
+        pnlButtons.setLayout(new GridLayout(1,2));
 
-        txtName = new JTextField(15);
-        JLabel lblName = new JLabel("Name");
-	      JLabel lblValue = new JLabel("");
+
+        txtName = new JTextField(30);
+        JLabel lblName = new JLabel("Send Values");
         lblSent = new JLabel("");
-        pnlName.add(lblName);
-        pnlName.add(txtName);
-	      pnlName.add(lblValue);
-        pnlName.add(lblSent);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(5,5,5,30);
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        pnlName.add(lblName,gbc);
+        gbc.insets = new Insets(2,5,5,2);
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        gbc.gridwidth = 2;
+        pnlName.add(txtName,gbc);
+        gbc.insets = new Insets(8,5,5,2);
+        gbc.gridx = 0;
+        gbc.gridy = 4;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        pnlName.add(lblSent,gbc);
 
         JButton btnSend = new JButton("Send");
         btnSend.setActionCommand("send");
@@ -38,14 +52,14 @@ class LabClient extends JFrame implements ActionListener{
         pnlButtons.add(btnSend);
         pnlButtons.add(btnQuit);
 
-        pnlMain.add(pnlName);
-        pnlMain.add(pnlButtons);
+        pnlMain.add(pnlName, BorderLayout.NORTH);
+        pnlMain.add(pnlButtons, BorderLayout.SOUTH);
 
         getContentPane().add(pnlMain);
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setTitle("Login Client");
-        setSize(300,200);
+        setTitle("Server Client Lab");
+        setSize(350,165);
 
         Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
         int x = (int) ((dimension.getWidth() - this.getWidth()) / 2);
@@ -65,12 +79,18 @@ class LabClient extends JFrame implements ActionListener{
 
             while (true){
                 String strIn = brIn.readLine();
-                if (strIn.startsWith("<send_received>")){
-                    JOptionPane.showMessageDialog(this,"text sent","Successful",JOptionPane.PLAIN_MESSAGE);
-                    lblSent.setText(lblSent.getText()+strIn);
+                if (strIn.startsWith("<val>")){
+                  System.out.println("Client Received: " + strIn.substring(5));
+                    //JOptionPane.showMessageDialog(this,"text sent","Successful",JOptionPane.PLAIN_MESSAGE);
+                    String current = lblSent.getText();
+                    String prior = (current.equals("")) ? "" : (current + "+");
+                    lblSent.setText(prior+strIn.substring(5));
+                }
+                else if (strIn.startsWith("<EOL>")){
+                    JOptionPane.showMessageDialog(this,"The send process has been completed!","Send Function",JOptionPane.PLAIN_MESSAGE);
                 }
                 else
-                    JOptionPane.showMessageDialog(this,strIn,"???",JOptionPane.PLAIN_MESSAGE);
+                    JOptionPane.showMessageDialog(this,strIn,"Error Encountered",JOptionPane.PLAIN_MESSAGE);
             }
         }catch(IOException e){
             System.out.println("IOException");
@@ -84,7 +104,7 @@ class LabClient extends JFrame implements ActionListener{
             switch (e.getActionCommand()){
                 case "send":
                     System.out.println("<send>," + txtName.getText());
-                    pwOut.println("<send>," + txtName.getText());
+                    pwOut.println("<send>," + txtName.getText()+"<EOL>");
                 break;
                 case "quit":
                     pwOut.println("<die>");

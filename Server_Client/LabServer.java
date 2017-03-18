@@ -1,14 +1,17 @@
 import java.net.*;
 import java.util.ArrayList;
 import java.io.IOException;
+import java.io.*;
+
 
 class LabServer extends Thread{
 
     ArrayList<String> values;
     ServerSocket ss;
+    Socket client;
 
     LabServer(){
-        values = new ArrayList<String>();   
+        values = new ArrayList<String>();
     }
 
     public void run(){
@@ -16,17 +19,17 @@ class LabServer extends Thread{
         ss = new ServerSocket(50000);   //high port numbers aren't normally dedicated
         System.out.println("Server Started");
         while(true){
-            Socket client = ss.accept();
+            client = ss.accept();
             new LabClientHandler(client,this).start();
             System.out.println("Started ClientHandler");
         }
         }catch(SocketException f){
             System.out.println("null");
-        
+
         }catch(IOException e){
             System.out.print("Server IOException");
             e.printStackTrace();
-        }      
+        }
     }
 
     public void die(){
@@ -38,22 +41,36 @@ class LabServer extends Thread{
         System.exit(0);
     }
     public boolean addValue(String value){
-        if(value.equalsIgnoreCase("quit")){
-            return false;
-        }else{
+      value = value.trim();
+      System.out.println("Server Received: " + value);
+        if(value.equalsIgnoreCase("")){
+             return false;
+         }
+         else{
 	    values.add(value);
+      sendValues(value);
             return true;
-        }
+       }
     }
 
-    public void sendValues(){
-	for(int i=0; i<values.size(); i++){
-	    
-	}
+    public void sendValues(String value){
+      System.out.println("Server -> Client : Sent " + value +"\n(CheckClientLog)\n");
+      try{
+      PrintWriter pwOut = new PrintWriter(client.getOutputStream(),true);
+        if(value.equals("<EOL>")){
+          pwOut.println("<EOL>");
+        }
+        else{
+         pwOut.println("<val>"+value);
+       }
+     }
+   catch(IOException e){
+       System.out.print("Server IOException");
+       e.printStackTrace();
+   }
     }
 
     public static void main(String args[]){
         new LabServer().start();
     }
-
 }

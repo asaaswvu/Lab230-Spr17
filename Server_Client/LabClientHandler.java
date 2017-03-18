@@ -37,7 +37,6 @@ class LabClientHandler extends Thread{
                     default:
                         pwOut.println("<error here>");
                 }
-
             }
         }catch(SocketException x){
             System.out.println("socket disconnected");
@@ -46,12 +45,13 @@ class LabClientHandler extends Thread{
         }
     }
     private void addValue(String [] data){
-            System.out.println(data.toString());
+      System.out.println(data.toString());
 	    for(int i=1; i<data.length; i++){
+        System.out.println("Client -> Server : Sent " + data[i]);
 		    if(server.addValue(data[i])){
-			pwOut.println("<send_received>");
+			//pwOut.println("<val>"+data[i]);
 		    }else{
-			pwOut.println("<error>" + data[i].toString());
+			pwOut.println("Double Comma OR no value b/w commas" + data[i].toString());
 		    }
 	    }
 
