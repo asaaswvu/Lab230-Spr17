@@ -46,6 +46,12 @@ class LabServer extends Thread{
         }
     }
 
+    public void sendValues(){
+	for(int i=0; i<values.size(); i++){
+	    
+	}
+    }
+
     public static void main(String args[]){
         new LabServer().start();
     }

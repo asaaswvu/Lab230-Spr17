@@ -8,7 +8,7 @@ class LabClientHandler extends Thread{
     PrintWriter pwOut;
     LabServer server;
     Socket socket;
-    
+
     LabClientHandler(Socket sock, LabServer serv){
         try{
             brIn = new BufferedReader(new InputStreamReader(sock.getInputStream()));
@@ -19,7 +19,7 @@ class LabClientHandler extends Thread{
             System.out.println("Error initiating ClientHandler");
         }
     }
-    
+
     public void run(){
         String line = new String();
         try{
@@ -36,22 +36,24 @@ class LabClientHandler extends Thread{
                         die();
                     default:
                         pwOut.println("<error here>");
-                }         
-                
+                }
+
             }
         }catch(SocketException x){
             System.out.println("socket disconnected");
         }catch(Exception e){
             System.out.print("Error: " + line);
-        } 
+        }
     }
     private void addValue(String [] data){
             System.out.println(data.toString());
-            if(server.addValue(data[1])){
-                pwOut.println("<ValueAdded>");
-            }else{
-                pwOut.println("<error>" + data.toString());
-            }
+	    for(int i=1; i<data.length; i++){
+		    if(server.addValue(data[i])){
+			pwOut.println("<send_received>");
+		    }else{
+			pwOut.println("<error>" + data[i].toString());
+		    }
+	    }
 
     }
     private void die(){
