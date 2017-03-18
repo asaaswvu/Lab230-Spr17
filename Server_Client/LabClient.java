@@ -1,7 +1,6 @@
 import javax.swing.*;
 import java.awt.event.*;
-import java.awt.Toolkit;
-import java.awt.Dimension;
+import java.awt.*;
 import java.net.*;
 import java.io.*;
 
@@ -15,7 +14,7 @@ class LabClient extends JFrame implements ActionListener{
 
     LabClient(){
         JPanel pnlMain = new JPanel(new SpringLayout());
-
+        SpringUtilities.makeCompactGrid(pnlMain,3, 2, 6, 6,6, 6);
         JPanel pnlName = new JPanel();
         JPanel pnlButtons = new JPanel();
 
@@ -42,7 +41,6 @@ class LabClient extends JFrame implements ActionListener{
         pnlMain.add(pnlName);
         pnlMain.add(pnlButtons);
 
-        SpringUtilities.makeCompactGrid(pnlMain,3, 2, 6, 6,6, 6);
         getContentPane().add(pnlMain);
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
