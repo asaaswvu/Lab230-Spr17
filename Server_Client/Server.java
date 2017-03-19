@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 class Server extends Thread{
-
 //    Hashtable<String,String> users;
     ServerSocket ss;
     List users;
@@ -39,17 +38,25 @@ class Server extends Thread{
             //don't care, shutting down
         }
         System.exit(0);
-    }
+   }
 
     public boolean addUser(String [] strUser){
-        if(users.contains(strUser) || strUser.equals(null)){            
-	    return false;
+		System.out.println("debug: " + strUser.length);
+        if( strUser.equals(null) || strUser.length == 1){            
+			return false;
         }else{
-	    for (int i = 1; i < strUser.length; i++){
-		if (!strUser[i].isEmpty()){
+			for (int i = 1; i < strUser.length; i++){
+				if(!strUser[i].trim().isEmpty()) {
+					
+					if ( !users.contains(strUser[i]) ){
             	     users.add(strUser[i]);
-		}
-	    }	
+					}
+				}
+				else{
+					return false;
+				}
+				
+			}	
             return true;
         }
     }

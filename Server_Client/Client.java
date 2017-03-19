@@ -68,13 +68,13 @@ class Client extends JFrame implements ActionListener{
             pwOut = new PrintWriter(sock.getOutputStream(),true);
         
             while (true){
-                String strIn = brIn.readLine();
+               String strIn = brIn.readLine();
                 if (strIn.startsWith("<added>")){
                     JOptionPane.showMessageDialog(this,"Users added","Successful",JOptionPane.PLAIN_MESSAGE);
-                    names.setText(names.getText()+strIn);
+                    names.setText(strIn.substring(8, strIn.length()).replaceAll("]",""));
                 }
                 else{
-                    JOptionPane.showMessageDialog(this,strIn,"???",JOptionPane.PLAIN_MESSAGE);
+                    JOptionPane.showMessageDialog(this,strIn,"Error occured in one or more input.",JOptionPane.PLAIN_MESSAGE);
 		}            
 	}
         }catch(IOException e){

@@ -30,7 +30,7 @@ class ClientHandler extends Thread{
                 switch (data[0]){
                     case "<add>":
                         addUser(data);
-			displayUsers();
+						displayUsers();
                     break;
                     case "<die>" :
                         die();
@@ -47,7 +47,7 @@ class ClientHandler extends Thread{
     }
     private void addUser(String [] data){
             if(server.addUser(data)){
-                pwOut.println("<added>");
+                pwOut.println("<added>" + server.users.toString());
             }else{
                 pwOut.println("<error>");
             }
