@@ -104,7 +104,7 @@ class LabClient extends JFrame implements ActionListener{
             switch (e.getActionCommand()){
                 case "send":
                     System.out.println("<send>," + txtName.getText());
-                    pwOut.println("<send>," + txtName.getText()+"<EOL>");
+                    pwOut.println("<send>," + txtName.getText()+",<EOL>");
                 break;
                 case "quit":
                     pwOut.println("<die>");
