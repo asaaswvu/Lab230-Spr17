@@ -5,9 +5,11 @@ public class Election {
 	private ArrayList<String> eligibleGroups;
 	private HashMap<String, Race> races;
 	private String electionName = "";
+	private String commissioner;
 
-	public Election(String name){
+	public Election(String name, String commissioner){
 		electionName = name;
+		this.commissioner = commissioner;
 		eligibleGroups = new ArrayList<String>();
 		races = null;
 	}
@@ -29,6 +31,14 @@ public class Election {
 
 	public void changeElectionName(String newName){
 		electionName = newName;
+	}
+
+	public void setCommissioner(String name){
+		commissioner = name;
+	}
+
+	public String getCommissioner(){
+		return commissioner;
 	}
 
 	public void addRace(String nameRace) {
