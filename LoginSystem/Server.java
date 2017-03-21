@@ -1,10 +1,12 @@
 import java.net.*;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.io.IOException;
 
 class Server extends Thread{
 
     Hashtable<String, String[]> users;
+    HashMap<String, Election> elections;
     ServerSocket ss;
 
 
@@ -55,8 +57,28 @@ class Server extends Thread{
       return users.get(strUser)[1];
     }
 
+    public boolean removeElection(String election){
+      if(elections.containsKey(election)){
+        elections.remove(election);
+        return true;
+      }
+        return false;
+    }
+
+    public void addElection(String electionName){
+        elections.put(electionName, new Election(electionName));
+    }
+
+    public void addRace(Election election, String race){
+      elections.get(election).addRace(race);
+    }
+
+    public void addCandidate(Election election, String race, String name){
+    	 elections.get(election).getRace(race).addCandidate(name);
+    }
+
     public void log(String strUser){
-      System.out.println(strUser +", "+users.get(strUser)[1]+" has logged in.");
+      System.out.println(strUser +"["+users.get(strUser)[1]+"] has logged in.");
     }
 
     public static void main(String args[]){

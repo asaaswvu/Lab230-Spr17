@@ -16,13 +16,12 @@ class Client extends JFrame implements ActionListener{
 	private JPasswordField txtPass;
 	private JPanel pnlMain = new JPanel();
 	private JPanel pnlStudentView = new JPanel(new BorderLayout());
-  private JPanel pnlAdminView = new JPanel(new BorderLayout());
+	private JPanel pnlAdminView = new JPanel(new BorderLayout());
+	private JPanel pnlEditView = new JPanel(new BorderLayout());
 	private JButton btnLogout = new JButton("Logout");
 	private JButton btnQuit = new JButton("Quit");
 
 	Client(){
-    System.setProperty("awt.useSystemAAFontSettings", "off");
-    System.setProperty("swing.aatext", "false");
 		this.setResizable(false);
 		pnlMain.setLayout(new BoxLayout(pnlMain,BoxLayout.PAGE_AXIS));
 
@@ -76,16 +75,17 @@ class Client extends JFrame implements ActionListener{
 			while (true){
 				String strIn = brIn.readLine();
 				if (strIn.startsWith("<loggedS>")){
-          System.out.println("Student has logged in.");
+					System.out.println("Student has logged in.");
 					initStudent();
 					changeView(pnlStudentView);
 					continue;
 				}
-				if (strIn.startsWith("<loggedA>")){
-          System.out.println("Admin has logged in.");
+				else if (strIn.startsWith("<loggedA>")){
+					System.out.println("Admin has logged in.");
 					initAdmin();
 					changeView(pnlAdminView);
 				}
+
 				else
 					JOptionPane.showMessageDialog(this,strIn,"???",JOptionPane.PLAIN_MESSAGE);
 			}
@@ -110,18 +110,37 @@ class Client extends JFrame implements ActionListener{
 	private void initStudent(){
 		JLabel greeting = new JLabel("Welcome Student", SwingConstants.CENTER);
 		pnlStudentView.add(greeting, BorderLayout.PAGE_START);
-    btnLogout.setActionCommand("logout");
-    btnLogout.addActionListener(this);
+		btnLogout.setActionCommand("logout");
+		btnLogout.addActionListener(this);
 		pnlStudentView.add(btnLogout,BorderLayout.PAGE_END);
 	}
 
-  private void initAdmin(){
-    JLabel greeting = new JLabel("Welcome Admin", SwingConstants.CENTER);
-    pnlAdminView.add(greeting, BorderLayout.PAGE_START);
-    btnLogout.setActionCommand("logout");
-    btnLogout.addActionListener(this);
-    pnlAdminView.add(btnLogout,BorderLayout.PAGE_END);
-  }
+	private void initAdmin(){
+		JLabel greeting = new JLabel("Welcome Admin", SwingConstants.CENTER);
+		pnlAdminView.add(greeting, BorderLayout.PAGE_START);
+
+		JButton btnOpenEdit = new JButton("Open EditMode");
+		btnOpenEdit.setActionCommand("openEdit");
+		btnOpenEdit.addActionListener(this);
+		pnlAdminView.add(btnOpenEdit,BorderLayout.PAGE_END);
+		btnLogout.setActionCommand("logout");
+		btnLogout.addActionListener(this);
+		pnlAdminView.add(btnLogout,BorderLayout.PAGE_END);
+	}
+
+	private void initEdit(){
+		JLabel greeting = new JLabel("Edit Mode", SwingConstants.CENTER);
+		pnlAdminView.add(greeting, BorderLayout.PAGE_START);
+
+		JButton btnExitEdit = new JButton("Exit");
+		btnExitEdit.setActionCommand("exitEdit");
+		btnExitEdit.addActionListener(this);
+		pnlEditView.add(btnExitEdit,BorderLayout.PAGE_END);
+
+		btnLogout.setActionCommand("logout");
+		btnLogout.addActionListener(this);
+		pnlEditView.add(btnLogout,BorderLayout.PAGE_END);
+	}
 
 	public void actionPerformed(ActionEvent e){
 		if (!sock.isClosed()){
@@ -135,6 +154,15 @@ class Client extends JFrame implements ActionListener{
 				txtName.setText("");
 				txtPass.setText("");
 				changeView(pnlMain);
+				break;
+			case "openEdit":
+				System.out.println("Opening Edit Mode");
+				initEdit();
+				changeView(pnlEditView);
+				break;
+			case "exitEdit":
+				System.out.println("Exit Edit Mode");
+				changeView(pnlAdminView);
 				break;
 			case "quit":
 				pwOut.println("<die>");
