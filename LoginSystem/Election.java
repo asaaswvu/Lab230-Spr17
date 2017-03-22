@@ -12,6 +12,7 @@ public class Election {
 		electionName = name;
 		this.commissioner = commissioner;
 		eligibleGroups = new ArrayList<String>();
+		eligibleGroups.add("Admin");
 		races = new HashMap<String, Race>();
 	}
 	public ArrayList<String> getEligibleGroups() {

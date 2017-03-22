@@ -1,5 +1,6 @@
 import java.net.*;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Set;
 import java.io.IOException;
@@ -96,6 +97,14 @@ class Server extends Thread{
 	}
 	
 	public Set<String> getElections(){
+		/* Set<String> availableElects = new HashSet<String>();
+		for(String k : elections.keySet()){
+			System.out.println("@Election: " + k + " UserGroup is: "+userGroup);
+			if(elections.get(k).getEligibleGroups().contains(userGroup)){
+				System.out.println("@added election "+k);
+				availableElects.add(k);
+			}
+		}*/
 		return elections.keySet();
 	}
 	

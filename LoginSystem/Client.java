@@ -304,6 +304,7 @@ class Client extends JFrame implements ActionListener{
 		}
 
 		updateElectionList();
+		System.out.println("Refreshing election list @ ElectView");
 		lstElections.setBounds(131, 49, 170, 149);
 		pnlElectEditView.add(lstElections);
 	}
@@ -316,6 +317,7 @@ class Client extends JFrame implements ActionListener{
 		pnlBallotEditView.setLayout(null);
 
 		lstEditBallotRaces.setBounds(64, 61, 99, 87);
+		updateRaceList();
 		pnlBallotEditView.add(lstEditBallotRaces);
 
 		JLabel lblEditBallot = new JLabel("Edit Ballot");
@@ -365,6 +367,7 @@ class Client extends JFrame implements ActionListener{
 		pnlBallotEditView.add(btnExitEdit);
 		btnExitEdit.setActionCommand("exitBallotEdit");
 		btnExitEdit.addActionListener(this);
+		
 	}
 
 	private void updateElectionList(){
@@ -397,22 +400,21 @@ class Client extends JFrame implements ActionListener{
 		if (!sock.isClosed()){
 			switch (e.getActionCommand()){
 			case "login":
-				//pwOut.println("<getElections>,");
 				pwOut.println("<login>," + txtName.getText() + "," + txtPass.getText());
 				System.out.println("<login>," + txtName.getText() + "," + txtPass.getText());
-				pwOut.println("<initElections>,");
 				break;
 			case "logout":
 				System.out.println("Logging out...");
 				txtName.setText("");
 				txtPass.setText("");
 				getContentPane().removeAll();
-				getContentPane().add(pnlMain);
+				changeView(pnlMain);
 				pack();
 				setLocationRelativeTo(null);
 				break;
 			case "openEdit":
 				System.out.println("Opening Edit Mode");
+				pwOut.println("<initElections>,");
 				initElectEdit();
 				changeView(pnlElectEditView);
 				break;
@@ -483,6 +485,7 @@ class Client extends JFrame implements ActionListener{
 				break;
 			case "exitBallotEdit":
 				System.out.println("Exiting Ballot editor");
+				pwOut.println("<getElections>,");
 				changeView(pnlElectEditView);
 				break;
 			case "quit":
@@ -497,7 +500,9 @@ class Client extends JFrame implements ActionListener{
 
 	}
 
-	public static void main(String args[]){
+	public static void main(String args[]) throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException{
+		UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel"); 
 		new Client();
+
 	}
 }
