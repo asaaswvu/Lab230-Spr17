@@ -1,5 +1,6 @@
 import java.io.*;
 import java.net.*;
+import java.util.Set;
 
 
 class ClientHandler extends Thread{
@@ -25,8 +26,9 @@ class ClientHandler extends Thread{
 		try{
 			while (true){
 				line = brIn.readLine();
-				System.out.println(line);
+				System.out.println("line is "+line);
 				String [] data = line.split(",");
+				System.out.println("DATA @ 0 is : " + data[0]);
 				switch (data[0]){
 				case "<login>":
 					loginUser(data);
@@ -35,14 +37,55 @@ class ClientHandler extends Thread{
 					server.addElection(data[1], data[2]);
 					pwOut.println("<AddedElection>,"+data[1]+","+data[2]);
 					break;
-        case "<removeElection>":
-  				if(server.removeElection(data[1])){
-  				      pwOut.println("<removedElection>,"+data[1]);
-          }
-          else{
-              pwOut.println("<removedElection>,"+data[1]+",fail");
-          }
-  				break;
+				case "<getElections>":
+					Set<String> keys = server.getElections();
+					StringBuilder elections = new StringBuilder("<getElections>,");
+					for(String k:keys){
+						elections.append((k+","));
+					}
+					pwOut.println(elections.toString());
+					break;
+				case "<initElections>":
+					Set<String> initalKeys = server.getElections();
+					StringBuilder initElections = new StringBuilder("<initElections>,");
+					for(String k:initalKeys){
+						initElections.append((k+","));
+					}
+					pwOut.println(initElections.toString());
+					break;
+					
+				case "<removeElection>":
+					if(server.removeElection(data[1])){
+						pwOut.println("<removedElection>,"+data[1]);
+					}
+					else if(data[1].equals("noSelection")){
+						pwOut.println("<removedElection>,noSelection");
+					}
+					else{
+						pwOut.println("<removedElection>,"+data[1]+",fail");
+					}
+					break;
+				case "<addRace>":
+					System.out.println("@Adding Race");
+					server.addRace(data[1], data[2]);
+					pwOut.println("<addedRace>,"+data[1] + "," + data[2]);
+					break;
+				case "<removeRace>":
+					System.out.println("@removing Race");
+					if(data[1].equals("noSelection")){
+						pwOut.println("<removedRace>,noSelection");
+					}
+					server.getElection(data[1]).removeRace(data[2]);
+					pwOut.println("<removedRace>,"+data[1] + "," + data[2]);
+					break;
+				case "<getRaces>":
+					Set<String> raceNames = server.getElection(data[1]).getAllRaces();
+					StringBuilder races = new StringBuilder("<getRaces>,");
+					for(String r:raceNames){
+						races.append((r+","));
+					}
+					pwOut.println(races.toString());
+					break;
 				case "<die>" :
 					die();
 				default:
@@ -62,19 +105,24 @@ class ClientHandler extends Thread{
 		if (data.length == 3){
 			if(server.loginUser(data[1],data[2])){
 				String userType = server.getUserType(data[1]);
+				String logMessage = "";
 				if(userType.equals("Student")){
-					pwOut.println("<loggedS>");
+					logMessage = "<loggedS>";
 				}
 				else if(userType.equals("Admin")){
-					pwOut.println("<loggedA>");
+					logMessage = "<loggedA>";
 				}
-				else{
-					pwOut.println("<error>");
+				else if(userType.equals("Commissioner")){
+					logMessage = "<loggedC>";
 				}
-			}else{
-				pwOut.println("Invalid Credentials");
+				pwOut.println(logMessage + "," + data[1]);
 			}
-		}else{
+			else{
+				System.out.println("Invalid Credentials");
+				pwOut.println("<loggedF>");
+			}
+		}
+		else{
 			pwOut.println("<error>");
 		}
 	}

@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Set;
 
 public class Election {
 	private ArrayList<String> eligibleGroups;
@@ -11,7 +12,7 @@ public class Election {
 		electionName = name;
 		this.commissioner = commissioner;
 		eligibleGroups = new ArrayList<String>();
-		races = null;
+		races = new HashMap<String, Race>();
 	}
 	public ArrayList<String> getEligibleGroups() {
 		return eligibleGroups;
@@ -28,6 +29,10 @@ public class Election {
 	public Race getRace(String name) {
 		return races.get(name);
 	}
+	
+	public Set<String> getAllRaces(){
+		return races.keySet();
+	}
 
 	public void changeElectionName(String newName){
 		electionName = newName;
@@ -43,6 +48,7 @@ public class Election {
 
 	public void addRace(String nameRace) {
 		races.put(nameRace,new Race(nameRace));
+		System.out.println("adding race" + nameRace);
 	}
 
 	public void removeRace(String nameRace) {

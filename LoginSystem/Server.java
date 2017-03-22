@@ -1,6 +1,7 @@
 import java.net.*;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.Set;
 import java.io.IOException;
 
 class Server extends Thread{
@@ -15,8 +16,10 @@ class Server extends Thread{
 		elections = new HashMap<String,Election>();
 		String[] user1 = {"password","Student"};
 		String[] user2 = {"password","Admin"};
+		String[] user3 = {"password","Commissioner"};
 		users.put("student", user1);
 		users.put("admin", user2);
+		users.put("commis", user3);
 	}
 
 	public void run(){
@@ -29,7 +32,7 @@ class Server extends Thread{
 				System.out.println("Started ClientHandler");
 			}
 		}catch(SocketException f){
-			System.out.println("User Quit");
+			System.out.println("User Quit @ Socket Exception");
 
 		}catch(IOException e){
 			System.out.print("Server IOException");
@@ -46,6 +49,10 @@ class Server extends Thread{
 	}
 
 	public boolean loginUser(String strUser, String strPass){
+		if(!users.containsKey(strUser)){
+			System.out.println("User " + strUser + " does not exist in database!");
+			return false;
+		}
 		String tempPass = users.get(strUser)[0];
 		if (tempPass != null && tempPass.equals(strPass)){
 			return true;
@@ -75,8 +82,9 @@ class Server extends Thread{
 		elections.get(election).setCommissioner(newName);
 	}
 
-	public void addRace(Election election, String race){
+	public void addRace(String election, String race){
 		elections.get(election).addRace(race);
+		System.out.println("@Server.addRace");
 	}
 
 	public void addCandidate(Election election, String race, String name){
@@ -85,6 +93,14 @@ class Server extends Thread{
 
 	public void log(String strUser){
 		System.out.println("["+users.get(strUser)[1]+"]"+strUser +" has logged in.");
+	}
+	
+	public Set<String> getElections(){
+		return elections.keySet();
+	}
+	
+	public Election getElection(String electionName){
+		return elections.get(electionName);
 	}
 
 	public static void main(String args[]){
