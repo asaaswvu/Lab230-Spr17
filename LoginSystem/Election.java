@@ -55,4 +55,15 @@ public class Election {
 	public void removeRace(String nameRace) {
 		races.remove(nameRace);
 	}
+	
+	public HashMap<String,String[]> getVoteCount(){
+		HashMap<String,String[]> resultCounts = new HashMap<String,String[]>();
+		for(String raceName : races.keySet()){
+			for(String candName : races.get(raceName).getCandidateTotals().keySet()){
+				String[] candTots = {candName,Integer.toString(races.get(raceName).getCandidateTotals().get(candName))};
+				resultCounts.put(raceName, candTots);
+			}
+		}
+		return resultCounts;
+	}
 }

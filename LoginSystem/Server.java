@@ -15,10 +15,13 @@ class Server extends Thread{
 	Server(){
 		users = new Hashtable<String,String[]>();
 		elections = new HashMap<String,Election>();
-		String[] user1 = {"password","Student"};
-		String[] user2 = {"password","Admin"};
-		String[] user3 = {"password","Commissioner"};
-		users.put("student", user1);
+		String[] user1 = {"password","Student","123"};
+		String[] user2 = {"password","Admin","105"};
+		String[] user3 = {"password","Commissioner","106"};
+		String[] user4 = {"password","Student","124"};
+
+		users.put("bob", user1);
+		users.put("jim", user4);
 		users.put("admin", user2);
 		users.put("commis", user3);
 	}
@@ -62,8 +65,11 @@ class Server extends Thread{
 	}
 
 	public String getUserType(String strUser){
-		log(strUser);
 		return users.get(strUser)[1];
+	}
+	
+	public String getUserID(String strUser){
+		return users.get(strUser)[2];
 	}
 
 	public boolean removeElection(String election){
@@ -93,7 +99,7 @@ class Server extends Thread{
 	}
 
 	public void log(String strUser){
-		System.out.println("["+users.get(strUser)[1]+"]"+strUser +" has logged in.");
+		System.out.println("["+getUserType(strUser)+"]"+strUser +" has logged in. [ID]>>" + getUserID(strUser));
 	}
 	
 	public Set<String> getElections(){
