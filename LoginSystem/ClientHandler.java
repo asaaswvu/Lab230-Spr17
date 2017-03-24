@@ -1,5 +1,6 @@
 import java.io.*;
 import java.net.*;
+import java.util.ArrayList;
 import java.util.Set;
 
 
@@ -26,9 +27,8 @@ class ClientHandler extends Thread{
 		try{
 			while (true){
 				line = brIn.readLine();
-				System.out.println("line is "+line);
+				System.out.println("input to ClientHandler is: "+line);
 				String [] data = line.split(",");
-				System.out.println("DATA @ 0 is : " + data[0]);
 				switch (data[0]){
 				case "<login>":
 					createElectionList("<initElections>,");
@@ -81,37 +81,45 @@ class ClientHandler extends Thread{
 					server.getElection(data[1]).getRace(data[2]).disqualify(data[3]);
 					pwOut.println("<removedCand>,"+data[1] + "," + data[2]+"," + data[3]);
 					break;
+					
+					
 				case "<getCands>":
 					Set<String> candNames = server.getElection(data[1]).getRace(data[2]).getCandidates();
-					StringBuilder cands = new StringBuilder("<getCands>,");
+					StringBuilder cands = new StringBuilder("<pushCands>,");
 					for(String r:candNames){
 						cands.append((r+","));
 					}
 					pwOut.println(cands.toString());
 					break;
 				case "<getRandCands>":
-					Set<String> randCandNames = server.getElection(data[1]).getRace(data[2]).getRandomCandidates();
-					StringBuilder randCands = new StringBuilder("<getCands>,");
+					ArrayList<String> randCandNames = server.getElection(data[1]).getRace(data[2]).getRandomCandidates();
+					System.out.println(randCandNames);
+					StringBuilder randCands = new StringBuilder("<pushCands>,");
+					
 					for(String r:randCandNames){
 						randCands.append((r+","));
 					}
 					pwOut.println(randCands.toString());
 					break;
+					
+					
 				case "<vote>":
-					if(!server.getElection(data[2]).getRace(data[3]).vote(data[1], data[4])){
-						pwOut.println("<voteReceived>,Fail");
-					}
+					//Add a server.election check for if current user has voted id = data[1]
+					server.getElection(data[2]).getRace(data[3]).vote(data[4]);
+					//pwOut.println("<voteReceived>,Fail");
 					break;
 				case "<voteDone>":
 					pwOut.println("<voteReceived>,Success");
 					break;
 				case "<getVoteCount>":
-					StringBuilder votes = new StringBuilder("<voteCounts>,");
-					for(String raceName :server.getElection(data[1]).getVoteCount().keySet()){
-						votes.append(raceName+","+server.getElection(data[1]).getVoteCount().get(raceName)[0]+","+server.getElection(data[1]).getVoteCount().get(raceName)[1]+",");
+					Election currentE = server.getElection(data[1]);
+					StringBuilder votes = new StringBuilder("<voteCounts>," + currentE.getAllRaces().size()+",");
+					for(String raceName : currentE.getAllRaces()){
+						votes.append(raceName+","+currentE.getVoteCount().get(raceName).keySet().size()+",");
+						for(String candName : currentE.getVoteCount().get(raceName).keySet())
+						votes.append(candName+","+currentE.getVoteCount().get(raceName).get(candName)+",");
 					}
 						pwOut.println(votes.toString());
-						System.out.println(votes.toString());
 					break;
 				case "<die>" :
 					die();

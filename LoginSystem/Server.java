@@ -1,9 +1,14 @@
 import java.net.*;
+import java.nio.file.Paths;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Set;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 
 class Server extends Thread{
 
@@ -24,6 +29,25 @@ class Server extends Thread{
 		users.put("jim", user4);
 		users.put("admin", user2);
 		users.put("commis", user3);
+
+		elections.put("e1", new Election("ElectName","commissName"));
+		elections.get("e1").addRace("race1");
+		elections.get("e1").getRace("race1").addCandidate("c1r1");
+
+		elections.get("e1").addRace("race2");
+		elections.get("e1").getRace("race2").addCandidate("c2r1");
+
+		elections.get("e1").getRace("race2").addCandidate("c1r2");
+		elections.get("e1").addRace("race3");
+		elections.get("e1").getRace("race3").addCandidate("c1r3");
+
+		elections.get("e1").getRace("race3").addCandidate("c2r3");
+		elections.get("e1").getRace("race3").addCandidate("c3r3");
+
+		//restore("e1");
+		//System.out.println(elections.get("e1").getVoteCount().entrySet());
+		//System.out.println(elections.get("e1").getVoteCount().entrySet());
+		//backup("e1");
 	}
 
 	public void run(){
@@ -67,7 +91,7 @@ class Server extends Thread{
 	public String getUserType(String strUser){
 		return users.get(strUser)[1];
 	}
-	
+
 	public String getUserID(String strUser){
 		return users.get(strUser)[2];
 	}
@@ -101,7 +125,7 @@ class Server extends Thread{
 	public void log(String strUser){
 		System.out.println("["+getUserType(strUser)+"]"+strUser +" has logged in. [ID]>>" + getUserID(strUser));
 	}
-	
+
 	public Set<String> getElections(){
 		/* Set<String> availableElects = new HashSet<String>();
 		for(String k : elections.keySet()){
@@ -113,12 +137,58 @@ class Server extends Thread{
 		}*/
 		return elections.keySet();
 	}
-	
+
 	public Election getElection(String electionName){
 		return elections.get(electionName);
 	}
 
-	public static void main(String args[]){
-		new Server().start();
+
+	public void backup(String electionName){	      
+		try {
+			//CREATE FILE LEDGER TO STORE ALL NAMES TO RESTORE THEM LATER
+			URL resource = Election.class.getResource("/backups");
+			String filePath = (Paths.get(resource.toURI()).toFile().toString()+"\\"+electionName+".ser").replace("\\bin","\\LoginSystem");
+			File newBackup = new File(filePath);
+			newBackup.createNewFile();
+			FileOutputStream fileOut = new FileOutputStream(newBackup,false);
+			ObjectOutputStream out = new ObjectOutputStream(fileOut);
+			out.writeObject(elections.get(electionName));
+			out.close();
+			fileOut.close();
+			System.out.printf("BACKUP'D@: "+filePath);
+		}catch(IOException | URISyntaxException i) {
+			i.printStackTrace();
+		}
 	}
-}
+
+	public void restore(String electionName){	      
+		Election e = null;
+		try {
+			URL resource = Election.class.getResource("/backups");
+			String filePath = (Paths.get(resource.toURI()).toFile().toString()+"\\"+electionName+".ser").replace("\\bin","\\LoginSystem");
+			File newBackup = new File(filePath);
+			FileInputStream fileIn = new FileInputStream(newBackup);
+			ObjectInputStream in = new ObjectInputStream(fileIn);
+			e = (Election) in.readObject();
+			elections.put(electionName, e);
+			in.close();
+			fileIn.close();
+		}catch(IOException i) {
+			i.printStackTrace();
+			return;
+		}catch(ClassNotFoundException c) {
+			System.out.println("Employee class not found");
+			c.printStackTrace();
+			return;
+		} catch (URISyntaxException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		System.out.println(e.getCommissioner());
+	}
+
+
+		public static void main(String args[]){
+			new Server().start();
+		}
+	}

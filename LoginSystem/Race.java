@@ -7,34 +7,31 @@ import java.util.List;
 import java.util.Set;
 
 
-public class Race {
-	private Set<String> candidates;
+public class Race implements java.io.Serializable{
+	private static final long serialVersionUID = 1L;
+	HashMap<String,Integer> candidates;
 	private String raceName;
-	private HashMap<String,String> voterIDS;
 
 	public Race(String raceName){
 		this.raceName = raceName;
-		candidates = new HashSet<String>();
-		voterIDS = new HashMap<String, String>();
+		candidates = new HashMap<String,Integer>();
 	}
 
-	public Set<String> getRandomCandidates() {
+	public ArrayList<String> getRandomCandidates() {
 		ArrayList<String> candArray = new ArrayList<String>();
-		for(String name : candidates){
+		for(String name : candidates.keySet()){
 			candArray.add(name);
 		}
-		Collections.shuffle(Arrays.asList(candArray));
-		candidates.clear();
-		for(String name : candArray){
-			candidates.add(name);
-		}
-		return candidates;
+		Collections.shuffle(candArray);
+		return candArray;
 	}
 	public Set<String> getCandidates() {
-		return candidates;
+		return candidates.keySet();
 	}
 	public void addCandidate(String name) {
-		candidates.add(name);
+		System.out.println("ADDED Cand >:" + name +"to race " + raceName);
+		candidates.put(name,0);
+		System.out.println("CANDS: adfter added : "+candidates.entrySet());
 	}
 	public void disqualify(String name){
 		System.out.println("@Race " + raceName + "set of cands before removing: candidate '" +name+"'"+candidates.toString());
@@ -42,19 +39,14 @@ public class Race {
 		System.out.println("@Race " + raceName + "set of cands after remove: " + candidates.toString());
 
 	}
-	public boolean vote(String voterID, String candidateName){
-		if(voterIDS.containsKey(voterID)){
-			return false; // ALREADY VOTED
+	public void vote(String candidateName){
+		try{
+			candidates.put(candidateName,((candidates.get(candidateName))+1));
+		}catch(Exception e){
+			System.out.println(e.getMessage());
 		}
-		voterIDS.put(voterID, candidateName);
-		System.out.println("new Vote for candidateName!");
-		return true;
 	}
 	public HashMap<String,Integer> getCandidateTotals(){
-		HashMap<String,Integer> candTotals = new HashMap<String,Integer>();
-		for(String name : candidates){
-			candTotals.put(name,Collections.frequency(voterIDS.values(), name));
-		}
-		return candTotals;
+		return candidates;
 	}
 }

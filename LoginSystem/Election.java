@@ -2,7 +2,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
 
-public class Election {
+public class Election implements java.io.Serializable {
+	private static final long serialVersionUID = 1L;
 	private ArrayList<String> eligibleGroups;
 	private HashMap<String, Race> races;
 	private String electionName = "";
@@ -56,13 +57,10 @@ public class Election {
 		races.remove(nameRace);
 	}
 	
-	public HashMap<String,String[]> getVoteCount(){
-		HashMap<String,String[]> resultCounts = new HashMap<String,String[]>();
+	public HashMap<String,HashMap<String,Integer>> getVoteCount(){
+		HashMap<String,HashMap<String,Integer>>resultCounts = new HashMap<String,HashMap<String,Integer>>();
 		for(String raceName : races.keySet()){
-			for(String candName : races.get(raceName).getCandidateTotals().keySet()){
-				String[] candTots = {candName,Integer.toString(races.get(raceName).getCandidateTotals().get(candName))};
-				resultCounts.put(raceName, candTots);
-			}
+			resultCounts.put(raceName, races.get(raceName).getCandidateTotals());
 		}
 		return resultCounts;
 	}
