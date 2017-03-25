@@ -24,6 +24,7 @@ import java.io.*;
 
 class Client extends JFrame implements ActionListener{
 
+	private static final long serialVersionUID = 1L;
 	BufferedReader brIn;
 	PrintWriter pwOut;
 	Socket sock;
@@ -45,12 +46,12 @@ class Client extends JFrame implements ActionListener{
 
 	private boolean isVoting = false;
 
+	@SuppressWarnings("unused")
 	private String userName = "";
 	private String userID = "";
 	private String userType = "";
 	private String selectedElection = null;
 	private String selectedRace = null;
-	private String selectedCand = null;
 	private HashMap<String,String> voteChoices = new HashMap<String,String>();
 
 
@@ -796,7 +797,6 @@ class Client extends JFrame implements ActionListener{
 			case "viewElection":
 				selectedElection = lstElections.getSelectedValue();
 				selectedRace = null;
-				selectedCand = null;
 				pwOut.println("<getElectionStructure>,"+selectedElection);
 
 				

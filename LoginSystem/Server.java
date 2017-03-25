@@ -23,8 +23,7 @@ class Server extends Thread {
 	Hashtable<String, String[]> users;
 	HashMap<String, Election> elections;
 	ServerSocket ss;
-	private static consoleGUIFrame GUI;
-
+	
 	Server() {
 		users = new Hashtable<String, String[]>();
 		elections = new HashMap<String, Election>();

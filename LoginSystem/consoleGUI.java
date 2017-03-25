@@ -3,17 +3,12 @@
 import javax.swing.JPanel;
 import javax.swing.JButton;
 import javax.swing.JComponent;
-
 import java.awt.Dimension;
-
-import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
-import javax.swing.SwingConstants;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
-import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import java.awt.GridLayout;
 import java.awt.Color;
@@ -29,9 +24,7 @@ import java.awt.Insets;
 
 public class consoleGUI extends JPanel {
 
-	/**
-	 * Create the panel.
-	 */
+	private static final long serialVersionUID = 1L;
 	public static JList<String> currentUserJList;
 	public static JList<String> currentElectionJList;
 	public static JPanel currentUserPanel;

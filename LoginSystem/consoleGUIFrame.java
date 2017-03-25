@@ -1,19 +1,8 @@
-
-
-import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.GridBagLayout;
-
 import javax.swing.JFrame;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
 
 public class consoleGUIFrame extends JFrame {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	public consoleGUIFrame(Server s) {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
