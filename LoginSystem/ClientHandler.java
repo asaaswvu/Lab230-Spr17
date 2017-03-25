@@ -1,6 +1,7 @@
 import java.io.*;
 import java.net.*;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Set;
 
 class ClientHandler extends Thread {
@@ -35,12 +36,12 @@ class ClientHandler extends Thread {
 					loginUser(data);
 					break;
 				case "<logout>":
-					server.currentClients.remove(this);
-					server.onlineUsers.remove(currentUserName);
+					server.removeFromConnected(this,currentUserName);
 					break;
 				case "<addElection>":
 					server.addElection(data[1], data[2]);
 					pwOut.println("<AddedElection>," + data[1] + "," + data[2]);
+					consoleGUI.updateCurrentElections(server.elections.keySet());
 					break;
 				case "<getElections>":
 					createElectionList("<getElections>,");
@@ -55,6 +56,7 @@ class ClientHandler extends Thread {
 					} else {
 						pwOut.println("<removedElection>," + data[1] + ",fail");
 					}
+					consoleGUI.updateCurrentElections(server.elections.keySet());
 					break;
 				case "<addRace>":
 					System.out.println("@Adding Race");
@@ -146,9 +148,13 @@ class ClientHandler extends Thread {
 				}
 			}
 		} catch (SocketException x) {
-			server.currentClients.remove(this);
-			server.onlineUsers.remove(currentUserName);
 			System.out.println("socket disconnected - User x'd out");
+			try {
+				server.removeFromConnected(this, currentUserName);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		} catch (Exception e) {
 			server.die();
 			die();
@@ -183,17 +189,8 @@ class ClientHandler extends Thread {
 		pwOut.println(elections.toString());
 	}
 
-	private void sendmsg(String msg) {
+	public void sendmsg(String msg) {
 		pwOut.println(("<serverBROADCAST>," + msg));
-	}
-
-	private void attemptDisconnect() {
-		if (server.getUserType(currentUserName).equals("sudo"))
-			try {
-				server.forceDisconnectAllClients();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
 	}
 
 	private void die() {
@@ -204,8 +201,6 @@ class ClientHandler extends Thread {
 		} catch (Exception e) {
 			// shutting down
 		}
-		server.currentClients.remove(this);
-		server.onlineUsers.remove(currentUserName);
 		System.exit(0);
 	}
 }

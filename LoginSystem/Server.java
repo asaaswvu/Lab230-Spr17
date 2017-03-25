@@ -3,6 +3,7 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.Vector;
@@ -22,23 +23,24 @@ class Server extends Thread {
 	Hashtable<String, String[]> users;
 	HashMap<String, Election> elections;
 	ServerSocket ss;
+	private static consoleGUIFrame GUI;
 
 	Server() {
 		users = new Hashtable<String, String[]>();
 		elections = new HashMap<String, Election>();
-		String[] user0 = { "password", "Sudo", "000" };
 		String[] user1 = { "password", "Student", "123" };
 		String[] user2 = { "password", "Admin", "105" };
 		String[] user3 = { "password", "Commissioner", "106" };
 		String[] user4 = { "password", "Student", "124" };
 
-		users.put("sudo", user0);
 		users.put("bob", user1);
 		users.put("jim", user4);
 		users.put("admin", user2);
 		users.put("commis", user3);
 
-		restore();
+		//backup("fake");
+		//restore();
+		new consoleGUIFrame(this);
 		// System.out.println(elections.get("e1").getVoteCount().entrySet());
 		// System.out.println(elections.get("e1").getVoteCount().entrySet());
 		// backup("e1");
@@ -89,6 +91,8 @@ class Server extends Thread {
 		String tempPass = users.get(strUser)[0];
 		if (tempPass != null && tempPass.equals(strPass)) {
 			onlineUsers.add(strUser);
+			//consoleGUIFrame.updateOnlineUsers();
+			consoleGUI.updateOnlineUsers(onlineUsers);
 			return true;
 		}
 		return false;
@@ -135,19 +139,21 @@ class Server extends Thread {
 
 	public void backup(String electionName) {
 		try {
-			URL resource = Election.class.getResource("/backups");
-			String filePath = (Paths.get(resource.toURI()).toFile().toString()).replace("\\bin", "\\LoginSystem");
+			//URL resource = Election.class.getResource("/backups");
+			//String filePath = (Paths.get(resource.toURI()).toFile().toString()).replace("\\bin", "\\LoginSystem");
 
-			File newBackup = new File(filePath + "\\" + electionName + ".ser");
+			//File newBackup = new File(filePath + "\\" + electionName + ".ser");
+			File newBackup = new File(electionName + ".ser");
 			newBackup.createNewFile();
 			FileOutputStream fileOut = new FileOutputStream(newBackup, false);
 			ObjectOutputStream out = new ObjectOutputStream(fileOut);
 			out.writeObject(elections.get(electionName));
 			out.close();
 			fileOut.close();
-			System.out.println("BACKUP'D@: " + filePath);
+			System.out.println("BACKUP'D@: ");
 
-			File backupLedger = new File(filePath + "\\" + "ledger.txt");
+			//File backupLedger = new File(filePath + "\\" + "ledger.txt");
+			File backupLedger = new File("ledger.txt");
 			backupLedger.createNewFile();
 			PrintWriter ledgerWriter = new PrintWriter(backupLedger);
 			for (String electName : elections.keySet()) {
@@ -155,8 +161,8 @@ class Server extends Thread {
 			}
 			ledgerWriter.flush();
 			ledgerWriter.close();
-			System.out.println("Ledger Updated@: " + filePath);
-		} catch (IOException | URISyntaxException i) {
+			//System.out.println("Ledger Updated@: " + filePath);
+		} catch (IOException i) {
 			i.printStackTrace();
 		}
 	}
@@ -164,23 +170,32 @@ class Server extends Thread {
 	public void restore() {
 		Election e = null;
 		try {
-			URL resource = Election.class.getResource("/backups");
-			String filePath = (Paths.get(resource.toURI()).toFile().toString()).replace("\\bin", "\\LoginSystem");
+			//URL resource = Election.class.getResource("/backups");
+			//String filePath = (Paths.get(resource.toURI()).toFile().toString()).replace("\\bin", "\\LoginSystem");
 
 			HashSet<String> backedElections = new HashSet<String>();
-			Scanner fileRead = new Scanner(new FileReader(filePath + "\\" + "ledger.txt"));
+			//Scanner fileRead = new Scanner(new FileReader(filePath + "\\" + "ledger.txt"));
+			File backupLedger = new File("ledger.txt");
+			backupLedger.createNewFile();
+			Scanner fileRead = new Scanner(new FileReader("ledger.txt"));
+			System.out.println("#server.restore.PRIORWHILE");
 			while (fileRead.hasNext()) {
-				backedElections.add(fileRead.next());
+				backedElections.add(fileRead.nextLine());
+				System.out.println("election found" + backedElections.toString());
 			}
+			System.out.println("After while");
 			for (String currElectionBackup : backedElections) {
-				File newBackup = new File(filePath + "\\" + currElectionBackup + ".ser");
+				File newBackup = new File(currElectionBackup + ".ser");
 				FileInputStream fileIn = new FileInputStream(newBackup);
 				ObjectInputStream in = new ObjectInputStream(fileIn);
 				e = (Election) in.readObject();
 				elections.put(currElectionBackup, e);
 				in.close();
 				fileIn.close();
+				consoleGUI.updateCurrentElections(elections.keySet());
 			}
+			System.out.println("After for");
+			fileRead.close();
 		} catch (IOException i) {
 			i.printStackTrace();
 			return;
@@ -188,20 +203,37 @@ class Server extends Thread {
 			System.out.println("Employee class not found");
 			c.printStackTrace();
 			return;
-		} catch (URISyntaxException e1) {
-			e1.printStackTrace();
+		//} catch (URISyntaxException e1) {
+			//e1.printStackTrace();
 		}
 	}
 
 	void forceDisconnectAllClients() throws IOException {
-		System.out.println("Forcing Disconnect");
-		for (ClientHandler c : currentClients) {
-			System.out.println(c.currentUserName + " has been disconnected.");
-			c.socket.close();
+		System.out.println("Forcing Disconnect" +currentClients);
+		for (Iterator<ClientHandler> iter = currentClients.iterator(); iter.hasNext();) {
+		      ClientHandler c = iter.next();
+				c.socket.close();
 		}
+		currentClients.clear();
+	}
+	
+	void removeFromConnected(ClientHandler c, String Name) throws IOException{
+		for (Iterator<ClientHandler> iter = currentClients.iterator(); iter.hasNext();) {
+			ClientHandler removingC = iter.next();
+				if(removingC == c)
+					iter.remove();
+		}
+		for (Iterator<String> iter = onlineUsers.iterator(); iter.hasNext();) {
+			String removingName = iter.next();
+				if(Name.equals(removingName))
+					iter.remove();
+		}
+		consoleGUI.updateOnlineUsers(onlineUsers);
+		System.gc();
 	}
 
 	public static void main(String args[]) {
 		new Server().start();
+		//GUI.test
 	}
 }
