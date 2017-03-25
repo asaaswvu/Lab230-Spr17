@@ -18,11 +18,13 @@ public class Race implements java.io.Serializable{
 	}
 
 	public ArrayList<String> getRandomCandidates() {
+		System.out.println("@Race.RandBegin");
 		ArrayList<String> candArray = new ArrayList<String>();
 		for(String name : candidates.keySet()){
 			candArray.add(name);
 		}
 		Collections.shuffle(candArray);
+		System.out.println("@Race.RandCands"+Arrays.toString(candArray.toArray()));
 		return candArray;
 	}
 	public Set<String> getCandidates() {

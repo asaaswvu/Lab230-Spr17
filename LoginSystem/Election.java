@@ -9,13 +9,14 @@ public class Election implements java.io.Serializable {
 	private String electionName = "";
 	private String commissioner;
 
-	public Election(String name, String commissioner){
+	public Election(String name, String commissioner) {
 		electionName = name;
 		this.commissioner = commissioner;
 		eligibleGroups = new ArrayList<String>();
 		eligibleGroups.add("Admin");
 		races = new HashMap<String, Race>();
 	}
+
 	public ArrayList<String> getEligibleGroups() {
 		return eligibleGroups;
 	}
@@ -24,42 +25,42 @@ public class Election implements java.io.Serializable {
 		eligibleGroups.add(group);
 	}
 
-	public void removeEligibleGroup(String group){
+	public void removeEligibleGroup(String group) {
 		eligibleGroups.remove(group);
 	}
 
 	public Race getRace(String name) {
 		return races.get(name);
 	}
-	
-	public Set<String> getAllRaces(){
+
+	public Set<String> getAllRaces() {
 		return races.keySet();
 	}
 
-	public void changeElectionName(String newName){
+	public void changeElectionName(String newName) {
 		electionName = newName;
 	}
 
-	public void setCommissioner(String name){
+	public void setCommissioner(String name) {
 		commissioner = name;
 	}
 
-	public String getCommissioner(){
+	public String getCommissioner() {
 		return commissioner;
 	}
 
 	public void addRace(String nameRace) {
-		races.put(nameRace,new Race(nameRace));
+		races.put(nameRace, new Race(nameRace));
 		System.out.println("adding race" + nameRace);
 	}
 
 	public void removeRace(String nameRace) {
 		races.remove(nameRace);
 	}
-	
-	public HashMap<String,HashMap<String,Integer>> getVoteCount(){
-		HashMap<String,HashMap<String,Integer>>resultCounts = new HashMap<String,HashMap<String,Integer>>();
-		for(String raceName : races.keySet()){
+
+	public HashMap<String, HashMap<String, Integer>> getVoteCount() {
+		HashMap<String, HashMap<String, Integer>> resultCounts = new HashMap<String, HashMap<String, Integer>>();
+		for (String raceName : races.keySet()) {
 			resultCounts.put(raceName, races.get(raceName).getCandidateTotals());
 		}
 		return resultCounts;

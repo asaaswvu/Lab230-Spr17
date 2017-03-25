@@ -2,17 +2,21 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.table.DefaultTableModel;
+
 import java.awt.event.*;
 import java.awt.Toolkit;
 import java.awt.BorderLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.net.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
@@ -29,14 +33,16 @@ class Client extends JFrame implements ActionListener{
 	private JPanel pnlStudentVoteView = new JPanel();
 	private JPanel pnlStudentView = new JPanel(new BorderLayout());
 	private JPanel pnlAdminView = new JPanel(new GridBagLayout());
-	private JPanel pnlElectEditView = new JPanel(new GridBagLayout());
-	private JPanel pnlBallotEditView = new JPanel(new GridBagLayout());
-	private Set<String> elections = new HashSet<String>();
-	private Set<String> currentRaces = new HashSet<String>();
+	private JPanel pnlElectEditView = new JPanel();
+	private JPanel pnlBallotEditView = new JPanel();
+	private ArrayList<String> elections = new ArrayList<String>();
+	private ArrayList<String> currentRaces = new ArrayList<String>();
 	private ArrayList<String> currentCands = new ArrayList<String>();
 	private JList<String> lstElections = new JList<String>();
 	private JList<String> lstCandidates = new JList<String>();
 	private JList<String> lstRaces = new JList<String>();
+	private HashMap<String,ArrayList<String>> electStructure = new HashMap<String,ArrayList<String>>();
+
 	private boolean isVoting = false;
 
 	private String userName = "";
@@ -92,6 +98,8 @@ class Client extends JFrame implements ActionListener{
 		run();
 	}
 	
+	//**********---SERVER RESPONSE HANDLING BEGIN---**********
+	
 	private void run(){
 		try{
 			sock = new Socket("127.0.0.1",50000);
@@ -108,35 +116,43 @@ class Client extends JFrame implements ActionListener{
 						JOptionPane.showMessageDialog(this,"Login Failed!","Error Occurred!",JOptionPane.PLAIN_MESSAGE);
 						continue;
 					}
+					if(data[1].equals("YiJing")){
+						JOptionPane.showMessageDialog(this,"You're already logged in!","Error Occurred!",JOptionPane.PLAIN_MESSAGE);
+						continue;
+					}
 					userType = data[1]; 
 					userName = data[2];
 					userID = data[3];
-
+					
 					if(userType.equals("Student")){
 						System.out.println("Student has logged in.");
 						initStudent();
 						changeView(pnlStudentView);
-						setSize(450,300);
 					}
 					else if(userType.equals("Admin")){
 						System.out.println("Admin has logged in.");
 						initAdmin();
 						changeView(pnlAdminView);
-						setSize(450,300);
 					}
 					else if(userType.equals("Commissioner")){
 						System.out.println("Commissioner has logged in.");
 						initAdmin();
 						changeView(pnlAdminView);
-						setSize(450,300);
 					}
-					continue;
+//					else if(userType.equals("sudo")){
+//						System.out.println("sudo has logged in.");
+//						initSudo();
+//						changeView(pnlSudoView);
+//					}
+					setSize(450,300);
+				}
+				else if (strIn.startsWith("<serverBROADCAST>")){
+					JOptionPane.showMessageDialog(this,data[1],"Message from server",JOptionPane.PLAIN_MESSAGE);
 				}
 				else if (strIn.startsWith("<AddedElection>")){
 					String message = "The " + data[1] + " election has been created.\n"+data[2] + " is the Election Commissioner.";
 					JOptionPane.showMessageDialog(this,message,"Election Created",JOptionPane.PLAIN_MESSAGE);
 					System.out.println("Election created: " + data[1] + " : Commissioner: " + data[2]);
-					continue;
 				}
 				else if (strIn.startsWith("<removedElection>")){
 					String message = "";
@@ -148,24 +164,19 @@ class Client extends JFrame implements ActionListener{
 						message = "The " + data[1] + " election was not found!\nCould not remove.";
 					}
 					JOptionPane.showMessageDialog(this,message,"Election Removed",JOptionPane.PLAIN_MESSAGE);
-					continue;
 				}
 				else if(strIn.startsWith("<getElections>")){
 					elections.clear();
 					for(int i = 1; i < data.length;i++){
 						elections.add(data[i]);
 					}
-					System.out.println("@Client: elctions here are " + elections.toString());
 					updateElectionList(pnlElectEditView);
-					continue;
 				}
 				else if(strIn.startsWith("<initElections>")){
 					elections.clear();
 					for(int i = 1; i < data.length;i++){
 						elections.add(data[i]);
 					}
-					System.out.println("@Client: INITIAL elctions here are " + elections.toString());
-					continue;
 				}
 				else if(strIn.startsWith("<getRaces>")){
 					currentRaces.clear();
@@ -180,7 +191,6 @@ class Client extends JFrame implements ActionListener{
 						updateRaceList(pnlStudentVoteView);
 
 					}
-					continue;
 				}
 				else if(strIn.startsWith("<pushCands>")){
 					currentCands.clear();
@@ -193,23 +203,18 @@ class Client extends JFrame implements ActionListener{
 					else{
 						updateCandList(pnlStudentVoteView);
 					}
-					continue;
 				}
 				else if(strIn.startsWith("<addedCand>")){
 					System.out.println("Added Cand: " + data[3] + " to Race: " + data[2]+" in Election: "+ data[1]);
-					continue;
 				}
 				else if(strIn.startsWith("<removedCand>")){
 					System.out.println("Removed Cand: " + data[3] + " from Race: " + data[2]+" in Election: "+ data[1]);
-					continue;
 				}
 				else if(strIn.startsWith("<addedRace>")){
 					System.out.println("Added Race: " + data[1] + " to election: " + data[2]);
-					continue;
 				}
 				else if(strIn.startsWith("<removedRace>")){
 					System.out.println("removed Race: " + data[1] + " from election: " + data[2]);
-					continue;
 				}
 				else if(strIn.startsWith("<voteReceived>")){
 					if(data[1].equals("Success")){
@@ -248,12 +253,31 @@ class Client extends JFrame implements ActionListener{
 					System.out.println(n.toString());
 					exportResults(electionResults);
 				}
+				else if(strIn.startsWith("<electStructure>")){
+					int numRaces = Integer.parseInt(data[1]);
+					int i = 1;
+					String currRace;
+					for(int j = 0; j<numRaces;j++){
+						i++;
+						currRace = data[i];
+						i++;
+						int numCands = (Integer.parseInt(data[i]));
+						ArrayList<String> cands = new ArrayList<String>();
+						for(int k=0; k < numCands;k++){
+							i++;
+							cands.add(data[i]);
+						}
+						electStructure.put(currRace, cands);
+						if(i == data.length-1) break;
+						System.out.println(electStructure.entrySet());
+					}
+				}
 				else
 					JOptionPane.showMessageDialog(this,strIn,"Error Occurred!",JOptionPane.PLAIN_MESSAGE);
 			}
 		}catch(IOException e){
 			System.out.println("Server offline. Exiting...");
-			JOptionPane.showMessageDialog(this,"Server is offline\nNow exiting...","Error Occurred!",JOptionPane.PLAIN_MESSAGE);
+			//JOptionPane.showMessageDialog(this,"Server is offline\nNow exiting...","Error Occurred!",JOptionPane.PLAIN_MESSAGE);
 			System.exit(0);
 		}catch(NullPointerException npe){
 			System.out.println("User Quit @ null @ ClientFromServer");
@@ -263,6 +287,8 @@ class Client extends JFrame implements ActionListener{
 		}
 
 	}
+	
+	//**********---SERVER RESPONSE HANDLING END---**********
 
 	private void changeView(JPanel currentView){
 		getContentPane().removeAll();
@@ -272,6 +298,8 @@ class Client extends JFrame implements ActionListener{
 		getContentPane().repaint();
 
 	}
+	
+	//**********---GUI INITIALIZATIONS START---**********
 
 	private void initStudent(){
 		setTitle("Election System - Home");
@@ -301,6 +329,7 @@ class Client extends JFrame implements ActionListener{
 		btnViewElection.setEnabled(false);
 
 		updateElectionList(pnlStudentView);
+		System.out.println("STUDENT ELECTS UPDATED : " + Arrays.toString(elections.toArray()));
 		lstElections.setBounds(131, 49, 170, 149);
 		pnlStudentView.add(lstElections);
 
@@ -345,6 +374,19 @@ class Client extends JFrame implements ActionListener{
 
 		btnOpenEdit.setActionCommand("openEdit");
 		btnOpenEdit.addActionListener(this);
+		
+		JButton btnBackup = new JButton("Backup");
+		c.gridx = 0;
+		c.gridy = 1;
+		c.anchor = GridBagConstraints.LINE_START;
+		c.fill = GridBagConstraints.NONE;
+		pnlAdminView.add(btnBackup, c);
+		btnBackup.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				pwOut.println("<backup>");
+			}
+		});
+
 
 		c.gridx = 2;
 		c.gridy = 2;
@@ -532,78 +574,104 @@ class Client extends JFrame implements ActionListener{
 	private void initStudentVote(){
 		isVoting = true;
 		setTitle("Election System - Vote");
-		setSize(460,460);
+		setSize(500,450);
 		pnlStudentVoteView.removeAll();
 		pnlStudentVoteView.setBackground(Color.GRAY);
 		pnlStudentVoteView.setBorder(new EmptyBorder(5, 5, 5, 5));
+		
+		ArrayList<JTable> tabs = new ArrayList<JTable>();
+		int columnsNeeded = (elections.size() > 6) ? 4: (int) Math.ceil(Math.sqrt(elections.size()));
+		int rowsNeeded =  (elections.size() < 4)? 1 : (int)Math.ceil((long)elections.size()/3.0);	
 		pnlStudentVoteView.setLayout(null);
+		
+		JPanel panel = new JPanel();
+		panel.setBounds(38, 36, 401, 300);
+		pnlStudentVoteView.add(panel);
+		panel.setLayout(new GridLayout(rowsNeeded,columnsNeeded));
 
 		JLabel lblBallotTitle = new JLabel(selectedElection + " - BALLOT");
 		lblBallotTitle.setHorizontalAlignment(SwingConstants.CENTER);
-		lblBallotTitle.setBounds(0, 11, 450, 14);
+		lblBallotTitle.setFont(new Font("Calibri", Font.BOLD, 19));
+		lblBallotTitle.setBounds(10, 11, 464, 14);
 		pnlStudentVoteView.add(lblBallotTitle);
 
 		JButton btnVote = new JButton("VOTE");
-		btnVote.setBounds(351, 395, 89, 23);
+		btnVote.setBounds(381, 377, 93, 23);
 		pnlStudentVoteView.add(btnVote);
-		btnVote.setActionCommand("vote");
-		btnVote.addActionListener(this);
-
-		JButton btnNextRace = new JButton("NEXT RACE");
-		btnNextRace.setBounds(351, 214, 89, 23);
-		pnlStudentVoteView.add(btnNextRace);
-		btnNextRace.setActionCommand("nextRace");
-		btnNextRace.addActionListener(this);
-
-		JLabel lblRace = new JLabel("Race");
-		lblRace.setHorizontalAlignment(SwingConstants.CENTER);
-		lblRace.setBounds(10, 67, 122, 14);
-		pnlStudentVoteView.add(lblRace);
-
-		JLabel lblCandidates = new JLabel("Candidates");
-		lblCandidates.setHorizontalAlignment(SwingConstants.CENTER);
-		lblCandidates.setBounds(153, 65, 122, 14);
-		pnlStudentVoteView.add(lblCandidates);
-
-		currentCands.clear();
-		lstCandidates.setBounds(153, 85, 122, 315);
-		pnlStudentVoteView.add(lstCandidates);
-
-		lstRaces = new JList<String>();
-		updateRaceList(pnlStudentVoteView);
-		lstRaces.setBounds(21, 85, 122, 315);
-		pnlStudentVoteView.add(lstRaces);
-
-		btnNextRace.setEnabled(false);
-
-		lstRaces.addListSelectionListener(new ListSelectionListener() {
-			public void valueChanged(ListSelectionEvent lE) {
-				if (!lE.getValueIsAdjusting()) {
-					selectedRace = lstRaces.getSelectedValue();
-					if(selectedRace != null){
-						pwOut.println("<getRandCands>,"+selectedElection+","+selectedRace);
-					}
-					else{
-						btnNextRace.setEnabled(false);
-					}
+		btnVote.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				for (JTable t : tabs){
+					if(t.getSelectedRow() != -1)					
+					voteChoices.put(t.getColumnName(0).substring(4),(String) t.getValueAt(t.getSelectedRow(),0));
+				}					
+				System.out.println("VOTE CAST >> CHOICES: "+voteChoices.entrySet());
+				
+				for(String race : voteChoices.keySet()){
+					pwOut.println("<vote>,"+userID+","+selectedElection+","+race+","+voteChoices.get(race));
+					System.out.println("new Vote for : " + voteChoices.get(race));
+				}
+				voteChoices.clear();
+				pwOut.println("<voteDone>");
+				initStudent();
+				changeView(pnlStudentView);
+				setSize(450,300);
+			}
+		});
+		
+		JButton btnExitBallot = new JButton("Exit");
+		btnExitBallot.setBounds(10, 377, 93, 23);
+		pnlStudentVoteView.add(btnExitBallot);
+		btnExitBallot.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				initStudent();
+				changeView(pnlStudentView);
+				setSize(450,300);
+			}
+		});
+		
+		JButton btnRestart = new JButton("Restart");
+		btnRestart.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				for (JTable t : tabs){
+					t.clearSelection();
 				}
 			}
 		});
+		btnRestart.setBounds(203, 377, 93, 23);
+		pnlStudentVoteView.add(btnRestart);
 
-		lstCandidates.addListSelectionListener(new ListSelectionListener() {
-			public void valueChanged(ListSelectionEvent lE) {
-				if (!lE.getValueIsAdjusting()) {
-					selectedCand = lstCandidates.getSelectedValue();
-					if(selectedCand != null){
-						btnNextRace.setEnabled(true);
-					}
-					else{
-						btnNextRace.setEnabled(false);
-					}
-				}
+		for(String s : electStructure.keySet()){
+			JPanel tabPan = new JPanel();
+			JTable dynamicTable = new JTable();
+			dynamicTable.setShowGrid(false);
+			dynamicTable.setCellSelectionEnabled(true);
+
+			dynamicTable.setModel(new DefaultTableModel(0,0));
+			DefaultTableModel dtm = new DefaultTableModel(0, 0);
+
+			String header[] = new String[] {"For "+s};
+			dtm.setColumnIdentifiers(header);
+			dynamicTable.setModel(dtm);
+
+			// add row dynamically into the table      
+			for (String x : electStructure.get(s)) {
+				dtm.addRow(new Object[]{x});
 			}
-		});
+
+			JPanel tablePanel = new JPanel(new BorderLayout());
+			tablePanel.add(dynamicTable, BorderLayout.CENTER);
+			tablePanel.add(dynamicTable.getTableHeader(), BorderLayout.NORTH);
+			tabPan.add(tablePanel);
+			panel.add(tabPan);
+			tabs.add(dynamicTable);
+		}
+
+
 	}
+	
+	//**********---GUI INITIALIZATIONS END---**********
+	
+	//**********---LIST UPDATERS BEGIN---**********
 
 	private void updateElectionList(JPanel sourcePanel){
 		DefaultListModel<String> model = new DefaultListModel<String>();
@@ -634,6 +702,10 @@ class Client extends JFrame implements ActionListener{
 		sourcePanel.repaint();
 		sourcePanel.revalidate();
 	}
+	
+	//**********---LIST UPDATERS END---**********
+	
+	//**********---ACTIONS PERFORMED BEGIN---**********
 
 	public void actionPerformed(ActionEvent e){
 		if (!sock.isClosed()){
@@ -644,6 +716,7 @@ class Client extends JFrame implements ActionListener{
 				break;
 			case "logout":
 				System.out.println("Logging out...");
+				pwOut.println("<logout>,");
 				txtName.setText("");
 				txtPass.setText("password");
 				getContentPane().removeAll();
@@ -721,14 +794,13 @@ class Client extends JFrame implements ActionListener{
 				}
 				break;
 			case "viewElection":
-
 				selectedElection = lstElections.getSelectedValue();
 				selectedRace = null;
 				selectedCand = null;
+				pwOut.println("<getElectionStructure>,"+selectedElection);
+
+				
 				System.out.println("Opening Election View");
-				pwOut.println("<getRaces>,"+selectedElection);
-				currentCands.clear();
-				updateCandList(pnlStudentVoteView);
 				initStudentVote();
 				changeView(pnlStudentVoteView);				
 				break;
@@ -778,29 +850,8 @@ class Client extends JFrame implements ActionListener{
 				pwOut.println("<getElections>,");
 				changeView(pnlElectEditView);
 				break;
-			case "nextRace":
-				voteChoices.put(selectedRace,selectedCand);
-				System.out.println("Next Race");
-				currentRaces.remove(selectedRace);
-				updateRaceList(pnlStudentVoteView);
-				currentCands.clear();
-				updateCandList(pnlStudentVoteView);
-				System.out.println(voteChoices.entrySet().toString());
-				break;
-			case "vote":
-				System.out.println("Voted");
-				for(String race : voteChoices.keySet()){
-					pwOut.println("<vote>,"+userID+","+selectedElection+","+race+","+voteChoices.get(race));
-					System.out.println("new Vote for : " + voteChoices.get(race));
-				}
-				voteChoices.clear();
-				pwOut.println("<voteDone>");
-				initStudent();
-				changeView(pnlStudentView);
-				setSize(450,300);
-				break;
 			case "quit":
-				pwOut.println("<die>");
+				//pwOut.println("<die>");
 				System.exit(0);
 				break;
 			}
@@ -808,6 +859,8 @@ class Client extends JFrame implements ActionListener{
 			JOptionPane.showMessageDialog(this,"Socket is Closed","Error",JOptionPane.ERROR_MESSAGE);
 		}
 	}
+	
+	//**********---ACTIONS PERFORMED END---**********
 
 	public static void main(String args[]) throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException{
 		UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel"); 
