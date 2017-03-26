@@ -167,6 +167,7 @@ class ClientHandler extends Thread {
 				pwOut.println("<logged>,YiJing");
 				return;
 			} else if (server.loginUser(data[1], data[2])) {
+				createElectionList("<initElections>,");
 				String userType = server.getUserType(data[1]);
 				String userID = server.getUserID(data[1]);
 				currentUserName = data[1];

@@ -1,15 +1,15 @@
 import java.awt.Dimension;
 import javax.swing.JFrame;
 
-public class consoleGUIFrame extends JFrame {
+public class ElectionCreationGuiFrame extends JFrame {
 
 	private static final long serialVersionUID = 1L;
-	public consoleGUIFrame(Server s) {
+	public ElectionCreationGuiFrame() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		add(new consoleGUI(s));
+		add(new ElectionCreationGUI());
+		setMinimumSize(new Dimension(475, 275));
 		pack();
-		setMinimumSize(new Dimension(450, 325));
-		setTitle("Server Console");
+		setTitle("Election Creation");
 		setLocationRelativeTo(null);
 		setVisible(true);
 	}

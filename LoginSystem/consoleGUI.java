@@ -29,6 +29,7 @@ public class consoleGUI extends JPanel {
 	public static JList<String> currentElectionJList;
 	public static JPanel currentUserPanel;
 	public static JScrollPane currentElectionPanel;
+	
 	public consoleGUI(Server s) {
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[]{175, 114, 124, 0};
@@ -38,7 +39,7 @@ public class consoleGUI extends JPanel {
 		setLayout(gridBagLayout);
 
 		JPanel panel = new JPanel();
-		panel.setBorder(new TitledBorder(new LineBorder(Color.black, 1),
+		panel.setBorder(new TitledBorder(new LineBorder(Color.black, 2),
 				"Admin Controls"));
 		GridBagConstraints gbc_panel = new GridBagConstraints();
 		gbc_panel.ipadx = 5;
@@ -47,7 +48,7 @@ public class consoleGUI extends JPanel {
 		gbc_panel.weightx = 1.0;
 		gbc_panel.anchor = GridBagConstraints.NORTHWEST;
 		gbc_panel.fill = GridBagConstraints.BOTH;
-		gbc_panel.insets = new Insets(0, 0, 5, 5);
+		gbc_panel.insets = new Insets(0, 10, 0, 3);
 		gbc_panel.gridx = 0;
 		gbc_panel.gridy = 1;
 		add(panel, gbc_panel);
@@ -87,7 +88,6 @@ public class consoleGUI extends JPanel {
 				try {
 					s.forceDisconnectAllClients();
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
@@ -120,7 +120,7 @@ public class consoleGUI extends JPanel {
 		panel.add(btnShutServerDown);
 
 		currentElectionPanel = new JScrollPane();
-		currentElectionPanel.setBorder(new TitledBorder(new LineBorder(Color.black, 1),
+		currentElectionPanel.setBorder(new TitledBorder(new LineBorder(Color.black, 2),
 				"Current Elections"));
 		GridBagConstraints gbc_currentElectionPanel = new GridBagConstraints();
 		gbc_currentElectionPanel.ipadx = 5;
@@ -139,7 +139,7 @@ public class consoleGUI extends JPanel {
 		currentElectionPanel.setViewportView(currentElectionJList);
 
 		currentUserPanel = new JPanel();
-		currentUserPanel.setBorder(new TitledBorder(new LineBorder(Color.black, 1),
+		currentUserPanel.setBorder(new TitledBorder(new LineBorder(Color.black, 2),
 				"Current Users"));
 		GridBagConstraints gbc_currentUserPanel = new GridBagConstraints();
 		gbc_currentUserPanel.ipady = 5;
@@ -147,7 +147,7 @@ public class consoleGUI extends JPanel {
 		gbc_currentUserPanel.weighty = 1.0;
 		gbc_currentUserPanel.weightx = 1.0;
 		gbc_currentUserPanel.anchor = GridBagConstraints.NORTHEAST;
-		gbc_currentUserPanel.insets = new Insets(0, 3, 0, 3);
+		gbc_currentUserPanel.insets = new Insets(0, 3, 0, 10);
 		gbc_currentUserPanel.fill = GridBagConstraints.BOTH;
 		gbc_currentUserPanel.gridx = 2;
 		gbc_currentUserPanel.gridy = 1;
@@ -160,9 +160,10 @@ public class consoleGUI extends JPanel {
 		setPreferredSize(new Dimension(450, 325));
 
 		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setBorder(new TitledBorder(new LineBorder(Color.black, 1),
+		scrollPane.setBorder(new TitledBorder(new LineBorder(Color.black, 2),
 				"Server Logs"));
 		GridBagConstraints gbc_scrollPane = new GridBagConstraints();
+		gbc_scrollPane.insets = new Insets(0, 10, 10, 10);
 		gbc_scrollPane.ipady = 5;
 		gbc_scrollPane.ipadx = 5;
 		gbc_scrollPane.weighty = 1.0;

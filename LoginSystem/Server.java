@@ -7,6 +7,10 @@ import java.util.Iterator;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.Vector;
+
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -177,12 +181,10 @@ class Server extends Thread {
 			File backupLedger = new File("ledger.txt");
 			backupLedger.createNewFile();
 			Scanner fileRead = new Scanner(new FileReader("ledger.txt"));
-			System.out.println("#server.restore.PRIORWHILE");
 			while (fileRead.hasNext()) {
 				backedElections.add(fileRead.nextLine());
-				System.out.println("election found" + backedElections.toString());
+				System.out.println("election found >> : " + backedElections.toString());
 			}
-			System.out.println("After while");
 			for (String currElectionBackup : backedElections) {
 				File newBackup = new File(currElectionBackup + ".ser");
 				FileInputStream fileIn = new FileInputStream(newBackup);
@@ -193,7 +195,6 @@ class Server extends Thread {
 				fileIn.close();
 				consoleGUI.updateCurrentElections(elections.keySet());
 			}
-			System.out.println("After for");
 			fileRead.close();
 		} catch (IOException i) {
 			i.printStackTrace();
@@ -208,20 +209,18 @@ class Server extends Thread {
 	}
 
 	void forceDisconnectAllClients() throws IOException {
-		System.out.println("Forcing Disconnect" +currentClients);
+		System.out.println("Forcing Disconnect" +currentClients.toString());
 		for (Iterator<ClientHandler> iter = currentClients.iterator(); iter.hasNext();) {
 		      ClientHandler c = iter.next();
 				c.socket.close();
 		}
 		currentClients.clear();
+		for (Iterator<ClientHandler> iter = currentClients.iterator(); iter.hasNext();) {
+				iter.remove();
+		}
 	}
 	
 	void removeFromConnected(ClientHandler c, String Name) throws IOException{
-		for (Iterator<ClientHandler> iter = currentClients.iterator(); iter.hasNext();) {
-			ClientHandler removingC = iter.next();
-				if(removingC == c)
-					iter.remove();
-		}
 		for (Iterator<String> iter = onlineUsers.iterator(); iter.hasNext();) {
 			String removingName = iter.next();
 				if(Name.equals(removingName))

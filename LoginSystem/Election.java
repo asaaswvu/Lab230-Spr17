@@ -8,6 +8,7 @@ public class Election implements java.io.Serializable {
 	private HashMap<String, Race> races;
 	private String electionName = "";
 	private String commissioner;
+	public status electionStatus;
 
 	public Election(String name, String commissioner) {
 		electionName = name;
@@ -15,10 +16,19 @@ public class Election implements java.io.Serializable {
 		eligibleGroups = new ArrayList<String>();
 		eligibleGroups.add("Admin");
 		races = new HashMap<String, Race>();
+		electionStatus = status.EDITABLE;
+	}
+	
+	public enum status {
+	    ACTIVE, COMPLETE, EDITABLE
 	}
 
 	public ArrayList<String> getEligibleGroups() {
 		return eligibleGroups;
+	}
+	
+	public status getStatus(){
+		return electionStatus;
 	}
 
 	public void addEligibleGroup(String group) {
