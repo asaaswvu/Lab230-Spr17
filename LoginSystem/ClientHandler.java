@@ -1,7 +1,6 @@
 import java.io.*;
 import java.net.*;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.Set;
 
 class ClientHandler extends Thread {
@@ -30,6 +29,7 @@ class ClientHandler extends Thread {
 			while (true) {
 				line = brIn.readLine();
 				System.out.println("input to ClientHandler is: " + line);
+				server.logToGUI(line);
 				String[] data = line.split(",");
 				switch (data[0]) {
 				case "<login>":

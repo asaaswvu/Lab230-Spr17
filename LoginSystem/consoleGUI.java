@@ -21,6 +21,7 @@ import java.awt.event.ActionEvent;
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
+import javax.swing.JTextPane;
 
 public class consoleGUI extends JPanel {
 
@@ -29,6 +30,7 @@ public class consoleGUI extends JPanel {
 	public static JList<String> currentElectionJList;
 	public static JPanel currentUserPanel;
 	public static JScrollPane currentElectionPanel;
+	public static JTextPane txtpnHello;
 	
 	public consoleGUI(Server s) {
 		GridBagLayout gridBagLayout = new GridBagLayout();
@@ -174,6 +176,10 @@ public class consoleGUI extends JPanel {
 		gbc_scrollPane.gridx = 0;
 		gbc_scrollPane.gridy = 2;
 		add(scrollPane, gbc_scrollPane);
+		
+		txtpnHello = new JTextPane();
+		txtpnHello.setEditable(false);
+		scrollPane.setViewportView(txtpnHello);
 	}
 
 	public static void updateOnlineUsers(Vector<String> users){

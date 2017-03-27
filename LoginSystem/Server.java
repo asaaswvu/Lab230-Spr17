@@ -1,15 +1,10 @@
 import java.net.*;
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Scanner;
-import java.util.Set;
 import java.util.Vector;
-
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -61,10 +56,10 @@ class Server extends Thread {
 				ClientHandler newClient = new ClientHandler(client, this);
 				newClient.start();
 				currentClients.add(newClient);
-				System.out.println("User has connected," + client.getLocalPort());
+				System.out.println("User has connected," + client.getRemoteSocketAddress().toString());
 			}
 		} catch (SocketException f) {
-			System.out.println("Server.run.socketException >> Another server instance already running!");
+			System.out.println("Server.run.socketException >> Socket Closed or in use!");
 
 		} catch (IOException e) {
 			System.out.print("Server IOException");
@@ -78,12 +73,19 @@ class Server extends Thread {
 			backup(backupElectionName);
 		}
 		try {
+			forceDisconnectAllClients();
 			ss.close();
 		} catch (IOException e) {
 			// don't care, shutting down
 		}
 		System.out.println("Server shutting down...");
 		System.exit(0);
+	}
+	
+	public void logToGUI(String msg){
+		consoleGUI.txtpnHello.setText(consoleGUI.txtpnHello.getText()+"\n"+msg);
+		consoleGUI.txtpnHello.repaint();
+		consoleGUI.txtpnHello.revalidate();
 	}
 
 	public boolean loginUser(String strUser, String strPass) {

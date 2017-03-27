@@ -5,7 +5,6 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 
 import java.awt.event.*;
-import java.awt.Toolkit;
 import java.awt.BorderLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -18,11 +17,9 @@ import java.net.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
 import java.io.*;
 
-class Client extends JFrame implements ActionListener{
+public class Client extends JFrame implements ActionListener{
 
 	private static final long serialVersionUID = 1L;
 	BufferedReader brIn;
@@ -92,6 +89,7 @@ class Client extends JFrame implements ActionListener{
 		getContentPane().add(pnlMain);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setTitle("Election Login");
+		setMinimumSize(new Dimension(275,150));
 		pack();
 
 		setLocationRelativeTo(null);
@@ -105,6 +103,7 @@ class Client extends JFrame implements ActionListener{
 		try{
 			//sock = new Socket("127.0.0.1",50000);
 			sock = new Socket("10.253.73.124",50000);
+			//sock = new Socket("108.61.219.203",50000);
 			brIn = new BufferedReader(new InputStreamReader(sock.getInputStream()));
 			pwOut = new PrintWriter(sock.getOutputStream(),true);
 
@@ -709,19 +708,12 @@ class Client extends JFrame implements ActionListener{
 		sourcePanel.repaint();
 		sourcePanel.revalidate();
 	}
-	
-	private void updateElectStructure(){
-		
-		initStudentVote();
-		changeView(pnlStudentVoteView);
-		//sourcePanel.repaint();
-		//sourcePanel.revalidate();
-	}
 
 	//**********---LIST UPDATERS END---**********
 
 	//**********---ACTIONS PERFORMED BEGIN---**********
 
+	@SuppressWarnings("deprecation")
 	public void actionPerformed(ActionEvent e){
 		if (!sock.isClosed()){
 			switch (e.getActionCommand()){
@@ -757,8 +749,11 @@ class Client extends JFrame implements ActionListener{
 				//changeView(RESULTS);
 				break;
 			case "addElection":
-				new ElectionCreationGuiFrame();
-				
+				try{
+				new ElectionCreationGuiFrame();				
+				}catch(Exception z){
+					z.printStackTrace();
+				}
 				System.out.println("addElection");
 
 //				JPanel pnlGetAddElectionInfo = new JPanel();

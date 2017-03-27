@@ -5,6 +5,10 @@ import com.github.lgooddatepicker.components.TimePicker;
 import com.github.lgooddatepicker.components.TimePickerSettings;
 import com.github.lgooddatepicker.components.TimePickerSettings.TimeIncrement;
 import java.time.LocalTime;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.TimeZone;
+
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
@@ -35,9 +39,6 @@ public class ElectionCreationGUI extends JPanel {
 		timeSettings.initialTime = LocalTime.of(15, 30);
 		timeSettings.generatePotentialMenuTimes(TimeIncrement.FifteenMinutes, null, null);
 		timeSettings.setAllowEmptyTimes(false);
-
-
-		int row = rowMultiplier;
 
 		pnlHolder.setLayout(new BorderLayout(0, 0));
 
@@ -84,8 +85,12 @@ public class ElectionCreationGUI extends JPanel {
 		gbc_panel_13.gridy = 0;
 		panel_12.add(panel_13, gbc_panel_13);
 		panel_13.setLayout(new BorderLayout(0, 0));
-
-		JXDatePicker datePicker_1 = new JXDatePicker();
+		
+	    TimeZone estZone = TimeZone.getTimeZone("EST");
+	    Calendar est = Calendar.getInstance(estZone);
+		Date date = est.getTime();
+		JXDatePicker datePicker_1 = new JXDatePicker(date);
+		datePicker_1.setFormats("yyyy-MM-dd");
 		panel_13.add(datePicker_1, BorderLayout.CENTER);
 
 		JPanel panel_14 = new JPanel();
@@ -157,8 +162,9 @@ public class ElectionCreationGUI extends JPanel {
 		gbc_panel_9.gridy = 0;
 		panel_8.add(panel_9, gbc_panel_9);
 		panel_9.setLayout(new BorderLayout(0, 0));
-
-		JXDatePicker datePicker = new JXDatePicker();
+		
+		JXDatePicker datePicker = new JXDatePicker(date);
+		datePicker.setFormats("yyyy-MM-dd");
 		panel_9.add(datePicker, BorderLayout.NORTH);
 
 		JPanel panel_10 = new JPanel();

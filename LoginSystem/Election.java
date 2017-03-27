@@ -6,6 +6,7 @@ public class Election implements java.io.Serializable {
 	private static final long serialVersionUID = 1L;
 	private ArrayList<String> eligibleGroups;
 	private HashMap<String, Race> races;
+	@SuppressWarnings("unused")
 	private String electionName = "";
 	private String commissioner;
 	public status electionStatus;
