@@ -738,7 +738,6 @@ public class Client extends JFrame implements ActionListener{
 				setLocationRelativeTo(null);
 				break;
 			case "openEdit":
-				System.out.println("Opening Edit Mode");
 				pwOut.println("<initElections>,");
 				initElectEdit();
 				changeView(pnlElectEditView);

@@ -25,7 +25,6 @@ class ClientHandler extends Thread {
 	}
 
 	public void run() {
-		createElectionList("<initElections>,");
 		String line = new String();
 		try {
 			while (true) {
@@ -183,12 +182,10 @@ class ClientHandler extends Thread {
 				String userID = server.getUserID(data[1]);
 				currentUserName = data[1];
 				server.logToGUI("[" + server.getUserType(data[1]) + "][" +server.getUserID(data[1])+"]"+ data[1] + " has logged in.");
-
 				pwOut.println("<logged>," + userType + "," + data[1] + "," + userID);
 				return;
 			}
 		}
-		System.out.println("Invalid Credentials");
 		pwOut.println("<logged>,FAIL");
 	}
 

@@ -7,7 +7,6 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Scanner;
 import java.util.Vector;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -18,7 +17,6 @@ import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 
 class Server extends Thread {
-
 	Vector<ClientHandler> currentClients = new Vector<ClientHandler>();
 	Vector<String> onlineUsers = new Vector<String>();
 	Hashtable<String, String[]> users;
@@ -27,37 +25,33 @@ class Server extends Thread {
 	static Boolean useGUI = true;
 
 	Server() {
-		users = new Hashtable<String, String[]>();
 		elections = new HashMap<String, Election>();
+
+		// OIT HANDLE HERE -----
+		users = new Hashtable<String, String[]>();
 		String[] user1 = { "password", "Student", "123" };
 		String[] user2 = { "password", "Admin", "105" };
 		String[] user3 = { "password", "Commissioner", "106" };
 		String[] user4 = { "password", "Student", "124" };
-
 		users.put("bob", user1);
 		users.put("jim", user4);
 		users.put("admin", user2);
 		users.put("commis", user3);
+		// OIT HANDLE HERE -----
 
-		//backup("fake");
-		//restore();
-		if(useGUI)
+		if (useGUI)
 			new consoleGUIFrame(this);
-		// System.out.println(elections.get("e1").getVoteCount().entrySet());
-		// System.out.println(elections.get("e1").getVoteCount().entrySet());
-		// backup("e1");
-		// run();
+		restore();
 	}
 
 	public void run() {
-		if(useGUI)
+		if (useGUI)
 			logToGUI("Server starting...");
 		else
-			System.out.println("GUIless Server starting...");
-		
+			logToGUI("GUIless Server starting...");
+
 		try {
-			ss = new ServerSocket(50000); // high port numbers aren't normally
-			// dedicated
+			ss = new ServerSocket(50000);
 			logToGUI("Server Started");
 			while (true) {
 				Socket client = ss.accept();
@@ -74,33 +68,7 @@ class Server extends Thread {
 			e.printStackTrace();
 		}
 	}
-
-	public void die() {
-		logToGUI("Backing up current Elections...");
-		for (String backupElectionName : elections.keySet()) {
-			backup(backupElectionName);
-		}
-		try {
-			forceDisconnectAllClients();
-			ss.close();
-		} catch (IOException e) {
-			// don't care, shutting down
-		}
-		logToGUI("Server shutting down...");
-		System.exit(0);
-	}
-
-	public void logToGUI(String msg){
-		if(useGUI){
-			consoleGUI.txtpnHello.setText(consoleGUI.txtpnHello.getText() + new SimpleDateFormat("HH:mm:ss").format(Calendar.getInstance().getTime())+":> "+msg+"\n");
-			consoleGUI.txtpnHello.repaint();
-			consoleGUI.txtpnHello.revalidate();
-		}
-		else{
-			System.out.println(msg);
-		}
-	}
-
+	
 	public boolean loginUser(String strUser, String strPass) {
 		if (!users.containsKey(strUser)) {
 			System.out.println("User " + strUser + " does not exist in database!");
@@ -109,7 +77,7 @@ class Server extends Thread {
 		String tempPass = users.get(strUser)[0];
 		if (tempPass != null && tempPass.equals(strPass)) {
 			onlineUsers.add(strUser);
-			if(useGUI)
+			if (useGUI)
 				consoleGUI.updateOnlineUsers(onlineUsers);
 			return true;
 		}
@@ -146,14 +114,23 @@ class Server extends Thread {
 
 	public void addCandidate(Election election, String race, String name) {
 		elections.get(election).getRace(race).addCandidate(name);
-	}	
+	}
+
+	public void logToGUI(String msg) {
+		if (useGUI) {
+			consoleGUI.txtpnHello.setText(consoleGUI.txtpnHello.getText()
+					+ new SimpleDateFormat("HH:mm:ss").format(Calendar.getInstance().getTime()) + ":> " + msg + "\n");
+			consoleGUI.txtpnHello.repaint();
+			consoleGUI.txtpnHello.revalidate();
+		} else {
+			System.out.println(msg);
+		}
+	}
+
+
 
 	public void backup(String electionName) {
 		try {
-			//URL resource = Election.class.getResource("/backups");
-			//String filePath = (Paths.get(resource.toURI()).toFile().toString()).replace("\\bin", "\\LoginSystem");
-
-			//File newBackup = new File(filePath + "\\" + electionName + ".ser");
 			File newBackup = new File(electionName + ".ser");
 			newBackup.createNewFile();
 			FileOutputStream fileOut = new FileOutputStream(newBackup, false);
@@ -163,7 +140,7 @@ class Server extends Thread {
 			fileOut.close();
 			logToGUI("Backing up " + electionName + ".");
 
-			//File backupLedger = new File(filePath + "\\" + "ledger.txt");
+			// File backupLedger = new File(filePath + "\\" + "ledger.txt");
 			File backupLedger = new File("ledger.txt");
 			backupLedger.createNewFile();
 			PrintWriter ledgerWriter = new PrintWriter(backupLedger);
@@ -172,7 +149,7 @@ class Server extends Thread {
 			}
 			ledgerWriter.flush();
 			ledgerWriter.close();
-			//System.out.println("Ledger Updated@: " + filePath);
+			// System.out.println("Ledger Updated@: " + filePath);
 		} catch (IOException i) {
 			i.printStackTrace();
 		}
@@ -181,13 +158,10 @@ class Server extends Thread {
 	public void restore() {
 		Election e = null;
 		try {
-			//URL resource = Election.class.getResource("/backups");
-			//String filePath = (Paths.get(resource.toURI()).toFile().toString()).replace("\\bin", "\\LoginSystem");
-
 			HashSet<String> backedElections = new HashSet<String>();
-			//Scanner fileRead = new Scanner(new FileReader(filePath + "\\" + "ledger.txt"));
-			File backupLedger = new File("ledger.txt");
-			backupLedger.createNewFile();
+
+			File backupLedger = new File("ledger.txt");			
+			if(!backupLedger.createNewFile()){
 			Scanner fileRead = new Scanner(new FileReader("ledger.txt"));
 			while (fileRead.hasNext()) {
 				backedElections.add(fileRead.nextLine());
@@ -201,10 +175,14 @@ class Server extends Thread {
 				elections.put(currElectionBackup, e);
 				in.close();
 				fileIn.close();
-				if(useGUI)
+				if (useGUI)
 					consoleGUI.updateCurrentElections(elections.keySet());
 			}
 			fileRead.close();
+			}
+			else{
+				logToGUI("No backups found!");
+				}
 		} catch (IOException i) {
 			i.printStackTrace();
 			return;
@@ -212,13 +190,11 @@ class Server extends Thread {
 			System.out.println("Employee class not found");
 			c.printStackTrace();
 			return;
-			//} catch (URISyntaxException e1) {
-			//e1.printStackTrace();
 		}
 	}
 
 	void forceDisconnectAllClients() throws IOException {
-		System.out.println("Forcing Disconnect" +currentClients.toString());
+		System.out.println("Forcing Disconnect" + currentClients.toString());
 		for (Iterator<ClientHandler> iter = currentClients.iterator(); iter.hasNext();) {
 			ClientHandler c = iter.next();
 			c.socket.close();
@@ -226,32 +202,44 @@ class Server extends Thread {
 		currentClients.clear();
 	}
 
-	void removeUserFromOnline(String Name) throws IOException{
+	void removeUserFromOnline(String Name) throws IOException {
 		for (Iterator<String> iter = onlineUsers.iterator(); iter.hasNext();) {
 			String removingName = iter.next();
-			if(Name.equals(removingName))
+			if (Name.equals(removingName))
 				iter.remove();
 		}
-		if(useGUI)
+		if (useGUI)
 			consoleGUI.updateOnlineUsers(onlineUsers);
 	}
 
-	void removeClientHandler(ClientHandler c, String ip){
+	void removeClientHandler(ClientHandler c, String ip) {
 		for (Iterator<ClientHandler> iter = currentClients.iterator(); iter.hasNext();) {
 			ClientHandler currHandler = iter.next();
-			if(currHandler == c){
+			if (currHandler == c) {
 				logToGUI("Client @" + ip + " terminated.");
 				iter.remove();
 			}
 		}
 	}
+	
+	public void die() {
+		logToGUI("Backing up current Elections...");
+		for (String backupElectionName : elections.keySet()) {
+			backup(backupElectionName);
+		}
+		try {
+			forceDisconnectAllClients();
+			ss.close();
+		} catch (IOException e) {
+			// don't care, shutting down
+		}
+		logToGUI("Server shutting down...");
+		System.exit(0);
+	}
 
 	public static void main(String args[]) {
-		if(args.length>0 && args[0].equals("-F")){
+		if (args.length > 0 && args[0].equals("-F"))
 			useGUI = false;
-		}
-
 		new Server().start();
-		//GUI.test
 	}
 }
