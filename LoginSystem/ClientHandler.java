@@ -10,6 +10,7 @@ class ClientHandler extends Thread {
 	Server server;
 	Socket socket;
 	String currentUserName;
+	String ipAddress;
 
 	ClientHandler(Socket sock, Server serv) {
 		try {
@@ -17,6 +18,7 @@ class ClientHandler extends Thread {
 			pwOut = new PrintWriter(sock.getOutputStream(), true);
 			server = serv;
 			socket = sock;
+			ipAddress = sock.getRemoteSocketAddress().toString().substring(1);
 		} catch (Exception e) {
 			System.out.println("Error initiating ClientHandler");
 		}
@@ -28,20 +30,21 @@ class ClientHandler extends Thread {
 		try {
 			while (true) {
 				line = brIn.readLine();
-				System.out.println("input to ClientHandler is: " + line);
-				server.logToGUI(line);
 				String[] data = line.split(",");
 				switch (data[0]) {
 				case "<login>":
 					loginUser(data);
 					break;
 				case "<logout>":
-					server.removeFromConnected(this,currentUserName);
+					server.removeUserFromOnline(currentUserName);
+					server.logToGUI(currentUserName + " logged out.");
 					break;
 				case "<addElection>":
 					server.addElection(data[1], data[2]);
-					pwOut.println("<AddedElection>," + data[1] + "," + data[2]);
+					createElectionList("<getElections>,");
 					consoleGUI.updateCurrentElections(server.elections.keySet());
+					server.logToGUI(currentUserName + " has added election " + data[1]+".");
+					pwOut.println("<AddedElection>," + data[1] + "," + data[2]);
 					break;
 				case "<getElections>":
 					createElectionList("<getElections>,");
@@ -53,20 +56,21 @@ class ClientHandler extends Thread {
 				case "<removeElection>":
 					if (server.removeElection(data[1])) {
 						pwOut.println("<removedElection>," + data[1]);
+						server.logToGUI(currentUserName + " has removed election " + data[1]+".");
 					} else {
 						pwOut.println("<removedElection>," + data[1] + ",fail");
 					}
 					consoleGUI.updateCurrentElections(server.elections.keySet());
 					break;
 				case "<addRace>":
-					System.out.println("@Adding Race");
 					server.addRace(data[1], data[2]);
 					pwOut.println("<addedRace>," + data[1] + "," + data[2]);
+					server.logToGUI(currentUserName + " has added race " + data[2] + " to " + data[1]+".");
 					break;
 				case "<removeRace>":
-					System.out.println("@removing Race");
 					server.elections.get(data[1]).removeRace(data[2]);
 					pwOut.println("<removedRace>," + data[1] + "," + data[2]);
+					server.logToGUI(currentUserName + " has removed race " + data[2] + " from " + data[1]+".");
 					break;
 				case "<getRaces>":
 					Set<String> raceNames = server.elections.get(data[1]).getAllRaces();
@@ -77,14 +81,15 @@ class ClientHandler extends Thread {
 					pwOut.println(races.toString());
 					break;
 				case "<addCand>":
-					System.out.println("@Adding Cand");
 					server.elections.get(data[1]).getRace(data[2]).addCandidate(data[3]);
 					pwOut.println("<addedCand>," + data[1] + "," + data[2] + "," + data[3]);
+					server.logToGUI(currentUserName + " has added candidate " + data[3] + " to race " + data[2]+ " in election "+ data[1]+".");
+
 					break;
 				case "<removeCand>":
-					System.out.println("@removing Cand");
 					server.elections.get(data[1]).getRace(data[2]).disqualify(data[3]);
 					pwOut.println("<removedCand>," + data[1] + "," + data[2] + "," + data[3]);
+					server.logToGUI(currentUserName + " has removed candidate " + data[3] + " from race " + data[2]+ " in election "+ data[1]+".");
 					break;
 
 				case "<getCands>":
@@ -97,7 +102,6 @@ class ClientHandler extends Thread {
 					break;
 				case "<getRandCands>":
 					ArrayList<String> randCandNames = server.elections.get(data[1]).getRace(data[2]).getRandomCandidates();
-					System.out.println(randCandNames);
 					StringBuilder randCands = new StringBuilder("<pushCands>,");
 
 					for (String r : randCandNames) {
@@ -135,11 +139,16 @@ class ClientHandler extends Thread {
 							votes.append(candName + "," + currentElection.getVoteCount().get(raceName).get(candName) + ",");
 					}
 					pwOut.println(votes.toString());
+					server.logToGUI(currentUserName + " has requested vote count in election "+ data[1] + ".");
 					break;
 				case "<backup>":
+					server.logToGUI(currentUserName + " has requested a backup.");
 					for(String electName : server.elections.keySet()){
 						server.backup(electName);
 					}
+					break;
+				case "<clientQuit>":
+					server.removeClientHandler(this, ipAddress);
 					break;
 				case "<die>":
 					die();
@@ -150,12 +159,14 @@ class ClientHandler extends Thread {
 		} catch (SocketException x) {
 			System.out.println("socket disconnected - User x'd out");
 			try {
-				server.removeFromConnected(this, currentUserName);
+				server.removeUserFromOnline(currentUserName);
+				server.removeClientHandler(this, ipAddress);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		} catch (Exception e) {
+			server.logToGUI("ERROR : " + e.getMessage() + "SERVER DYING");
 			server.die();
 			die();
 		}
@@ -171,7 +182,8 @@ class ClientHandler extends Thread {
 				String userType = server.getUserType(data[1]);
 				String userID = server.getUserID(data[1]);
 				currentUserName = data[1];
-				server.log(data[1]);
+				server.logToGUI("[" + server.getUserType(data[1]) + "][" +server.getUserID(data[1])+"]"+ data[1] + " has logged in.");
+
 				pwOut.println("<logged>," + userType + "," + data[1] + "," + userID);
 				return;
 			}
@@ -182,7 +194,6 @@ class ClientHandler extends Thread {
 
 	private void createElectionList(String start) {
 		Set<String> keys = server.elections.keySet();
-		System.out.println("@CREATEELECTLIST: " + keys);
 		StringBuilder elections = new StringBuilder(start);
 		for (String k : keys) {
 			elections.append((k + ","));
@@ -195,7 +206,6 @@ class ClientHandler extends Thread {
 	}
 
 	private void die() {
-		System.out.println("@CLIENTHANDLER.DIE");
 		try {
 			socket.close();
 			server.die();

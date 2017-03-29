@@ -10,7 +10,7 @@ public class consoleGUIFrame extends JFrame {
 		gui = new consoleGUI(s);
 		add(gui);
 		pack();
-		setMinimumSize(new Dimension(450, 325));
+		setMinimumSize(new Dimension(450, 500));
 		setTitle("Server Console");
 		setLocationRelativeTo(null);
 		setVisible(true);

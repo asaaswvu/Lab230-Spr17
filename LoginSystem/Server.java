@@ -1,4 +1,6 @@
 import java.net.*;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -22,7 +24,8 @@ class Server extends Thread {
 	Hashtable<String, String[]> users;
 	HashMap<String, Election> elections;
 	ServerSocket ss;
-	
+	static Boolean useGUI = true;
+
 	Server() {
 		users = new Hashtable<String, String[]>();
 		elections = new HashMap<String, Election>();
@@ -38,7 +41,8 @@ class Server extends Thread {
 
 		//backup("fake");
 		//restore();
-		new consoleGUIFrame(this);
+		if(useGUI)
+			new consoleGUIFrame(this);
 		// System.out.println(elections.get("e1").getVoteCount().entrySet());
 		// System.out.println(elections.get("e1").getVoteCount().entrySet());
 		// backup("e1");
@@ -46,29 +50,33 @@ class Server extends Thread {
 	}
 
 	public void run() {
-		System.out.println("Server starting...");
+		if(useGUI)
+			logToGUI("Server starting...");
+		else
+			System.out.println("GUIless Server starting...");
+		
 		try {
 			ss = new ServerSocket(50000); // high port numbers aren't normally
-											// dedicated
-			System.out.println("Server Started");
+			// dedicated
+			logToGUI("Server Started");
 			while (true) {
 				Socket client = ss.accept();
 				ClientHandler newClient = new ClientHandler(client, this);
 				newClient.start();
 				currentClients.add(newClient);
-				System.out.println("User has connected," + client.getRemoteSocketAddress().toString());
+				logToGUI("Client @" + client.getRemoteSocketAddress().toString().substring(1) + " connected.");
 			}
 		} catch (SocketException f) {
-			System.out.println("Server.run.socketException >> Socket Closed or in use!");
+			logToGUI("Server.run.socketException >> Socket Closed or in use!");
 
 		} catch (IOException e) {
-			System.out.print("Server IOException");
+			logToGUI("Server IOException");
 			e.printStackTrace();
 		}
 	}
 
 	public void die() {
-		System.out.println("Backing up current Elections...");
+		logToGUI("Backing up current Elections...");
 		for (String backupElectionName : elections.keySet()) {
 			backup(backupElectionName);
 		}
@@ -78,14 +86,19 @@ class Server extends Thread {
 		} catch (IOException e) {
 			// don't care, shutting down
 		}
-		System.out.println("Server shutting down...");
+		logToGUI("Server shutting down...");
 		System.exit(0);
 	}
-	
+
 	public void logToGUI(String msg){
-		consoleGUI.txtpnHello.setText(consoleGUI.txtpnHello.getText()+"\n"+msg);
-		consoleGUI.txtpnHello.repaint();
-		consoleGUI.txtpnHello.revalidate();
+		if(useGUI){
+			consoleGUI.txtpnHello.setText(consoleGUI.txtpnHello.getText() + new SimpleDateFormat("HH:mm:ss").format(Calendar.getInstance().getTime())+":> "+msg+"\n");
+			consoleGUI.txtpnHello.repaint();
+			consoleGUI.txtpnHello.revalidate();
+		}
+		else{
+			System.out.println(msg);
+		}
 	}
 
 	public boolean loginUser(String strUser, String strPass) {
@@ -96,8 +109,8 @@ class Server extends Thread {
 		String tempPass = users.get(strUser)[0];
 		if (tempPass != null && tempPass.equals(strPass)) {
 			onlineUsers.add(strUser);
-			//consoleGUIFrame.updateOnlineUsers();
-			consoleGUI.updateOnlineUsers(onlineUsers);
+			if(useGUI)
+				consoleGUI.updateOnlineUsers(onlineUsers);
 			return true;
 		}
 		return false;
@@ -121,7 +134,6 @@ class Server extends Thread {
 
 	public void addElection(String electionName, String commissioner) {
 		elections.put(electionName, new Election(electionName, commissioner));
-		System.out.println("Current Elections: " + elections.keySet().toString());
 	}
 
 	public void changeCommissioner(String election, String newName) {
@@ -130,17 +142,11 @@ class Server extends Thread {
 
 	public void addRace(String election, String race) {
 		elections.get(election).addRace(race);
-		System.out.println("@Server.addRace");
 	}
 
 	public void addCandidate(Election election, String race, String name) {
 		elections.get(election).getRace(race).addCandidate(name);
-	}
-
-	public void log(String strUser) {
-		System.out.println("[" + getUserType(strUser) + "]" + strUser + " has logged in. [ID]>>" + getUserID(strUser));
-	}
-	
+	}	
 
 	public void backup(String electionName) {
 		try {
@@ -155,7 +161,7 @@ class Server extends Thread {
 			out.writeObject(elections.get(electionName));
 			out.close();
 			fileOut.close();
-			System.out.println("BACKUP'D@: ");
+			logToGUI("Backing up " + electionName + ".");
 
 			//File backupLedger = new File(filePath + "\\" + "ledger.txt");
 			File backupLedger = new File("ledger.txt");
@@ -195,7 +201,8 @@ class Server extends Thread {
 				elections.put(currElectionBackup, e);
 				in.close();
 				fileIn.close();
-				consoleGUI.updateCurrentElections(elections.keySet());
+				if(useGUI)
+					consoleGUI.updateCurrentElections(elections.keySet());
 			}
 			fileRead.close();
 		} catch (IOException i) {
@@ -205,7 +212,7 @@ class Server extends Thread {
 			System.out.println("Employee class not found");
 			c.printStackTrace();
 			return;
-		//} catch (URISyntaxException e1) {
+			//} catch (URISyntaxException e1) {
 			//e1.printStackTrace();
 		}
 	}
@@ -213,26 +220,37 @@ class Server extends Thread {
 	void forceDisconnectAllClients() throws IOException {
 		System.out.println("Forcing Disconnect" +currentClients.toString());
 		for (Iterator<ClientHandler> iter = currentClients.iterator(); iter.hasNext();) {
-		      ClientHandler c = iter.next();
-				c.socket.close();
+			ClientHandler c = iter.next();
+			c.socket.close();
 		}
 		currentClients.clear();
-		for (Iterator<ClientHandler> iter = currentClients.iterator(); iter.hasNext();) {
-				iter.remove();
-		}
 	}
-	
-	void removeFromConnected(ClientHandler c, String Name) throws IOException{
+
+	void removeUserFromOnline(String Name) throws IOException{
 		for (Iterator<String> iter = onlineUsers.iterator(); iter.hasNext();) {
 			String removingName = iter.next();
-				if(Name.equals(removingName))
-					iter.remove();
+			if(Name.equals(removingName))
+				iter.remove();
 		}
-		consoleGUI.updateOnlineUsers(onlineUsers);
-		System.gc();
+		if(useGUI)
+			consoleGUI.updateOnlineUsers(onlineUsers);
+	}
+
+	void removeClientHandler(ClientHandler c, String ip){
+		for (Iterator<ClientHandler> iter = currentClients.iterator(); iter.hasNext();) {
+			ClientHandler currHandler = iter.next();
+			if(currHandler == c){
+				logToGUI("Client @" + ip + " terminated.");
+				iter.remove();
+			}
+		}
 	}
 
 	public static void main(String args[]) {
+		if(args.length>0 && args[0].equals("-F")){
+			useGUI = false;
+		}
+
 		new Server().start();
 		//GUI.test
 	}

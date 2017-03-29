@@ -33,6 +33,7 @@ public class Client extends JFrame implements ActionListener{
 	private JPanel pnlAdminView = new JPanel(new GridBagLayout());
 	private JPanel pnlElectEditView = new JPanel();
 	private JPanel pnlBallotEditView = new JPanel();
+	private ElectionCreationGUI pnlAddElectionView;
 	private ArrayList<String> elections = new ArrayList<String>();
 	private ArrayList<String> currentRaces = new ArrayList<String>();
 	private ArrayList<String> currentCands = new ArrayList<String>();
@@ -154,6 +155,8 @@ public class Client extends JFrame implements ActionListener{
 					String message = "The " + data[1] + " election has been created.\n"+data[2] + " is the Election Commissioner.";
 					JOptionPane.showMessageDialog(this,message,"Election Created",JOptionPane.PLAIN_MESSAGE);
 					System.out.println("Election created: " + data[1] + " : Commissioner: " + data[2]);
+					initAdmin();
+					changeView(pnlElectEditView);
 				}
 				else if (strIn.startsWith("<removedElection>")){
 					String message = "";
@@ -250,10 +253,12 @@ public class Client extends JFrame implements ActionListener{
 							candVotes.put(currCand, Integer.parseInt(data[i]));
 						}
 						electionResults.put(currRace, candVotes);
+						
 						if(i == data.length-1) break;
 
 					}
 					System.out.println(n.toString());
+					JOptionPane.showMessageDialog(this,n.toString(),"Voting Results!",JOptionPane.PLAIN_MESSAGE);
 					exportResults(electionResults);
 				}
 				else if(strIn.startsWith("<electStructure>")){
@@ -749,35 +754,16 @@ public class Client extends JFrame implements ActionListener{
 				//changeView(RESULTS);
 				break;
 			case "addElection":
-				try{
-				new ElectionCreationGuiFrame();				
-				}catch(Exception z){
-					z.printStackTrace();
-				}
+				pnlAddElectionView = new ElectionCreationGUI();				
+				changeView(pnlAddElectionView);
+				ActionListener finBut = new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						pwOut.println("<addElection>,"+pnlAddElectionView.electionName.getText()+","+pnlAddElectionView.commissName.getText());
+					}
+				};
+				pnlAddElectionView.setActnList(finBut);
+				
 				System.out.println("addElection");
-
-//				JPanel pnlGetAddElectionInfo = new JPanel();
-//				JTextField txtAddElectionName = new JTextField(15);
-//				String addElectionName = "";
-//				JTextField txtAddElectionCommissioner = new JTextField(15);
-//				String addElectionCommissionerName = "";
-//				pnlGetAddElectionInfo.add(new JLabel("Election Name:"));
-//				pnlGetAddElectionInfo.add(txtAddElectionName);
-//				pnlGetAddElectionInfo.add(Box.createHorizontalStrut(15)); // a spacer
-//				pnlGetAddElectionInfo.add(new JLabel("Commissioner Name:"));
-//				pnlGetAddElectionInfo.add(txtAddElectionCommissioner);
-//
-//				int addElectionChoice = JOptionPane.showConfirmDialog(null, pnlGetAddElectionInfo, "Add Election", JOptionPane.OK_CANCEL_OPTION);
-//				if (addElectionChoice == JOptionPane.OK_OPTION) {
-//					addElectionName = txtAddElectionName.getText();
-//					addElectionCommissionerName = txtAddElectionCommissioner.getText();
-//				}
-//				else{
-//					break;
-//				}
-//				pwOut.println("<addElection>,"+addElectionName+","+addElectionCommissionerName);
-//				pwOut.println("<getElections>,");
-//				selectedElection = null;
 				break;
 			case "removeElection":
 				System.out.println("removeElection");
@@ -856,7 +842,7 @@ public class Client extends JFrame implements ActionListener{
 				changeView(pnlElectEditView);
 				break;
 			case "quit":
-				//pwOut.println("<die>");
+				pwOut.println("<clientQuit>");
 				System.exit(0);
 				break;
 			}
@@ -868,7 +854,7 @@ public class Client extends JFrame implements ActionListener{
 	//**********---ACTIONS PERFORMED END---**********
 
 	public static void main(String args[]) throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException{
-		UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
+		//UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
 		new Client();
 
 	}

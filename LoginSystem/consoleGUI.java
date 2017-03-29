@@ -1,5 +1,3 @@
-
-
 import javax.swing.JPanel;
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -9,11 +7,14 @@ import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
+import javax.swing.text.DefaultCaret;
 import javax.swing.JScrollPane;
 import java.awt.GridLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.io.IOException;
 import java.util.Set;
 import java.util.Vector;
@@ -22,6 +23,7 @@ import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import javax.swing.JTextPane;
+import javax.swing.JTextField;
 
 public class consoleGUI extends JPanel {
 
@@ -31,8 +33,10 @@ public class consoleGUI extends JPanel {
 	public static JPanel currentUserPanel;
 	public static JScrollPane currentElectionPanel;
 	public static JTextPane txtpnHello;
-	
+	private JTextField broadCastText;
+
 	public consoleGUI(Server s) {
+		setPreferredSize(new Dimension(475, 475));
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[]{175, 114, 124, 0};
 		gridBagLayout.rowHeights = new int[]{14, 140, 122, 0};
@@ -40,8 +44,8 @@ public class consoleGUI extends JPanel {
 		gridBagLayout.rowWeights = new double[]{0.0, 0.0, 0.0, Double.MIN_VALUE};
 		setLayout(gridBagLayout);
 
-		JPanel panel = new JPanel();
-		panel.setBorder(new TitledBorder(new LineBorder(Color.black, 2),
+		JPanel pnlButtonContainer = new JPanel();
+		pnlButtonContainer.setBorder(new TitledBorder(new LineBorder(Color.black, 2),
 				"Admin Controls"));
 		GridBagConstraints gbc_panel = new GridBagConstraints();
 		gbc_panel.ipadx = 5;
@@ -53,12 +57,12 @@ public class consoleGUI extends JPanel {
 		gbc_panel.insets = new Insets(0, 10, 0, 3);
 		gbc_panel.gridx = 0;
 		gbc_panel.gridy = 1;
-		add(panel, gbc_panel);
-		panel.setLayout(new GridLayout(4, 1, 0, 0));
+		add(pnlButtonContainer, gbc_panel);
+		pnlButtonContainer.setLayout(new GridLayout(5, 1, 0, 0));
 
-		JPanel panel_1 = new JPanel();
-		panel.add(panel_1);
-		panel_1.setLayout(new GridLayout(0, 2, 0, 0));
+		JPanel pnlBackupRestoreContainer = new JPanel();
+		pnlButtonContainer.add(pnlBackupRestoreContainer);
+		pnlBackupRestoreContainer.setLayout(new GridLayout(0, 2, 0, 0));
 
 		JButton btnBackup = new JButton("Backup");
 		btnBackup.addActionListener(new ActionListener() {
@@ -70,7 +74,7 @@ public class consoleGUI extends JPanel {
 				}
 			}
 		});
-		panel_1.add(btnBackup);
+		pnlBackupRestoreContainer.add(btnBackup);
 		btnBackup.setAlignmentX(Component.RIGHT_ALIGNMENT);
 
 		JButton btnRestore = new JButton("Restore");
@@ -80,7 +84,7 @@ public class consoleGUI extends JPanel {
 				s.restore();
 			}
 		});
-		panel_1.add(btnRestore);
+		pnlBackupRestoreContainer.add(btnRestore);
 		btnRestore.setAlignmentX(JComponent.CENTER_ALIGNMENT);
 
 		JButton btnDisconnectAllUsers = new JButton("Disconnect all Users");
@@ -95,21 +99,22 @@ public class consoleGUI extends JPanel {
 			}
 		});
 		btnDisconnectAllUsers.setAlignmentX(JComponent.CENTER_ALIGNMENT);
-		panel.add(btnDisconnectAllUsers);
+		pnlButtonContainer.add(btnDisconnectAllUsers);
 
 		JButton btnBroadcastMessage = new JButton("Broadcast Message");
 		btnBroadcastMessage.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				String msg = JOptionPane.showInputDialog("Enter Broadcast message:", "Message").toString();
-				System.out.println("Broadcasting to Connected Clients: " + msg);
-				for(ClientHandler c : s.currentClients){
-					c.sendmsg(msg);
+				String msg = broadCastText.getText();
+				if(!msg.equals("Enter Broadcast Message here")){
+					for(ClientHandler c : s.currentClients){
+						c.sendmsg(msg);
+					}
+					broadCastText.setText("Enter Broadcast Message here");
 				}
-
 			}
 		});
 		btnBroadcastMessage.setAlignmentX(JComponent.CENTER_ALIGNMENT);
-		panel.add(btnBroadcastMessage);
+		pnlButtonContainer.add(btnBroadcastMessage);
 
 		JButton btnShutServerDown = new JButton("Shut Server Down");
 		btnShutServerDown.addActionListener(new ActionListener() {
@@ -118,8 +123,30 @@ public class consoleGUI extends JPanel {
 				s.die();
 			}
 		});
+
+		broadCastText = new JTextField("Enter Broadcast Message here");
+		pnlButtonContainer.add(broadCastText);
+		broadCastText.setColumns(10);
+
+		broadCastText.addFocusListener(new FocusListener() {
+			@Override
+			public void focusGained(FocusEvent e) {
+				if (broadCastText.getText().equals("Enter Broadcast Message here")){
+					broadCastText.setText("");
+					broadCastText.setForeground(Color.BLACK);
+				}
+			}
+			@Override
+			public void focusLost(FocusEvent e) {
+				if (broadCastText.getText().isEmpty()) {
+					broadCastText.setForeground(Color.GRAY);
+					broadCastText.setText("Enter Broadcast Message here");
+				}
+			}
+		});
+
 		btnShutServerDown.setAlignmentX(JComponent.CENTER_ALIGNMENT);
-		panel.add(btnShutServerDown);
+		pnlButtonContainer.add(btnShutServerDown);
 
 		currentElectionPanel = new JScrollPane();
 		currentElectionPanel.setBorder(new TitledBorder(new LineBorder(Color.black, 2),
@@ -137,7 +164,6 @@ public class consoleGUI extends JPanel {
 		//currentElectionPanel.setLayout(new GridLayout(1, 0, 0, 0));
 
 		currentElectionJList = new JList<String>();
-		currentElectionJList.setVisibleRowCount(5);
 		currentElectionPanel.setViewportView(currentElectionJList);
 
 		currentUserPanel = new JPanel();
@@ -159,8 +185,6 @@ public class consoleGUI extends JPanel {
 		currentUserJList = new JList<String>();
 		currentUserPanel.add(currentUserJList);
 
-		setPreferredSize(new Dimension(450, 325));
-
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setBorder(new TitledBorder(new LineBorder(Color.black, 2),
 				"Server Logs"));
@@ -176,9 +200,11 @@ public class consoleGUI extends JPanel {
 		gbc_scrollPane.gridx = 0;
 		gbc_scrollPane.gridy = 2;
 		add(scrollPane, gbc_scrollPane);
-		
+
 		txtpnHello = new JTextPane();
 		txtpnHello.setEditable(false);
+		DefaultCaret caret = (DefaultCaret)txtpnHello.getCaret();
+		caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
 		scrollPane.setViewportView(txtpnHello);
 	}
 
