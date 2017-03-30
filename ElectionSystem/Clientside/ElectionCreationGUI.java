@@ -15,14 +15,10 @@ import java.awt.GridLayout;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
 import javax.swing.border.TitledBorder;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
-import java.io.PrintWriter;
-import java.awt.event.ActionEvent;
 import java.awt.FlowLayout;
-import java.awt.BorderLayout;
 import javax.swing.BoxLayout;
 
 public class ElectionCreationGUI extends JPanel {

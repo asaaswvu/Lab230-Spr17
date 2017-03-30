@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Set;
 
@@ -9,6 +10,10 @@ public class Election implements java.io.Serializable {
 	@SuppressWarnings("unused")
 	private String electionName = "";
 	private String commissioner;
+	@SuppressWarnings("unused")
+	private Date startDate;
+	@SuppressWarnings("unused")
+	private Date endDate;
 	public status electionStatus;
 
 	public Election(String name, String commissioner) {

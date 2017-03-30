@@ -4,7 +4,6 @@ import javax.swing.JComponent;
 import java.awt.Dimension;
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
-import javax.swing.JOptionPane;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.text.DefaultCaret;

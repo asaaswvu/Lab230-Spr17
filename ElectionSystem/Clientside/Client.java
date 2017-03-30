@@ -6,34 +6,32 @@ import javax.swing.table.DefaultTableModel;
 
 import java.awt.event.*;
 import java.awt.BorderLayout;
-import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
-import java.awt.Insets;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.net.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.io.*;
 
 public class Client extends JFrame implements ActionListener{
 
 	private static final long serialVersionUID = 1L;
+	public static Client parentClient;
+
 	BufferedReader brIn;
-	PrintWriter pwOut;
+	static PrintWriter pwOut;
 	Socket sock;
 	private JTextField txtName;
 	private JPasswordField txtPass;
 	private JPanel pnlMain = new JPanel();
 	private JPanel pnlStudentVoteView = new JPanel();
-	private JPanel pnlStudentView = new JPanel(new BorderLayout());
+	private JPanel pnlHomeView = new JPanel(new BorderLayout());
 	private JPanel pnlAdminView = new JPanel(new GridBagLayout());
-	private JPanel pnlElectEditView = new JPanel();
-	private JPanel pnlBallotEditView = new JPanel();
 	private ElectionCreationGUI pnlAddElectionView;
+	private ElectionEditPanel ballotEdit;
 	private ArrayList<String> elections = new ArrayList<String>();
 	private ArrayList<String> currentRaces = new ArrayList<String>();
 	private ArrayList<String> currentCands = new ArrayList<String>();
@@ -42,18 +40,17 @@ public class Client extends JFrame implements ActionListener{
 	private JList<String> lstRaces = new JList<String>();
 	private HashMap<String,ArrayList<String>> electStructure = new HashMap<String,ArrayList<String>>();
 
-	private boolean isVoting = false;
-
 	@SuppressWarnings("unused")
 	private String userName = "";
 	private String userID = "";
 	private String userType = "";
-	private String selectedElection = null;
-	private String selectedRace = null;
+	public static String selectedElection = null;
+	public static String selectedRace = null;
 	private HashMap<String,String> voteChoices = new HashMap<String,String>();
 
 
 	Client(){
+		parentClient = this;
 		this.setResizable(false);
 		pnlMain.setLayout(new BoxLayout(pnlMain,BoxLayout.PAGE_AXIS));
 
@@ -102,8 +99,8 @@ public class Client extends JFrame implements ActionListener{
 
 	private void run(){
 		try{
-			//sock = new Socket("127.0.0.1",50000);
-			sock = new Socket("10.253.73.124",50000);
+			sock = new Socket("127.0.0.1",50000);
+			//sock = new Socket("10.253.73.124",50000);
 			//sock = new Socket("108.61.219.203",50000);
 			brIn = new BufferedReader(new InputStreamReader(sock.getInputStream()));
 			pwOut = new PrintWriter(sock.getOutputStream(),true);
@@ -128,24 +125,24 @@ public class Client extends JFrame implements ActionListener{
 
 					if(userType.equals("Student")){
 						System.out.println("Student has logged in.");
-						initStudent();
-						changeView(pnlStudentView);
+						initMain();
+						changeView(pnlHomeView);
 					}
 					else if(userType.equals("Admin")){
 						System.out.println("Admin has logged in.");
-						initAdmin();
-						changeView(pnlAdminView);
+						initMain();
+						changeView(pnlHomeView);
 					}
 					else if(userType.equals("Commissioner")){
 						System.out.println("Commissioner has logged in.");
-						initAdmin();
-						changeView(pnlAdminView);
+						initMain();
+						changeView(pnlHomeView);
 					}
-//					else if(userType.equals("sudo")){
-//						System.out.println("sudo has logged in.");
-//						initSudo();
-//						changeView(pnlSudoView);
-//					}
+					//					else if(userType.equals("sudo")){
+					//						System.out.println("sudo has logged in.");
+					//						initSudo();
+					//						changeView(pnlSudoView);
+					//					}
 					setSize(450,300);
 				}
 				else if (strIn.startsWith("<serverBROADCAST>")){
@@ -155,8 +152,8 @@ public class Client extends JFrame implements ActionListener{
 					String message = "The " + data[1] + " election has been created.\n"+data[2] + " is the Election Commissioner.";
 					JOptionPane.showMessageDialog(this,message,"Election Created",JOptionPane.PLAIN_MESSAGE);
 					System.out.println("Election created: " + data[1] + " : Commissioner: " + data[2]);
-					initAdmin();
-					changeView(pnlElectEditView);
+					initMain();
+					changeView(pnlHomeView);
 				}
 				else if (strIn.startsWith("<removedElection>")){
 					String message = "";
@@ -174,7 +171,7 @@ public class Client extends JFrame implements ActionListener{
 					for(int i = 1; i < data.length;i++){
 						elections.add(data[i]);
 					}
-					updateElectionList(pnlElectEditView);
+					updateElectionList(ballotEdit);
 				}
 				else if(strIn.startsWith("<initElections>")){
 					elections.clear();
@@ -187,28 +184,15 @@ public class Client extends JFrame implements ActionListener{
 					for(int i = 1; i < data.length;i++){
 						currentRaces.add(data[i]);
 					}
-					System.out.println("@Client: races here are " + currentRaces.toString());
-					initBallotEdit();
-					changeView(pnlBallotEditView);
-					if(!isVoting){
-						updateRaceList(pnlBallotEditView);
-					}
-					else{
-						//updateRaceList(pnlStudentVoteView);
-
-					}
+					updateRaceList(ballotEdit);
 				}
 				else if(strIn.startsWith("<pushCands>")){
 					currentCands.clear();
 					for(int i = 1; i < data.length;i++){
 						currentCands.add(data[i]);
 					}
-					if(!isVoting){
-						updateCandList(pnlBallotEditView);
-					}
-					else{
-						updateCandList(pnlStudentVoteView);
-					}
+					updateCandList(ballotEdit);
+
 				}
 				else if(strIn.startsWith("<addedCand>")){
 					System.out.println("Added Cand: " + data[3] + " to Race: " + data[2]+" in Election: "+ data[1]);
@@ -253,7 +237,7 @@ public class Client extends JFrame implements ActionListener{
 							candVotes.put(currCand, Integer.parseInt(data[i]));
 						}
 						electionResults.put(currRace, candVotes);
-						
+
 						if(i == data.length-1) break;
 
 					}
@@ -279,8 +263,20 @@ public class Client extends JFrame implements ActionListener{
 						if(i == data.length-1) break;
 						System.out.println(electStructure.entrySet());
 					}
-					initStudentVote();
-					changeView(pnlStudentVoteView);
+					
+				    String code = JOptionPane.showInputDialog(
+				            this, 
+				            "Enter elections password", 
+				            "Password Protected", 
+				            JOptionPane.WARNING_MESSAGE
+				        );
+				    if(code!=null && code.equals("password")){//REPLACE FIRST MEMEBR OF ELECT STRUCT PRINT WRITE WITH THE KEY INSTED AND ADJUST ALL ALGS ACCORDINGLY
+				    	initStudentVote();
+						changeView(pnlStudentVoteView);
+				    }
+				    else{
+				    	JOptionPane.showMessageDialog(this,"Incorrect Password!","Password Protected",JOptionPane.PLAIN_MESSAGE);
+				    }
 				}
 				else
 					JOptionPane.showMessageDialog(this,strIn,"Error Occurred!",JOptionPane.PLAIN_MESSAGE);
@@ -306,42 +302,46 @@ public class Client extends JFrame implements ActionListener{
 		getContentPane().doLayout();
 		getContentPane().revalidate();
 		getContentPane().repaint();
-
 	}
 
 	//**********---GUI INITIALIZATIONS START---**********
 
-	private void initStudent(){
+	private void initMain(){
 		setTitle("Election System - Home");
 		setSize(450,300);
-		pnlStudentView.removeAll();
-		pnlStudentView.setBackground(Color.GRAY);
-		pnlStudentView.setBorder(new EmptyBorder(5, 5, 5, 5));
-		pnlStudentView.setLayout(null);
+		pnlHomeView.removeAll();
+		pnlHomeView.setBackground(Color.GRAY);
+		pnlHomeView.setBorder(new EmptyBorder(5, 5, 5, 5));
+		pnlHomeView.setLayout(null);
 
-		JLabel lblTitle = new JLabel("Welcome Student");
+		JLabel lblTitle = new JLabel("Welcome " + userType);
 		lblTitle.setFont(new Font("Lucida Sans Typewriter", Font.BOLD, 12));
-		lblTitle.setBounds(186, 11, 71, 14);
-		pnlStudentView.add(lblTitle);
-
-		JButton btnViewElection = new JButton("View Election");
-		btnViewElection.setBounds(311, 127, 111, 23);
-		btnViewElection.setActionCommand("viewElection");
-		btnViewElection.addActionListener(this);
-		pnlStudentView.add(btnViewElection);
+		lblTitle.setHorizontalAlignment(SwingConstants.CENTER);
+		lblTitle.setBounds(0, 11, 450, 14);
+		pnlHomeView.add(lblTitle);
 
 		JButton btnLogout = new JButton("Logout");
 		btnLogout.setBounds(335, 227, 89, 23);
 		btnLogout.setActionCommand("logout");
 		btnLogout.addActionListener(this);
-		pnlStudentView.add(btnLogout);
+		pnlHomeView.add(btnLogout);
 
-		btnViewElection.setEnabled(false);
+		JLabel lblElections = new JLabel("Available Elections");
+		lblElections.setHorizontalAlignment(SwingConstants.CENTER);
+		lblElections.setBounds(36, 36, 151, 14);
+		pnlHomeView.add(lblElections);
 
-		updateElectionList(pnlStudentView);
-		System.out.println("STUDENT ELECTS UPDATED : " + Arrays.toString(elections.toArray()));
-		lstElections.setBounds(131, 49, 170, 149);
-		pnlStudentView.add(lstElections);
+		lstElections.setBounds(36, 57, 151, 175);
+		pnlHomeView.add(lstElections);
+
+		JPanel pnlButtons = new JPanel(new GridLayout(6, 1, 0, 0));
+		pnlButtons.setBounds(263, 57, 151, 175);
+		pnlButtons.setBackground(Color.GRAY);
+		pnlHomeView.add(pnlButtons);
+
+		final JButton btnViewElection = new JButton("View Ballot");
+		final JButton btnRemoveElection = new JButton("Remove Election");
+		final JButton btnOpenEdit = new JButton("Open EditMode");
 
 		lstElections.addListSelectionListener(new ListSelectionListener() {
 			public void valueChanged(ListSelectionEvent lE) {
@@ -349,240 +349,67 @@ public class Client extends JFrame implements ActionListener{
 					selectedElection = lstElections.getSelectedValue();
 					if(selectedElection != null){
 						btnViewElection.setEnabled(true);
+						btnRemoveElection.setEnabled(true);
+						if(userType.equals("Commissioner")){
+							pnlButtons.add(btnOpenEdit);
+							pnlHomeView.revalidate();
+							pnlHomeView.repaint();
+						}
 					}
 					else{
 						btnViewElection.setEnabled(false);
-					}
-				}
-			}
-		});
-	}
-
-	private void initAdmin(){
-		setTitle("Election System - Home");
-		pnlAdminView.removeAll();
-		pnlAdminView.setLayout(new GridBagLayout());
-		GridBagConstraints c = new GridBagConstraints();
-
-		JLabel greeting = new JLabel("Welcome " + userType);
-		c.gridwidth = 1;
-		c.anchor = GridBagConstraints.PAGE_START;
-		c.insets = new Insets(10,10,10,10);  //top padding
-		c.fill = GridBagConstraints.HORIZONTAL;
-		c.weightx = 1;
-		c.weighty = 1;
-		c.gridx = 0;
-		c.gridy = 0;
-		pnlAdminView.add(greeting, c);
-
-		JButton btnOpenEdit = new JButton("Open EditMode");
-		c.gridx = 0;
-		c.gridy = 2;
-		c.anchor = GridBagConstraints.LAST_LINE_START;
-		c.fill = GridBagConstraints.NONE;
-		pnlAdminView.add(btnOpenEdit, c);
-
-		btnOpenEdit.setActionCommand("openEdit");
-		btnOpenEdit.addActionListener(this);
-
-		JButton btnBackup = new JButton("Backup");
-		c.gridx = 0;
-		c.gridy = 1;
-		c.anchor = GridBagConstraints.LINE_START;
-		c.fill = GridBagConstraints.NONE;
-		pnlAdminView.add(btnBackup, c);
-		btnBackup.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				pwOut.println("<backup>");
-			}
-		});
-
-
-		c.gridx = 2;
-		c.gridy = 2;
-		c.ipadx = 40;
-		c.anchor = GridBagConstraints.LAST_LINE_END;
-
-		JButton btnLogout = new JButton("Logout");
-		btnLogout.setActionCommand("logout");
-		btnLogout.addActionListener(this);
-		pnlAdminView.add(btnLogout, c);
-	}
-
-	private void initElectEdit(){
-		setTitle("Election System - Edit Elections");
-		setSize(450,300);
-		pnlElectEditView.removeAll();
-		pnlElectEditView.setBackground(Color.GRAY);
-		pnlElectEditView.setBorder(new EmptyBorder(5, 5, 5, 5));
-		pnlElectEditView.setLayout(null);
-
-		JLabel lblTitle = new JLabel("Edit Mode");
-		lblTitle.setFont(new Font("Lucida Sans Typewriter", Font.BOLD, 12));
-		lblTitle.setBounds(186, 11, 71, 14);
-		pnlElectEditView.add(lblTitle);
-
-		JButton btnExitEdit = new JButton("Exit");
-		btnExitEdit.setBounds(335, 227, 89, 23);
-		pnlElectEditView.add(btnExitEdit);
-		btnExitEdit.setActionCommand("exitElectionEdit");
-		btnExitEdit.addActionListener(this);
-
-		JButton btnAddElection = new JButton("Add Election");
-		btnAddElection.setBounds(311, 93, 111, 23);
-		btnAddElection.setActionCommand("addElection");
-		btnAddElection.addActionListener(this);
-
-		if(userType.equals("Admin")){
-			pnlElectEditView.add(btnAddElection);
-		}
-
-		JButton btnRemoveElection = new JButton("Remove Election");
-		btnRemoveElection.setBounds(311, 127, 111, 23);
-		btnRemoveElection.setActionCommand("removeElection");
-		btnRemoveElection.addActionListener(this);
-
-		if(userType.equals("Admin")){
-			pnlElectEditView.add(btnRemoveElection);
-		}
-
-		JButton btnViewResults = new JButton("View Results");
-		btnViewResults.setBounds(10, 93, 111, 23);
-		pnlElectEditView.add(btnViewResults);
-		btnViewResults.setActionCommand("viewResults");
-		btnViewResults.addActionListener(this);
-
-		JButton btnEditBallot = new JButton("Edit Ballot");
-		btnEditBallot.setEnabled(false);
-		btnEditBallot.setBounds(311, 161, 111, 23);
-		btnEditBallot.setActionCommand("editBallot");
-		btnEditBallot.addActionListener(this);
-
-		if(userType.equals("Commissioner")){
-			pnlElectEditView.add(btnEditBallot);
-		}
-
-		lstElections.addListSelectionListener(new ListSelectionListener() {
-			public void valueChanged(ListSelectionEvent lE) {
-				if (!lE.getValueIsAdjusting()) {
-					selectedElection = lstElections.getSelectedValue();
-					if(selectedElection!= null){
-						btnRemoveElection.setEnabled(true);
-						btnEditBallot.setEnabled(true);
-						btnViewResults.setEnabled(true);
-					}
-					else{
-						System.out.println("No Selection @ electionList");
 						btnRemoveElection.setEnabled(false);
-						btnEditBallot.setEnabled(false);
-						btnViewResults.setEnabled(false);
+						if(userType.equals("Commissioner")){
+							pnlButtons.remove(btnOpenEdit);
+							pnlHomeView.revalidate();
+							pnlHomeView.repaint();
+						}
 					}
 				}
 			}
 		});
 
-		btnRemoveElection.setEnabled(false);
-		btnEditBallot.setEnabled(false);
-		btnViewResults.setEnabled(false);
 
-		updateElectionList(pnlElectEditView);
-		System.out.println("Refreshing election list @ ElectView");
-		lstElections.setBounds(131, 49, 170, 149);
-		pnlElectEditView.add(lstElections);
+
+		//Buttons ----
+		switch(userType){
+		case "Commissioner":
+			btnOpenEdit.setActionCommand("openEdit");
+			btnOpenEdit.addActionListener(this);
+
+		case "Student":
+			btnViewElection.setActionCommand("viewElection");
+			btnViewElection.addActionListener(this);
+			btnViewElection.setEnabled(false);
+			pnlButtons.add(btnViewElection);
+			break;
+
+		case "Admin":
+			JButton btnAddElection = new JButton("Add Election");
+			pnlButtons.add(btnAddElection);
+			btnAddElection.setActionCommand("addElection");
+			btnAddElection.addActionListener(this);
+			pnlButtons.add(btnAddElection);
+
+			pnlButtons.add(btnRemoveElection);
+			btnRemoveElection.setEnabled(false);
+			btnRemoveElection.setActionCommand("removeElection");
+			btnRemoveElection.addActionListener(this);
+			pnlButtons.add(btnRemoveElection);
+			break;
+		}
+		updateElectionList(pnlHomeView);
 	}
+	
+	private void initBallotEdit2(){
+		setSize(525,400);
+		currentCands.clear();
+		ballotEdit = new ElectionEditPanel(lstRaces,lstCandidates);
+		pwOut.println("<getRaces>,"+selectedElection);
 
-	private void initBallotEdit(){
-		isVoting = true;
-		setTitle("Election System - Edit Ballot");
-		setSize(450,300);
-		pnlBallotEditView.removeAll();
-		pnlBallotEditView.setBackground(Color.GRAY);
-		pnlBallotEditView.setBorder(new EmptyBorder(5, 5, 5, 5));
-		pnlBallotEditView.setLayout(null);
-
-		JLabel lblEditBallot = new JLabel("Edit Ballot");
-		lblEditBallot.setHorizontalAlignment(SwingConstants.CENTER);
-		lblEditBallot.setBounds(0, 11, 450, 14);
-		pnlBallotEditView.add(lblEditBallot);
-
-		JLabel lblBallotRaces = new JLabel("Races");
-		lblBallotRaces.setHorizontalAlignment(SwingConstants.CENTER);
-		lblBallotRaces.setBounds(64, 36, 99, 14);
-		pnlBallotEditView.add(lblBallotRaces);
-
-		JButton btnAddRace = new JButton("Add  Race");
-		btnAddRace.setBounds(64, 148, 99, 23);
-		pnlBallotEditView.add(btnAddRace);
-		btnAddRace.setActionCommand("addRace");
-		btnAddRace.addActionListener(this);
-
-		JButton btnRemoveRace = new JButton("Remove Race");
-		btnRemoveRace.setBounds(64, 171, 99, 23);
-		pnlBallotEditView.add(btnRemoveRace);
-		btnRemoveRace.setActionCommand("removeRace");
-		btnRemoveRace.addActionListener(this);
-
-		JLabel lblBallotCadidates = new JLabel("Cadidates");
-		lblBallotCadidates.setHorizontalAlignment(SwingConstants.CENTER);
-		lblBallotCadidates.setBounds(263, 36, 123, 14);
-		pnlBallotEditView.add(lblBallotCadidates);
-
-		lstCandidates.setBounds(263, 61, 123, 87);
-		pnlBallotEditView.add(lstCandidates);
-
-		JButton btnAddCandidate = new JButton("Add Candidate");
-		btnAddCandidate.setBounds(263, 148, 123, 23);
-		pnlBallotEditView.add(btnAddCandidate);
-		btnAddCandidate.setActionCommand("addCand");
-		btnAddCandidate.addActionListener(this);
-
-		JButton btnRemoveCandidate = new JButton("Remove Candidate");
-		btnRemoveCandidate.setBounds(263, 171, 123, 23);
-		pnlBallotEditView.add(btnRemoveCandidate);
-		btnRemoveCandidate.setActionCommand("removeCand");
-		btnRemoveCandidate.addActionListener(this);
-
-		JRadioButton rdbtnMultSelect = new JRadioButton("Allow multiple selection");
-		rdbtnMultSelect.setBounds(64, 201, 135, 23);
-		pnlBallotEditView.add(rdbtnMultSelect);
-
-		JButton btnExitEdit = new JButton("Exit");
-		btnExitEdit.setBounds(335, 227, 89, 23);
-		pnlBallotEditView.add(btnExitEdit);
-		btnExitEdit.setActionCommand("exitBallotEdit");
-		btnExitEdit.addActionListener(this);
-
-		lstRaces = new JList<String>();
-		lstRaces.addListSelectionListener(new ListSelectionListener() {
-			public void valueChanged(ListSelectionEvent lE) {
-				if (!lE.getValueIsAdjusting()) {
-					selectedRace = lstRaces.getSelectedValue();
-					if(selectedRace != null){
-						pwOut.println("<getCands>,"+selectedElection+","+selectedRace);
-						btnRemoveRace.setEnabled(true);
-						btnAddCandidate.setEnabled(true);
-						btnRemoveCandidate.setEnabled(true);
-					}
-					else{
-						btnRemoveRace.setEnabled(false);
-						btnAddCandidate.setEnabled(false);
-						btnRemoveCandidate.setEnabled(false);
-					}
-				}
-			}
-		});
-
-		btnRemoveRace.setEnabled(false);
-		btnAddCandidate.setEnabled(false);
-		btnRemoveCandidate.setEnabled(false);
-
-		lstRaces.setBounds(64, 61, 99, 87);
-		updateRaceList(pnlBallotEditView);
-		pnlBallotEditView.add(lstRaces);
 	}
 
 	private void initStudentVote(){
-		isVoting = true;
 		setTitle("Election System - Vote");
 		setSize(500,450);
 		pnlStudentVoteView.removeAll();
@@ -612,7 +439,7 @@ public class Client extends JFrame implements ActionListener{
 			public void actionPerformed(ActionEvent e) {
 				for (JTable t : tabs){
 					if(t.getSelectedRow() != -1)
-					voteChoices.put(t.getColumnName(0).substring(4),(String) t.getValueAt(t.getSelectedRow(),0));
+						voteChoices.put(t.getColumnName(0).substring(4),(String) t.getValueAt(t.getSelectedRow(),0));
 				}
 				System.out.println("VOTE CAST >> CHOICES: "+voteChoices.entrySet());
 
@@ -622,8 +449,8 @@ public class Client extends JFrame implements ActionListener{
 				}
 				voteChoices.clear();
 				pwOut.println("<voteDone>");
-				initStudent();
-				changeView(pnlStudentView);
+				initMain();
+				changeView(pnlHomeView);
 				setSize(450,300);
 			}
 		});
@@ -633,8 +460,8 @@ public class Client extends JFrame implements ActionListener{
 		pnlStudentVoteView.add(btnExitBallot);
 		btnExitBallot.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				initStudent();
-				changeView(pnlStudentView);
+				initMain();
+				changeView(pnlHomeView);
 				setSize(450,300);
 				electStructure.clear();				
 			}
@@ -738,9 +565,9 @@ public class Client extends JFrame implements ActionListener{
 				setLocationRelativeTo(null);
 				break;
 			case "openEdit":
-				pwOut.println("<initElections>,");
-				initElectEdit();
-				changeView(pnlElectEditView);
+				initBallotEdit2();
+				changeView(ballotEdit);
+				updateRaceList(ballotEdit);
 				break;
 			case "exitElectionEdit":
 				System.out.println("Exit Edit Mode");
@@ -761,7 +588,7 @@ public class Client extends JFrame implements ActionListener{
 					}
 				};
 				pnlAddElectionView.setActnList(finBut);
-				
+
 				System.out.println("addElection");
 				break;
 			case "removeElection":
@@ -775,19 +602,6 @@ public class Client extends JFrame implements ActionListener{
 					selectedElection = null;
 				}
 				break;
-			case "editBallot":
-				currentCands.clear();
-				updateCandList(pnlBallotEditView);
-				System.out.println("Opening Ballot editor");
-				if( lstElections.getSelectedValue() == null){
-					JOptionPane.showMessageDialog(this,"Must select election to edit its ballot!","Error Occurred",JOptionPane.PLAIN_MESSAGE);
-				}
-				else{
-					selectedElection = lstElections.getSelectedValue();
-					pwOut.println("<getRaces>,"+selectedElection);
-
-				}
-				break;
 			case "viewElection":
 				selectedElection = lstElections.getSelectedValue();
 				selectedRace = null;
@@ -799,7 +613,7 @@ public class Client extends JFrame implements ActionListener{
 				currentCands.clear();
 				pwOut.println("<addRace>,"+selectedElection+","+newRaceName);
 				pwOut.println("<getRaces>,"+selectedElection);
-				updateCandList(pnlBallotEditView);
+				updateCandList(ballotEdit);
 				break;
 			case "removeRace":
 				if(lstRaces.getSelectedValue() == null){
@@ -809,7 +623,7 @@ public class Client extends JFrame implements ActionListener{
 					currentCands.clear();
 					pwOut.println("<removeRace>,"+selectedElection+","+selectedRace);
 					pwOut.println("<getRaces>,"+selectedElection);
-					updateCandList(pnlBallotEditView);
+					updateCandList(ballotEdit);
 				}
 				break;
 			case "addCand":
@@ -835,10 +649,13 @@ public class Client extends JFrame implements ActionListener{
 					pwOut.println("<getCands>,"+selectedElection+","+selectedRace);
 				}
 				break;
+			case "finalizeBallot":
+
 			case "exitBallotEdit":
 				System.out.println("Exiting Ballot editor");
 				pwOut.println("<getElections>,");
-				changeView(pnlElectEditView);
+				changeView(pnlHomeView);
+				setSize(450,300);
 				break;
 			case "quit":
 				pwOut.println("<clientQuit>");
@@ -860,7 +677,10 @@ public class Client extends JFrame implements ActionListener{
 
 	public void exportResults(HashMap<String,HashMap<String,Integer>> results){
 		System.out.println("@ExportResults\n"+results.entrySet());
-
+	}
+	
+	public static void raceSelected(){
+		pwOut.println("<getCands>,"+selectedElection+","+selectedRace);
 	}
 
 }
