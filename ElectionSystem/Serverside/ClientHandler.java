@@ -30,6 +30,7 @@ class ClientHandler extends Thread {
 			while (true) {
 				line = brIn.readLine();
 				String[] data = line.split(",");
+				System.out.println(line);
 				switch (data[0]) {
 				case "<login>":
 					loginUser(data);

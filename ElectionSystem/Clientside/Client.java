@@ -171,7 +171,7 @@ public class Client extends JFrame implements ActionListener{
 					for(int i = 1; i < data.length;i++){
 						elections.add(data[i]);
 					}
-					updateElectionList(ballotEdit);
+					updateElectionList(pnlHomeView);
 				}
 				else if(strIn.startsWith("<initElections>")){
 					elections.clear();
@@ -216,14 +216,15 @@ public class Client extends JFrame implements ActionListener{
 				}
 				else if(strIn.startsWith("<voteCounts>")){
 					StringBuilder n = new StringBuilder("Election: "+selectedElection+" Results.\n");
+					HashMap<String,HashMap<String,Integer>> electionResults = new HashMap<String,HashMap<String,Integer>>();
 					int numRaces = Integer.parseInt(data[1]);
+					if(numRaces > 0){
 					int i = 1;
 					String currCand;
 					String currRace;
-					HashMap<String,HashMap<String,Integer>> electionResults = new HashMap<String,HashMap<String,Integer>>();
 					for(int j = 0; j<numRaces;j++){
 						i++;
-						n.append("race:"+data[i]+"\n");
+						n.append("---------------\nrace:"+data[i]+"\n");
 						currRace = data[i];
 						i++;
 						int numCands = (Integer.parseInt(data[i]));
@@ -239,7 +240,10 @@ public class Client extends JFrame implements ActionListener{
 						electionResults.put(currRace, candVotes);
 
 						if(i == data.length-1) break;
-
+					}
+					}
+					else{
+						n.append("\nNo ballots were cast!");
 					}
 					System.out.println(n.toString());
 					JOptionPane.showMessageDialog(this,n.toString(),"Voting Results!",JOptionPane.PLAIN_MESSAGE);
@@ -287,7 +291,7 @@ public class Client extends JFrame implements ActionListener{
 			System.exit(0);
 		}catch(NullPointerException npe){
 			System.out.println("User Quit @ null @ ClientFromServer");
-			System.out.println(npe.getMessage());
+			npe.printStackTrace(System.out);
 			pwOut.println("<die>");
 			System.exit(0);
 		}
@@ -341,6 +345,7 @@ public class Client extends JFrame implements ActionListener{
 
 		final JButton btnViewElection = new JButton("View Ballot");
 		final JButton btnRemoveElection = new JButton("Remove Election");
+		final JButton btnViewResults = new JButton("View Results");
 		final JButton btnOpenEdit = new JButton("Open EditMode");
 
 		lstElections.addListSelectionListener(new ListSelectionListener() {
@@ -350,6 +355,7 @@ public class Client extends JFrame implements ActionListener{
 					if(selectedElection != null){
 						btnViewElection.setEnabled(true);
 						btnRemoveElection.setEnabled(true);
+						btnViewResults.setEnabled(true);
 						if(userType.equals("Commissioner")){
 							pnlButtons.add(btnOpenEdit);
 							pnlHomeView.revalidate();
@@ -359,6 +365,7 @@ public class Client extends JFrame implements ActionListener{
 					else{
 						btnViewElection.setEnabled(false);
 						btnRemoveElection.setEnabled(false);
+						btnViewResults.setEnabled(false);
 						if(userType.equals("Commissioner")){
 							pnlButtons.remove(btnOpenEdit);
 							pnlHomeView.revalidate();
@@ -368,8 +375,6 @@ public class Client extends JFrame implements ActionListener{
 				}
 			}
 		});
-
-
 
 		//Buttons ----
 		switch(userType){
@@ -391,11 +396,15 @@ public class Client extends JFrame implements ActionListener{
 			btnAddElection.addActionListener(this);
 			pnlButtons.add(btnAddElection);
 
-			pnlButtons.add(btnRemoveElection);
 			btnRemoveElection.setEnabled(false);
 			btnRemoveElection.setActionCommand("removeElection");
 			btnRemoveElection.addActionListener(this);
 			pnlButtons.add(btnRemoveElection);
+			pnlButtons.add(new JLabel()); // Spacer for view from add/remove
+			btnViewResults.setEnabled(false);
+			btnViewResults.setActionCommand("viewResults");
+			btnViewResults.addActionListener(this);
+			pnlButtons.add(btnViewResults);
 			break;
 		}
 		updateElectionList(pnlHomeView);
@@ -593,14 +602,9 @@ public class Client extends JFrame implements ActionListener{
 				break;
 			case "removeElection":
 				System.out.println("removeElection");
-				if( lstElections.getSelectedValue() == null){
-					JOptionPane.showMessageDialog(this,"Must select election to remove!","Error Occurred",JOptionPane.PLAIN_MESSAGE);
-				}
-				else{
 					pwOut.println("<removeElection>,"+ selectedElection);
 					pwOut.println("<getElections>,");
 					selectedElection = null;
-				}
 				break;
 			case "viewElection":
 				selectedElection = lstElections.getSelectedValue();
