@@ -1,3 +1,4 @@
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -7,14 +8,12 @@ public class Election implements java.io.Serializable {
 	private static final long serialVersionUID = 1L;
 	private ArrayList<String> eligibleGroups;
 	private HashMap<String, Race> races;
-	@SuppressWarnings("unused")
 	private String electionName = "";
 	private String commissioner;
-	@SuppressWarnings("unused")
-	private Date startDate;
-	@SuppressWarnings("unused")
-	private Date endDate;
+	public Date startDate;
+	public Date endDate;
 	public status electionStatus;
+	public String electionPassword;
 
 	public Election(String name, String commissioner) {
 		electionName = name;
@@ -23,16 +22,32 @@ public class Election implements java.io.Serializable {
 		eligibleGroups.add("Admin");
 		races = new HashMap<String, Race>();
 		electionStatus = status.EDITABLE;
+		electionPassword = "password";
+		startDate = new Date(System.currentTimeMillis() + (600000000));
+		endDate = new Date(System.currentTimeMillis() + (600000000));
+		SimpleDateFormat ft = new SimpleDateFormat ("MMM d, yyyy k:mm:ss");
+		System.out.println("START: "+ft.format(startDate));
+		System.out.println("END: "+ft.format(endDate));
 	}
-	
+
 	public enum status {
-	    ACTIVE, COMPLETE, EDITABLE
+		ACTIVE, COMPLETE, EDITABLE
+	}
+
+	public void closePoll(){
+		electionStatus = status.COMPLETE;
+		System.out.println("CLOSING POLL");
+	}
+
+	public void openPoll(){
+		electionStatus = status.ACTIVE;
+		System.out.println("OPENING POLL");
 	}
 
 	public ArrayList<String> getEligibleGroups() {
 		return eligibleGroups;
 	}
-	
+
 	public status getStatus(){
 		return electionStatus;
 	}
@@ -47,6 +62,10 @@ public class Election implements java.io.Serializable {
 
 	public Race getRace(String name) {
 		return races.get(name);
+	}
+	
+	public String getElectionName() {
+		return this.electionName;
 	}
 
 	public Set<String> getAllRaces() {

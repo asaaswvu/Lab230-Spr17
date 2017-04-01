@@ -12,8 +12,13 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.net.*;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.io.*;
 
 public class Client extends JFrame implements ActionListener{
@@ -122,31 +127,14 @@ public class Client extends JFrame implements ActionListener{
 					userType = data[1];
 					userName = data[2];
 					userID = data[3];
-
-					if(userType.equals("Student")){
-						System.out.println("Student has logged in.");
-						initMain();
-						changeView(pnlHomeView);
-					}
-					else if(userType.equals("Admin")){
-						System.out.println("Admin has logged in.");
-						initMain();
-						changeView(pnlHomeView);
-					}
-					else if(userType.equals("Commissioner")){
-						System.out.println("Commissioner has logged in.");
-						initMain();
-						changeView(pnlHomeView);
-					}
-					//					else if(userType.equals("sudo")){
-					//						System.out.println("sudo has logged in.");
-					//						initSudo();
-					//						changeView(pnlSudoView);
-					//					}
+					initMain();
+					changeView(pnlHomeView);
 					setSize(450,300);
 				}
 				else if (strIn.startsWith("<serverBROADCAST>")){
 					JOptionPane.showMessageDialog(this,data[1],"Message from server",JOptionPane.PLAIN_MESSAGE);
+				}
+				else if (strIn.startsWith("<ignore>")){
 				}
 				else if (strIn.startsWith("<AddedElection>")){
 					String message = "The " + data[1] + " election has been created.\n"+data[2] + " is the Election Commissioner.";
@@ -154,6 +142,10 @@ public class Client extends JFrame implements ActionListener{
 					System.out.println("Election created: " + data[1] + " : Commissioner: " + data[2]);
 					initMain();
 					changeView(pnlHomeView);
+				}
+				else if (strIn.startsWith("<changedCommissioner>")){
+					String message = data[1] + "'s commissioner is now "+data[2] +".";
+					JOptionPane.showMessageDialog(this,message,"Commissioner Changed",JOptionPane.PLAIN_MESSAGE);
 				}
 				else if (strIn.startsWith("<removedElection>")){
 					String message = "";
@@ -173,12 +165,12 @@ public class Client extends JFrame implements ActionListener{
 					}
 					updateElectionList(pnlHomeView);
 				}
-				else if(strIn.startsWith("<initElections>")){
-					elections.clear();
-					for(int i = 1; i < data.length;i++){
-						elections.add(data[i]);
-					}
-				}
+//				else if(strIn.startsWith("<initElections>")){
+//					elections.clear();
+//					for(int i = 1; i < data.length;i++){
+//						elections.add(data[i]);
+//					}
+//				}
 				else if(strIn.startsWith("<getRaces>")){
 					currentRaces.clear();
 					for(int i = 1; i < data.length;i++){
@@ -219,28 +211,28 @@ public class Client extends JFrame implements ActionListener{
 					HashMap<String,HashMap<String,Integer>> electionResults = new HashMap<String,HashMap<String,Integer>>();
 					int numRaces = Integer.parseInt(data[1]);
 					if(numRaces > 0){
-					int i = 1;
-					String currCand;
-					String currRace;
-					for(int j = 0; j<numRaces;j++){
-						i++;
-						n.append("---------------\nrace:"+data[i]+"\n");
-						currRace = data[i];
-						i++;
-						int numCands = (Integer.parseInt(data[i]));
-						HashMap<String,Integer> candVotes = new HashMap<String,Integer>();
-						for(int k=0; k < numCands;k++){
+						int i = 1;
+						String currCand;
+						String currRace;
+						for(int j = 0; j<numRaces;j++){
 							i++;
-							n.append("\tcand:"+data[i]+" >> ");
-							currCand = data[i];
+							n.append("---------------\nrace:"+data[i]+"\n");
+							currRace = data[i];
 							i++;
-							n.append("votes:"+data[i]+"\n");
-							candVotes.put(currCand, Integer.parseInt(data[i]));
-						}
-						electionResults.put(currRace, candVotes);
+							int numCands = (Integer.parseInt(data[i]));
+							HashMap<String,Integer> candVotes = new HashMap<String,Integer>();
+							for(int k=0; k < numCands;k++){
+								i++;
+								n.append("\tcand:"+data[i]+" >> ");
+								currCand = data[i];
+								i++;
+								n.append("votes:"+data[i]+"\n");
+								candVotes.put(currCand, Integer.parseInt(data[i]));
+							}
+							electionResults.put(currRace, candVotes);
 
-						if(i == data.length-1) break;
-					}
+							if(i == data.length-1) break;
+						}
 					}
 					else{
 						n.append("\nNo ballots were cast!");
@@ -251,7 +243,8 @@ public class Client extends JFrame implements ActionListener{
 				}
 				else if(strIn.startsWith("<electStructure>")){
 					int numRaces = Integer.parseInt(data[1]);
-					int i = 1;
+					String pass = data[2];
+					int i = 2;
 					String currRace;
 					for(int j = 0; j<numRaces;j++){
 						i++;
@@ -267,20 +260,20 @@ public class Client extends JFrame implements ActionListener{
 						if(i == data.length-1) break;
 						System.out.println(electStructure.entrySet());
 					}
-					
-				    String code = JOptionPane.showInputDialog(
-				            this, 
-				            "Enter elections password", 
-				            "Password Protected", 
-				            JOptionPane.WARNING_MESSAGE
-				        );
-				    if(code!=null && code.equals("password")){//REPLACE FIRST MEMEBR OF ELECT STRUCT PRINT WRITE WITH THE KEY INSTED AND ADJUST ALL ALGS ACCORDINGLY
-				    	initStudentVote();
+
+					String code = JOptionPane.showInputDialog(
+							this, 
+							"Enter elections password", 
+							"Password Protected", 
+							JOptionPane.WARNING_MESSAGE
+							);
+					if(code!=null && code.equals(pass)){//REPLACE FIRST MEMEBR OF ELECT STRUCT PRINT WRITE WITH THE KEY INSTED AND ADJUST ALL ALGS ACCORDINGLY
+						initStudentVote();
 						changeView(pnlStudentVoteView);
-				    }
-				    else{
-				    	JOptionPane.showMessageDialog(this,"Incorrect Password!","Password Protected",JOptionPane.PLAIN_MESSAGE);
-				    }
+					}
+					else{
+						JOptionPane.showMessageDialog(this,"Incorrect Password!","Password Protected",JOptionPane.PLAIN_MESSAGE);
+					}
 				}
 				else
 					JOptionPane.showMessageDialog(this,strIn,"Error Occurred!",JOptionPane.PLAIN_MESSAGE);
@@ -345,6 +338,7 @@ public class Client extends JFrame implements ActionListener{
 
 		final JButton btnViewElection = new JButton("View Ballot");
 		final JButton btnRemoveElection = new JButton("Remove Election");
+		final JButton btnChangeCommissioner = new JButton("Edit Commissioner");
 		final JButton btnViewResults = new JButton("View Results");
 		final JButton btnOpenEdit = new JButton("Open EditMode");
 
@@ -356,6 +350,7 @@ public class Client extends JFrame implements ActionListener{
 						btnViewElection.setEnabled(true);
 						btnRemoveElection.setEnabled(true);
 						btnViewResults.setEnabled(true);
+						btnChangeCommissioner.setEnabled(true);
 						if(userType.equals("Commissioner")){
 							pnlButtons.add(btnOpenEdit);
 							pnlHomeView.revalidate();
@@ -366,6 +361,7 @@ public class Client extends JFrame implements ActionListener{
 						btnViewElection.setEnabled(false);
 						btnRemoveElection.setEnabled(false);
 						btnViewResults.setEnabled(false);
+						btnChangeCommissioner.setEnabled(false);
 						if(userType.equals("Commissioner")){
 							pnlButtons.remove(btnOpenEdit);
 							pnlHomeView.revalidate();
@@ -381,6 +377,10 @@ public class Client extends JFrame implements ActionListener{
 		case "Commissioner":
 			btnOpenEdit.setActionCommand("openEdit");
 			btnOpenEdit.addActionListener(this);
+			btnViewResults.setEnabled(false);
+			btnViewResults.setActionCommand("viewResults");
+			btnViewResults.addActionListener(this);
+			pnlButtons.add(btnViewResults);
 
 		case "Student":
 			btnViewElection.setActionCommand("viewElection");
@@ -400,7 +400,12 @@ public class Client extends JFrame implements ActionListener{
 			btnRemoveElection.setActionCommand("removeElection");
 			btnRemoveElection.addActionListener(this);
 			pnlButtons.add(btnRemoveElection);
-			pnlButtons.add(new JLabel()); // Spacer for view from add/remove
+
+			btnChangeCommissioner.setEnabled(false);
+			btnChangeCommissioner.setActionCommand("changeCommissioner");
+			btnChangeCommissioner.addActionListener(this);
+			pnlButtons.add(btnChangeCommissioner);
+
 			btnViewResults.setEnabled(false);
 			btnViewResults.setActionCommand("viewResults");
 			btnViewResults.addActionListener(this);
@@ -409,7 +414,7 @@ public class Client extends JFrame implements ActionListener{
 		}
 		updateElectionList(pnlHomeView);
 	}
-	
+
 	private void initBallotEdit2(){
 		setSize(525,400);
 		currentCands.clear();
@@ -593,18 +598,39 @@ public class Client extends JFrame implements ActionListener{
 				changeView(pnlAddElectionView);
 				ActionListener finBut = new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-						pwOut.println("<addElection>,"+pnlAddElectionView.electionName.getText()+","+pnlAddElectionView.commissName.getText());
+						String eName = pnlAddElectionView.electionName.getText();
+						String cName = pnlAddElectionView.commissName.getText();
+						if(!eName.equals("") && !cName.equals("")){
+							pwOut.println("<addElection>,"+pnlAddElectionView.electionName.getText()+","+pnlAddElectionView.commissName.getText());
+						}
+						else{
+							JOptionPane.showMessageDialog(pnlAddElectionView,"Election must given a name and commissioner assigned!","Election Creation Error",JOptionPane.PLAIN_MESSAGE);
+						}
 					}
 				};
 				pnlAddElectionView.setActnList(finBut);
+				break;
+			case "changeCommissioner":
+				String newCommisName = JOptionPane.showInputDialog(
+						pnlHomeView, 
+						"Enter new Commissioner", 
+						"Modifying Election", 
+						JOptionPane.QUESTION_MESSAGE
+						);
+				if(newCommisName != null){
+					pwOut.println("<changeCommissioner>,"+selectedElection+","+newCommisName);
+				}
+				else{
+					JOptionPane.showMessageDialog(pnlAddElectionView,"Election must given a name and commissioner assigned!","Election Creation Error",JOptionPane.PLAIN_MESSAGE);
+				}
 
-				System.out.println("addElection");
+
 				break;
 			case "removeElection":
 				System.out.println("removeElection");
-					pwOut.println("<removeElection>,"+ selectedElection);
-					pwOut.println("<getElections>,");
-					selectedElection = null;
+				pwOut.println("<removeElection>,"+ selectedElection);
+				pwOut.println("<getElections>,");
+				selectedElection = null;
 				break;
 			case "viewElection":
 				selectedElection = lstElections.getSelectedValue();
@@ -654,6 +680,13 @@ public class Client extends JFrame implements ActionListener{
 				}
 				break;
 			case "finalizeBallot":
+				if(ballotEdit.electStartTime.getDateTimeStrict() != null && ballotEdit.electEndTime.getDateTimeStrict() != null){
+					long d1 = Date.from(ballotEdit.electStartTime.getDateTimeStrict().atZone(ZoneId.systemDefault()).toInstant()).getTime();
+					pwOut.println("<setElectionStart>," + selectedElection+","+String.valueOf(d1));
+					d1 = Date.from(ballotEdit.electEndTime.getDateTimeStrict().atZone(ZoneId.systemDefault()).toInstant()).getTime();
+					pwOut.println("<setElectionEnd>," + selectedElection+","+String.valueOf(d1));
+					pwOut.println("<setElectionPassword>," +selectedElection+","+ ballotEdit.electPassword.getText());
+				}
 
 			case "exitBallotEdit":
 				System.out.println("Exiting Ballot editor");
@@ -682,7 +715,7 @@ public class Client extends JFrame implements ActionListener{
 	public void exportResults(HashMap<String,HashMap<String,Integer>> results){
 		System.out.println("@ExportResults\n"+results.entrySet());
 	}
-	
+
 	public static void raceSelected(){
 		pwOut.println("<getCands>,"+selectedElection+","+selectedRace);
 	}

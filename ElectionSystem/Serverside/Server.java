@@ -1,12 +1,19 @@
 import java.net.*;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Scanner;
+import java.util.Set;
 import java.util.Vector;
+
+import org.omg.PortableInterceptor.INACTIVE;
+
+import com.sun.xml.internal.ws.wsdl.parser.InaccessibleWSDLException;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -21,11 +28,18 @@ class Server extends Thread {
 	Vector<String> onlineUsers = new Vector<String>();
 	Hashtable<String, String[]> users;
 	HashMap<String, Election> elections;
+	HashMap<String, String> electCommissioners; // Name -> Elect
+	Set<String> activeElections;
+	Set<String> completeElections;
+
 	ServerSocket ss;
 	static Boolean useGUI = true;
 
 	Server() {
 		elections = new HashMap<String, Election>();
+		activeElections = new HashSet<String>();
+		completeElections = new HashSet<String>();
+		electCommissioners = new HashMap<String, String>();
 
 		// OIT HANDLE HERE -----
 		users = new Hashtable<String, String[]>();
@@ -50,6 +64,7 @@ class Server extends Thread {
 		else
 			logToGUI("GUIless Server starting...");
 
+		new timeManager(this).start();
 		try {
 			ss = new ServerSocket(50000);
 			logToGUI("Server Started");
@@ -87,25 +102,40 @@ class Server extends Thread {
 	public String getUserType(String strUser) {
 		return users.get(strUser)[1];
 	}
+	
+	public void changeElectionComplete(String name){
+		activeElections.remove(name);
+		completeElections.add(name);
+	}
+	
+	public void changeElectionActive(String name){
+		activeElections.add(name);
+	}
 
 	public String getUserID(String strUser) {
 		return users.get(strUser)[2];
 	}
 
+	public void addElection(String electionName, String commissioner) {
+		elections.put(electionName, new Election(electionName, commissioner));
+		electCommissioners.put(commissioner, electionName);
+	}
+	
 	public boolean removeElection(String election) {
 		if (elections.containsKey(election)) {
+			electCommissioners.remove(elections.get(election).getCommissioner());
 			elections.remove(election);
+			activeElections.remove(election);
+			completeElections.remove(election);
 			return true;
 		}
 		return false;
 	}
 
-	public void addElection(String electionName, String commissioner) {
-		elections.put(electionName, new Election(electionName, commissioner));
-	}
-
 	public void changeCommissioner(String election, String newName) {
+		electCommissioners.remove(elections.get(election).getCommissioner());
 		elections.get(election).setCommissioner(newName);
+		electCommissioners.put(newName, election);
 	}
 
 	public void addRace(String election, String race) {
@@ -126,8 +156,6 @@ class Server extends Thread {
 			System.out.println(msg);
 		}
 	}
-
-
 
 	public void backup(String electionName) {
 		try {

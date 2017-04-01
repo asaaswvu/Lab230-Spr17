@@ -6,9 +6,12 @@ import javax.swing.event.ListSelectionListener;
 import com.github.lgooddatepicker.components.DatePickerSettings;
 import com.github.lgooddatepicker.components.DateTimePicker;
 import com.github.lgooddatepicker.components.TimePickerSettings;
+import com.github.lgooddatepicker.components.TimePickerSettings.TimeIncrement;
 
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
+import java.time.LocalTime;
+
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.SwingConstants;
@@ -19,9 +22,9 @@ import javax.swing.JTextField;
 public class ElectionEditPanel extends JPanel {
 
 	private static final long serialVersionUID = 1L;
-	public DateTimePicker dateTimePicker;
-	public DateTimePicker dateTimePicker_1;
-	private JTextField textField;
+	public DateTimePicker electStartTime;
+	public DateTimePicker electEndTime;
+	public JTextField electPassword;
 
 	
 	public ElectionEditPanel(JList<String> lstRaces, JList<String> lstCandidates) {
@@ -34,10 +37,10 @@ public class ElectionEditPanel extends JPanel {
 		lblBallotEdit.setBounds(10, 11, 480, 14);
 		add(lblBallotEdit);
 		
-		textField = new JTextField();
-		textField.setBounds(259, 173, 231, 23);
-		add(textField);
-		textField.setColumns(10);
+		electPassword = new JTextField();
+		electPassword.setBounds(259, 173, 231, 23);
+		add(electPassword);
+		electPassword.setColumns(10);
 		
 		JLabel lblElectionPassword = new JLabel("Election Password");
 		lblElectionPassword.setHorizontalAlignment(SwingConstants.CENTER);
@@ -98,8 +101,16 @@ public class ElectionEditPanel extends JPanel {
 
 		JPanel pnlStartDate = new JPanel();
 		pnlStartDate.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
-		dateTimePicker = new DateTimePicker((DatePickerSettings) null, (TimePickerSettings) null);
-		pnlStartDate.add(dateTimePicker);
+		
+		TimePickerSettings timeSettings = new TimePickerSettings();
+		timeSettings.initialTime = LocalTime.of(12, 0);
+		timeSettings.generatePotentialMenuTimes(TimeIncrement.FifteenMinutes, null, null);
+		timeSettings.setAllowEmptyTimes(false);
+		
+		DatePickerSettings dateSettings = new DatePickerSettings();
+		dateSettings.setAllowEmptyDates(false);
+		electStartTime = new DateTimePicker(dateSettings, timeSettings);
+		pnlStartDate.add(electStartTime);
 		datesAndOptions.add(pnlStartDate);
 		
 		JLabel lblEndDate = new JLabel("Election End Date and Time");
@@ -107,9 +118,17 @@ public class ElectionEditPanel extends JPanel {
 		lblEndDate.setVerticalAlignment(SwingConstants.BOTTOM);
 		datesAndOptions.add(lblEndDate);
 
+		TimePickerSettings timeSettings2 = new TimePickerSettings();
+		timeSettings2.initialTime = LocalTime.of(12, 0);
+		timeSettings2.generatePotentialMenuTimes(TimeIncrement.FifteenMinutes, null, null);
+		timeSettings2.setAllowEmptyTimes(false);
+		
+		DatePickerSettings dateSettings2 = new DatePickerSettings();
+		dateSettings2.setAllowEmptyDates(false);
+		
 		JPanel pnlEndDate = new JPanel();
-		dateTimePicker_1 = new DateTimePicker((DatePickerSettings) null, (TimePickerSettings) null);
-		pnlEndDate.add(dateTimePicker_1);
+		electEndTime = new DateTimePicker(dateSettings2, timeSettings2);
+		pnlEndDate.add(electEndTime);
 		datesAndOptions.add(pnlEndDate);
 		
 		JLabel label = new JLabel("");

@@ -4,10 +4,6 @@ import com.github.lgooddatepicker.components.DateTimePicker;
 import com.github.lgooddatepicker.components.TimePickerSettings;
 import com.github.lgooddatepicker.components.TimePickerSettings.TimeIncrement;
 import java.time.LocalTime;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.TimeZone;
-
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
@@ -76,27 +72,7 @@ public class ElectionCreationGUI extends JPanel {
 		JPanel panel_1 = new JPanel();
 		pnlHolder.add(panel_1);
 		panel_1.setLayout(new GridLayout(0, 1, 0, 0));
-
-		JPanel panel_16 = new JPanel();
-		panel_16.setBorder(new TitledBorder(new LineBorder(Color.black, 1), "Election Start Date and Time"));
-		panel_1.add(panel_16);
-		panel_16.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
-
-		dateTimePicker = new DateTimePicker((DatePickerSettings) null, (TimePickerSettings) null);
-		panel_16.add(dateTimePicker);
-
-		TimeZone estZone = TimeZone.getTimeZone("EST");
-		Calendar est = Calendar.getInstance(estZone);
-		Date date = est.getTime();
-
-		JPanel panel_5 = new JPanel();
-		panel_5.setBorder(new TitledBorder(new LineBorder(Color.black, 1), "Election End Date and Time"));
-
-		panel_1.add(panel_5);
-
-		dateTimePicker_1 = new DateTimePicker((DatePickerSettings) null, (TimePickerSettings) null);
-		panel_5.add(dateTimePicker_1);
-
+		
 		JPanel panel_4 = new JPanel();
 		pnlHolder.add(panel_4);
 
@@ -105,10 +81,6 @@ public class ElectionCreationGUI extends JPanel {
 		panel_4.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 		panel_4.add(btnNewButton);
 		add(pnlHolder);
-		DatePickerSettings dateSettings = new DatePickerSettings();
-		timeSettings = new TimePickerSettings();
-		dateSettings.setAllowEmptyDates(false);
-		timeSettings.setAllowEmptyTimes(false);
 
 	}
 

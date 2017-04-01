@@ -1,7 +1,10 @@
 import java.io.*;
 import java.net.*;
+import java.sql.Date;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 class ClientHandler extends Thread {
 
@@ -10,6 +13,7 @@ class ClientHandler extends Thread {
 	Server server;
 	Socket socket;
 	String currentUserName;
+	String currentUserType;
 	String ipAddress;
 
 	ClientHandler(Socket sock, Server serv) {
@@ -50,7 +54,7 @@ class ClientHandler extends Thread {
 					createElectionList("<getElections>,");
 					break;
 				case "<initElections>":
-					createElectionList("<initElections>,");
+					createElectionList("<getElections>,");
 					break;
 
 				case "<removeElection>":
@@ -61,6 +65,11 @@ class ClientHandler extends Thread {
 						pwOut.println("<removedElection>," + data[1] + ",fail");
 					}
 					consoleGUI.updateCurrentElections(server.elections.keySet());
+					break;
+				case "<changeCommissioner>":
+					server.changeCommissioner(data[1],data[2]);
+					pwOut.println("<changedCommissioner>," + data[1]+","+data[2]);
+					server.logToGUI(currentUserName + " has changed commissioner of election: " + data[1]+", to "+data[2]+".");
 					break;
 				case "<addRace>":
 					server.addRace(data[1], data[2]);
@@ -91,7 +100,22 @@ class ClientHandler extends Thread {
 					pwOut.println("<removedCand>," + data[1] + "," + data[2] + "," + data[3]);
 					server.logToGUI(currentUserName + " has removed candidate " + data[3] + " from race " + data[2]+ " in election "+ data[1]+".");
 					break;
-
+				case "<setElectionStart>":
+					server.elections.get(data[1]).startDate = new Date(Long.parseLong(data[2]));
+					server.elections.get(data[1]).electionStatus = Election.status.EDITABLE;
+					server.completeElections.remove(data[1]);
+					//System.out.println("SET startDATE TO: " + new SimpleDateFormat("MMM dd HH:mm").format(server.elections.get(data[1]).startDate));
+					pwOut.print("<ignore>,");
+					break;
+				case "<setElectionEnd>":
+					server.elections.get(data[1]).endDate = new Date(Long.parseLong(data[2]));
+					//System.out.println("SET endDATE TO: " + new SimpleDateFormat("MMM dd HH:mm").format(server.elections.get(data[1]).endDate));
+					pwOut.print("<ignore>,");
+					break;
+				case "<setElectionPassword>":
+					server.elections.get(data[1]).electionPassword = data[2];
+					pwOut.println("<ignore>");
+					break;
 				case "<getCands>":
 					Set<String> candNames = server.elections.get(data[1]).getRace(data[2]).getCandidates();
 					StringBuilder cands = new StringBuilder("<pushCands>,");
@@ -111,7 +135,7 @@ class ClientHandler extends Thread {
 					break;
 				case "<getElectionStructure>":
 					Election currentE = server.elections.get(data[1]);
-					StringBuilder structure = new StringBuilder("<electStructure>," + currentE.getAllRaces().size() + ",");
+					StringBuilder structure = new StringBuilder("<electStructure>," + currentE.getAllRaces().size() + "," + currentE.electionPassword +",");
 					for (String raceName : currentE.getAllRaces()) {
 						structure.append(raceName + "," + currentE.getVoteCount().get(raceName).keySet().size() + ",");
 						ArrayList<String> randName = server.elections.get(data[1]).getRace(raceName).getRandomCandidates();
@@ -178,12 +202,13 @@ class ClientHandler extends Thread {
 				pwOut.println("<logged>,YiJing");
 				return;
 			} else if (server.loginUser(data[1], data[2])) {
-				createElectionList("<initElections>,");
 				String userType = server.getUserType(data[1]);
 				String userID = server.getUserID(data[1]);
 				currentUserName = data[1];
+				currentUserType = userType;
 				server.logToGUI("[" + server.getUserType(data[1]) + "][" +server.getUserID(data[1])+"]"+ data[1] + " has logged in.");
 				pwOut.println("<logged>," + userType + "," + data[1] + "," + userID);
+				createElectionList("<getElections>,");
 				return;
 			}
 		}
@@ -191,10 +216,21 @@ class ClientHandler extends Thread {
 	}
 
 	private void createElectionList(String start) {
-		Set<String> keys = server.elections.keySet();
+		Set<String> keys = null;
+		System.out.println("HERE");
+		if(currentUserType.equals("Student") || currentUserType.equals("Commissioner")){
+			keys = server.activeElections;
+		}
+		else{
+			keys = server.elections.keySet();
+		}
+
 		StringBuilder elections = new StringBuilder(start);
 		for (String k : keys) {
 			elections.append((k + ","));
+		}
+		if(server.electCommissioners.containsKey(currentUserName)){
+			elections.append(server.electCommissioners.get(currentUserName) + ",");
 		}
 		pwOut.println(elections.toString());
 	}
