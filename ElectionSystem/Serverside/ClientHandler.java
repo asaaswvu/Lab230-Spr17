@@ -133,23 +133,34 @@ class ClientHandler extends Thread {
 					}
 					pwOut.println(randCands.toString());
 					break;
+				case "<getPass>":
+					pwOut.println("<electPass>,"+server.elections.get(data[1]).getPass());
+					break;
 				case "<getElectionStructure>":
 					Election currentE = server.elections.get(data[1]);
-					StringBuilder structure = new StringBuilder("<electStructure>," + currentE.getAllRaces().size() + "," + currentE.electionPassword +",");
-					for (String raceName : currentE.getAllRaces()) {
-						structure.append(raceName + "," + currentE.getVoteCount().get(raceName).keySet().size() + ",");
-						ArrayList<String> randName = server.elections.get(data[1]).getRace(raceName).getRandomCandidates();
-						for (String candName : randName){
-							structure.append(candName+ ",");
-						}
+					if(currentE.hasVoted(currentUserName)){
+						pwOut.println("<FailedVoteGet>,voted," + data[1]);
 					}
-					pwOut.println(structure.toString());
+					else if(currentE.getStatus()==Election.status.COMPLETE){
+						pwOut.println("<FailedVoteGet>,ended," + data[1]);
+					}
+					else{
+						StringBuilder structure = new StringBuilder("<electStructure>," + currentE.getAllRaces().size() + "," + currentE.electionPassword +",");
+						for (String raceName : currentE.getAllRaces()) {
+							structure.append(raceName + "," + currentE.getVoteCount().get(raceName).keySet().size() + ",");
+							ArrayList<String> randName = server.elections.get(data[1]).getRace(raceName).getRandomCandidates();
+							for (String candName : randName){
+								structure.append(candName+ ",");
+							}
+						}
+						pwOut.println(structure.toString());
+					}
 					break;
 				case "<vote>":
 					// Add a server.election check for if current user has voted
 					// id = data[1]
 					server.elections.get(data[2]).getRace(data[3]).vote(data[4]);
-					// pwOut.println("<voteReceived>,Fail");
+					server.elections.get(data[2]).userVoted(currentUserName);
 					break;
 				case "<voteDone>":
 					pwOut.println("<voteReceived>,Success");

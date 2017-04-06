@@ -1,17 +1,12 @@
-import java.awt.Color;
-import com.github.lgooddatepicker.components.DatePickerSettings;
-import com.github.lgooddatepicker.components.DateTimePicker;
 import com.github.lgooddatepicker.components.TimePickerSettings;
 import com.github.lgooddatepicker.components.TimePickerSettings.TimeIncrement;
 import java.time.LocalTime;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
-import javax.swing.border.LineBorder;
 import java.awt.GridLayout;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
-import javax.swing.border.TitledBorder;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.FlowLayout;
@@ -23,8 +18,6 @@ public class ElectionCreationGUI extends JPanel {
 	private JButton btnNewButton;
 	public JTextField electionName;
 	public JTextField commissName;
-	public DateTimePicker dateTimePicker_1;
-	public DateTimePicker dateTimePicker;
 
 	public ElectionCreationGUI() {
 		setBounds(100, 100, 280, 200);

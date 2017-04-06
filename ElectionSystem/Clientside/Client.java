@@ -52,6 +52,7 @@ public class Client extends JFrame implements ActionListener{
 	public static String selectedElection = null;
 	public static String selectedRace = null;
 	private HashMap<String,String> voteChoices = new HashMap<String,String>();
+	public String currElectPassword;
 
 
 	Client(){
@@ -112,6 +113,7 @@ public class Client extends JFrame implements ActionListener{
 
 			while (true){
 				String strIn = brIn.readLine();
+				System.out.println(strIn);
 				String [] data = strIn.split(",");
 				System.out.println("Response from Server to Client : " + strIn);
 
@@ -165,12 +167,12 @@ public class Client extends JFrame implements ActionListener{
 					}
 					updateElectionList(pnlHomeView);
 				}
-//				else if(strIn.startsWith("<initElections>")){
-//					elections.clear();
-//					for(int i = 1; i < data.length;i++){
-//						elections.add(data[i]);
-//					}
-//				}
+				//				else if(strIn.startsWith("<initElections>")){
+				//					elections.clear();
+				//					for(int i = 1; i < data.length;i++){
+				//						elections.add(data[i]);
+				//					}
+				//				}
 				else if(strIn.startsWith("<getRaces>")){
 					currentRaces.clear();
 					for(int i = 1; i < data.length;i++){
@@ -185,6 +187,10 @@ public class Client extends JFrame implements ActionListener{
 					}
 					updateCandList(ballotEdit);
 
+				}
+				else if(strIn.startsWith("<electPass>")){
+					currElectPassword = data[1];
+					initBallotEdit2();
 				}
 				else if(strIn.startsWith("<addedCand>")){
 					System.out.println("Added Cand: " + data[3] + " to Race: " + data[2]+" in Election: "+ data[1]);
@@ -261,19 +267,37 @@ public class Client extends JFrame implements ActionListener{
 						System.out.println(electStructure.entrySet());
 					}
 
-					String code = JOptionPane.showInputDialog(
-							this, 
-							"Enter elections password", 
-							"Password Protected", 
-							JOptionPane.WARNING_MESSAGE
-							);
-					if(code!=null && code.equals(pass)){//REPLACE FIRST MEMEBR OF ELECT STRUCT PRINT WRITE WITH THE KEY INSTED AND ADJUST ALL ALGS ACCORDINGLY
+					if(pass.equals("UM")){
 						initStudentVote();
 						changeView(pnlStudentVoteView);
 					}
 					else{
-						JOptionPane.showMessageDialog(this,"Incorrect Password!","Password Protected",JOptionPane.PLAIN_MESSAGE);
+						String code = JOptionPane.showInputDialog(
+								this, 
+								"Enter elections password", 
+								"Password Protected", 
+								JOptionPane.WARNING_MESSAGE
+								);
+						if(code!=null && code.equals(pass)){
+							initStudentVote();
+							changeView(pnlStudentVoteView);
+						}
+
+						else{
+							JOptionPane.showMessageDialog(this,"Incorrect Password!","Password Protected",JOptionPane.PLAIN_MESSAGE);
+						}
 					}
+				}
+				else if(strIn.startsWith("<FailedVoteGet>")){
+					String msg;
+					if(data[1].equals("voted")){
+						msg = "You have already voted!";
+					}
+					else{
+						msg = "Election: " + data[2] + "'s polls are not open!";
+					}
+					JOptionPane.showMessageDialog(this,msg,"Error Occurred",JOptionPane.PLAIN_MESSAGE);		
+					updateElectionList(pnlHomeView);
 				}
 				else
 					JOptionPane.showMessageDialog(this,strIn,"Error Occurred!",JOptionPane.PLAIN_MESSAGE);
@@ -419,6 +443,8 @@ public class Client extends JFrame implements ActionListener{
 		setSize(525,400);
 		currentCands.clear();
 		ballotEdit = new ElectionEditPanel(lstRaces,lstCandidates);
+		changeView(ballotEdit);
+		updateRaceList(ballotEdit);
 		pwOut.println("<getRaces>,"+selectedElection);
 
 	}
@@ -579,9 +605,7 @@ public class Client extends JFrame implements ActionListener{
 				setLocationRelativeTo(null);
 				break;
 			case "openEdit":
-				initBallotEdit2();
-				changeView(ballotEdit);
-				updateRaceList(ballotEdit);
+				pwOut.println("<getPass>,"+selectedElection);
 				break;
 			case "exitElectionEdit":
 				System.out.println("Exit Edit Mode");
@@ -635,6 +659,7 @@ public class Client extends JFrame implements ActionListener{
 			case "viewElection":
 				selectedElection = lstElections.getSelectedValue();
 				selectedRace = null;
+				pwOut.println("<getElections>,");
 				pwOut.println("<getElectionStructure>,"+selectedElection);
 				System.out.println("Opening Election View");
 				break;
@@ -685,7 +710,8 @@ public class Client extends JFrame implements ActionListener{
 					pwOut.println("<setElectionStart>," + selectedElection+","+String.valueOf(d1));
 					d1 = Date.from(ballotEdit.electEndTime.getDateTimeStrict().atZone(ZoneId.systemDefault()).toInstant()).getTime();
 					pwOut.println("<setElectionEnd>," + selectedElection+","+String.valueOf(d1));
-					pwOut.println("<setElectionPassword>," +selectedElection+","+ ballotEdit.electPassword.getText());
+					String electPassword = (ballotEdit.electPassword.getText() == null) ? ballotEdit.electPassword.getText() : "UM";
+					pwOut.println("<setElectionPassword>," +selectedElection+","+ electPassword);
 				}
 
 			case "exitBallotEdit":

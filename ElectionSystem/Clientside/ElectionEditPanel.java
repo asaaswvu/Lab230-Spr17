@@ -37,7 +37,7 @@ public class ElectionEditPanel extends JPanel {
 		lblBallotEdit.setBounds(10, 11, 480, 14);
 		add(lblBallotEdit);
 		
-		electPassword = new JTextField();
+		electPassword = new JTextField(Client.parentClient.currElectPassword);
 		electPassword.setBounds(259, 173, 231, 23);
 		add(electPassword);
 		electPassword.setColumns(10);

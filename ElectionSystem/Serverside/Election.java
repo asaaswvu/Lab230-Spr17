@@ -2,11 +2,11 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Set;
 
 public class Election implements java.io.Serializable {
 	private static final long serialVersionUID = 1L;
-	private ArrayList<String> eligibleGroups;
 	private HashMap<String, Race> races;
 	private String electionName = "";
 	private String commissioner;
@@ -14,20 +14,18 @@ public class Election implements java.io.Serializable {
 	public Date endDate;
 	public status electionStatus;
 	public String electionPassword;
+	private HashSet<String> usersVoted;
 
 	public Election(String name, String commissioner) {
 		electionName = name;
 		this.commissioner = commissioner;
-		eligibleGroups = new ArrayList<String>();
-		eligibleGroups.add("Admin");
 		races = new HashMap<String, Race>();
 		electionStatus = status.EDITABLE;
 		electionPassword = "password";
 		startDate = new Date(System.currentTimeMillis() + (600000000));
 		endDate = new Date(System.currentTimeMillis() + (600000000));
 		SimpleDateFormat ft = new SimpleDateFormat ("MMM d, yyyy k:mm:ss");
-		System.out.println("START: "+ft.format(startDate));
-		System.out.println("END: "+ft.format(endDate));
+		usersVoted = new HashSet<String>();
 	}
 
 	public enum status {
@@ -38,26 +36,26 @@ public class Election implements java.io.Serializable {
 		electionStatus = status.COMPLETE;
 		System.out.println("CLOSING POLL");
 	}
+	
+	public boolean hasVoted(String user){
+		return usersVoted.contains(user);
+	}
+	
+	public void userVoted(String user){
+		usersVoted.add(user);
+	}
 
 	public void openPoll(){
 		electionStatus = status.ACTIVE;
 		System.out.println("OPENING POLL");
 	}
 
-	public ArrayList<String> getEligibleGroups() {
-		return eligibleGroups;
-	}
-
 	public status getStatus(){
 		return electionStatus;
 	}
-
-	public void addEligibleGroup(String group) {
-		eligibleGroups.add(group);
-	}
-
-	public void removeEligibleGroup(String group) {
-		eligibleGroups.remove(group);
+	
+	public String getPass(){
+		return this.electionPassword;
 	}
 
 	public Race getRace(String name) {
@@ -71,11 +69,7 @@ public class Election implements java.io.Serializable {
 	public Set<String> getAllRaces() {
 		return races.keySet();
 	}
-
-	public void changeElectionName(String newName) {
-		electionName = newName;
-	}
-
+	
 	public void setCommissioner(String name) {
 		commissioner = name;
 	}
@@ -86,7 +80,6 @@ public class Election implements java.io.Serializable {
 
 	public void addRace(String nameRace) {
 		races.put(nameRace, new Race(nameRace));
-		System.out.println("adding race" + nameRace);
 	}
 
 	public void removeRace(String nameRace) {
