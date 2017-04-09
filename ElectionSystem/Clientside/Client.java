@@ -12,13 +12,10 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.net.*;
-import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.io.*;
 
 public class Client extends JFrame implements ActionListener{
@@ -370,6 +367,7 @@ public class Client extends JFrame implements ActionListener{
 			public void valueChanged(ListSelectionEvent lE) {
 				if (!lE.getValueIsAdjusting()) {
 					selectedElection = lstElections.getSelectedValue();
+					System.out.println("->SLECTED ELECTION @ LISTENER is : " + selectedElection);
 					if(selectedElection != null){
 						btnViewElection.setEnabled(true);
 						btnRemoveElection.setEnabled(true);
@@ -657,11 +655,7 @@ public class Client extends JFrame implements ActionListener{
 				selectedElection = null;
 				break;
 			case "viewElection":
-				selectedElection = lstElections.getSelectedValue();
-				selectedRace = null;
-				pwOut.println("<getElections>,");
 				pwOut.println("<getElectionStructure>,"+selectedElection);
-				System.out.println("Opening Election View");
 				break;
 			case "addRace":
 				String newRaceName = JOptionPane.showInputDialog(this, "Enter Race Name to add:").toString();
