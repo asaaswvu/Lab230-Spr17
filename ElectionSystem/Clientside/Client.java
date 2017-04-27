@@ -1,3 +1,4 @@
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
@@ -5,6 +6,7 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 
 import java.awt.event.*;
+import java.awt.image.BufferedImage;
 import java.awt.BorderLayout;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
@@ -79,7 +81,19 @@ public class Client extends JFrame implements ActionListener{
 		JButton btnQuit = new JButton("Quit");
 		btnQuit.setActionCommand("quit");
 		btnQuit.addActionListener(this);
-
+		BufferedImage myPicture = null;
+		try {
+			//myPicture = ImageIO.read(new File("C:/Users/Mszaf/Downloads/icon2.jpg"));
+			myPicture = ImageIO.read(getClass().getResource("/icon2.jpg"));
+				
+			} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		JLabel picLabel = new JLabel(new ImageIcon(myPicture));
+		picLabel.setBorder(new EmptyBorder(5, 0, 0, 40));
+;
+		pnlMain.add(picLabel);
 		pnlButtons.add(btnLogin);
 		pnlButtons.add(btnQuit);
 
@@ -90,7 +104,8 @@ public class Client extends JFrame implements ActionListener{
 		getContentPane().add(pnlMain);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setTitle("Election Login");
-		setMinimumSize(new Dimension(275,150));
+		setMinimumSize(new Dimension(250,350));
+
 		pack();
 
 		setLocationRelativeTo(null);
@@ -103,6 +118,7 @@ public class Client extends JFrame implements ActionListener{
 	private void run(){
 		try{
 			sock = new Socket("127.0.0.1",50000);
+			//sock = new Socket("10.253.106.110",50000);
 			//sock = new Socket("10.253.73.124",50000);
 			//sock = new Socket("108.61.219.203",50000);
 			brIn = new BufferedReader(new InputStreamReader(sock.getInputStream()));
@@ -362,6 +378,7 @@ public class Client extends JFrame implements ActionListener{
 		final JButton btnChangeCommissioner = new JButton("Edit Commissioner");
 		final JButton btnViewResults = new JButton("View Results");
 		final JButton btnOpenEdit = new JButton("Open EditMode");
+		final JButton btnCertify = new JButton("Certify Election");
 
 		lstElections.addListSelectionListener(new ListSelectionListener() {
 			public void valueChanged(ListSelectionEvent lE) {
@@ -373,6 +390,13 @@ public class Client extends JFrame implements ActionListener{
 						btnRemoveElection.setEnabled(true);
 						btnViewResults.setEnabled(true);
 						btnChangeCommissioner.setEnabled(true);
+						btnCertify.setEnabled(true);
+
+						if(userType.equals("Admin")){
+							pnlButtons.add(btnCertify);
+							pnlHomeView.revalidate();
+							pnlHomeView.repaint();
+						}
 						if(userType.equals("Commissioner")){
 							pnlButtons.add(btnOpenEdit);
 							pnlHomeView.revalidate();
@@ -384,8 +408,14 @@ public class Client extends JFrame implements ActionListener{
 						btnRemoveElection.setEnabled(false);
 						btnViewResults.setEnabled(false);
 						btnChangeCommissioner.setEnabled(false);
+						
 						if(userType.equals("Commissioner")){
 							pnlButtons.remove(btnOpenEdit);
+							pnlHomeView.revalidate();
+							pnlHomeView.repaint();
+						}
+						if(userType.equals("Admin")){
+							pnlButtons.remove(btnCertify);
 							pnlHomeView.revalidate();
 							pnlHomeView.repaint();
 						}
@@ -422,6 +452,9 @@ public class Client extends JFrame implements ActionListener{
 			btnRemoveElection.setActionCommand("removeElection");
 			btnRemoveElection.addActionListener(this);
 			pnlButtons.add(btnRemoveElection);
+			
+			btnCertify.setActionCommand("certify");
+			btnCertify.addActionListener(this);
 
 			btnChangeCommissioner.setEnabled(false);
 			btnChangeCommissioner.setActionCommand("changeCommissioner");
@@ -714,6 +747,9 @@ public class Client extends JFrame implements ActionListener{
 				changeView(pnlHomeView);
 				setSize(450,300);
 				break;
+			case "certify":
+				JOptionPane.showMessageDialog(this,selectedElection + " has been certified!","Success",JOptionPane.PLAIN_MESSAGE);
+				break;
 			case "quit":
 				pwOut.println("<clientQuit>");
 				System.exit(0);
@@ -727,7 +763,7 @@ public class Client extends JFrame implements ActionListener{
 	//**********---ACTIONS PERFORMED END---**********
 
 	public static void main(String args[]) throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException{
-		//UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
+		UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
 		new Client();
 
 	}
