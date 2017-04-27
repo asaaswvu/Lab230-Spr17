@@ -50,7 +50,7 @@ class Server extends Thread {
 		users.put("bob", user1);
 		users.put("jim", user4);
 		users.put("admin", user2);
-		users.put("commis", user3);
+		users.put("gordon", user3);
 		// OIT HANDLE HERE -----
 
 		if (useGUI)
