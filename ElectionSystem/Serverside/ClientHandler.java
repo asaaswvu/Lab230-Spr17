@@ -201,7 +201,8 @@ class ClientHandler extends Thread {
 				e.printStackTrace();
 			}
 		} catch (Exception e) {
-			server.logToGUI("ERROR : " + e.getMessage() + "SERVER DYING");
+			server.logToGUI("ERROR : SERVER DYING");
+			e.printStackTrace();
 			server.die();
 			die();
 		}
