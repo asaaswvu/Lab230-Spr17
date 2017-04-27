@@ -46,7 +46,8 @@ class ClientHandler extends Thread {
 				case "<addElection>":
 					server.addElection(data[1], data[2]);
 					createElectionList("<getElections>,");
-					consoleGUI.updateCurrentElections(server.elections.keySet());
+					if(Server.useGUI)
+						consoleGUI.updateCurrentElections(server.elections.keySet());
 					server.logToGUI(currentUserName + " has added election " + data[1]+".");
 					pwOut.println("<AddedElection>," + data[1] + "," + data[2]);
 					break;
